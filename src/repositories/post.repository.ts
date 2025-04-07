@@ -26,6 +26,7 @@ export const postRepository = {
         return
     },
 
+
     deletePost(id: string) {
         const index =  db.posts.findIndex((el) => el.id === id)
 
