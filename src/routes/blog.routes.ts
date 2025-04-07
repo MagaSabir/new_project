@@ -1,11 +1,14 @@
 import {Router} from "express";
-import {SETTINGS} from "../settings";
 import {blogController} from "../controllers/blog.controller";
 import {descriptionValidator, nameValidator, websiteUrlValidator} from "../validations/blogValidation/blog.validation";
+import {authMiddleware} from "../core/middlewares/authMiddleware";
 
 export const blogRouter = Router()
 
-blogRouter
-    .get(SETTINGS.PATH.blogs,  blogController.getAllBlogs)
-    .post(SETTINGS.PATH.blogs, nameValidator, descriptionValidator, websiteUrlValidator, blogController.postController)
 
+blogRouter
+    .get('/:id', blogController.getBlogById)
+    .get('/',  blogController.getAllBlogs)
+    .post('/', authMiddleware, nameValidator, descriptionValidator, websiteUrlValidator, blogController.postController)
+    .put('/:id', authMiddleware, nameValidator, descriptionValidator, websiteUrlValidator, blogController.putController)
+    .delete('/:id', authMiddleware, blogController.deleteController)
