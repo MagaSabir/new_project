@@ -1,14 +1,13 @@
-import {config} from "dotenv";
+import { config } from "dotenv";
 
-config()
+config();
 
 export const SETTINGS = {
-    PORT: process.env.PORT || 3000,
-    PATH: {
-        blogs: "/blogs",
-        posts: '/posts',
-        cleanDB: "/testing/all-data"
-    },
-    ADMIN_AUTH: 'admin:qwerty'
-}
-
+  PORT: process.env.PORT || 3000,
+  PATH: {
+    blogs: "/blogs",
+    posts: "/posts",
+    cleanDB: "/testing/all-data",
+  },
+  ADMIN_AUTH: "admin:qwerty",
+};
