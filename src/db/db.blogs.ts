@@ -5,13 +5,7 @@ export const db = {
       name: "name",
       description: "blabla",
       websiteUrl: "google.com",
-    },
-    {
-      id: "2",
-      name: "name",
-      description: "blabla",
-      websiteUrl: "website.com",
-    },
+    }
   ],
   posts: [
     {

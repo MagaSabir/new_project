@@ -7,22 +7,22 @@ import {BlogType, ErrorMessageType} from "../types/blogTypes/blogType";
 export const blogController = {
   getAllBlogs: (req: Request, res: Response) => {
     const blogs: BlogType[] = blogRepository.findBlogs();
-    res.status(STATUS_CODE.OK).send(blogs);
+    res.status(STATUS_CODE.OK_200).send(blogs);
   },
 
   getBlogById: (req: Request, res: Response) => {
     const blog: BlogType | undefined = blogRepository.findBlog(req.params.id);
     if (!blog) {
-      res.sendStatus(STATUS_CODE.NOT_FOUND);
+      res.sendStatus(STATUS_CODE.NOT_FOUND_404);
       return;
     }
-    res.status(STATUS_CODE.OK).send(blog);
+    res.status(STATUS_CODE.OK_200).send(blog);
   },
 
   postController: (req: Request, res: Response) => {
     const errors: ErrorMessageType[] = errorsArray(req);
     if (errors.length) {
-      res.status(STATUS_CODE.BAD_REQUEST).send({ errorsMessages: errors });
+      res.status(STATUS_CODE.BAD_REQUEST_400).send({ errorsMessages: errors });
       return;
     }
     const newBlog = {
@@ -32,31 +32,31 @@ export const blogController = {
       websiteUrl: req.body.websiteUrl,
     };
     blogRepository.createBlog(newBlog);
-    res.status(STATUS_CODE.CREATED).send(newBlog);
+    res.status(STATUS_CODE.CREATED_201).send(newBlog);
   },
 
   putController: (req: Request, res: Response) => {
     const errors: ErrorMessageType[] = errorsArray(req);
     const blog = blogRepository.findBlog(req.params.id);
     if (errors.length) {
-      res.status(STATUS_CODE.BAD_REQUEST).send({ errorsMessages: errors });
+      res.status(STATUS_CODE.BAD_REQUEST_400).send({ errorsMessages: errors });
       return;
     }
     if (!blog) {
-      res.sendStatus(STATUS_CODE.NOT_FOUND);
+      res.sendStatus(STATUS_CODE.NOT_FOUND_404);
     }
     blogRepository.updateBlog(req.body, req.params.id);
-    res.sendStatus(STATUS_CODE.NO_CONTENT);
+    res.sendStatus(STATUS_CODE.NO_CONTENT_404);
   },
 
   deleteController: (req: Request, res: Response) => {
     const blog = blogRepository.findBlog(req.params.id);
     if (!blog) {
-      res.sendStatus(STATUS_CODE.NOT_FOUND);
+      res.sendStatus(STATUS_CODE.NOT_FOUND_404);
       return;
     }
     blogRepository.deleteBlog(req.params.id);
-    res.sendStatus(STATUS_CODE.NO_CONTENT);
+    res.sendStatus(STATUS_CODE.NO_CONTENT_404);
   },
 };
 

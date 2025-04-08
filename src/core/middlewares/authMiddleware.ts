@@ -10,14 +10,14 @@ export const authMiddleware = (
   const auth = req.headers["authorization"];
 
   if (!auth) {
-    res.sendStatus(STATUS_CODE.UNAUTHORIZED);
+    res.sendStatus(STATUS_CODE.UNAUTHORIZED_401);
     return;
   }
 
   const [authType, token] = auth.split(" ");
 
   if (authType !== "Basic") {
-    res.sendStatus(STATUS_CODE.UNAUTHORIZED);
+    res.sendStatus(STATUS_CODE.UNAUTHORIZED_401);
     return;
   }
 
@@ -26,7 +26,7 @@ export const authMiddleware = (
   const [loginUser, passwordUser] = SETTINGS.ADMIN_AUTH.split(":");
 
   if (newLogin !== loginUser || newPassword !== passwordUser) {
-    res.sendStatus(STATUS_CODE.UNAUTHORIZED);
+    res.sendStatus(STATUS_CODE.UNAUTHORIZED_401);
     return;
   }
   next();

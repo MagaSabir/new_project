@@ -15,15 +15,14 @@ export const blogRepository = {
   },
 
   updateBlog(newBlog: BlogType, id: string) {
-    const blog: BlogType | undefined = db.blogs.find(
-      (el: BlogType): boolean => el.id === id,
-    );
+    const blog: BlogType | undefined = db.blogs.find((el: BlogType): boolean => el.id === id);
     if (!blog) {
       return null;
     }
-    (blog.name = newBlog.name),
-      (blog.description = newBlog.description),
-      (blog.websiteUrl = newBlog.websiteUrl);
+
+    blog.name = newBlog.name;
+    blog.description = newBlog.description;
+    blog.websiteUrl = newBlog.websiteUrl;
     return;
   },
 
