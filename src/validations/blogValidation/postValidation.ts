@@ -19,7 +19,7 @@ export const contentValidator = body("content")
   .withMessage("length");
 export const blogIdValidator = body("blogId")
   .trim()
-  .custom((blogId) => {
-    return blogRepository.findBlog(blogId) ? true : false;
+  .custom(async (blogId) => {
+    return await blogRepository.findBlog(blogId) ? true : false;
   })
   .withMessage("no blogId");

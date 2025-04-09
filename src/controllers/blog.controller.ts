@@ -1,62 +1,77 @@
 import { Request, Response } from "express";
 import { STATUS_CODE } from "../core/http-statuses-code";
 import { errorsArray } from "../core/utils/errorMessage";
-import { blogRepository } from "../repositories/blog.repository";
+import {blogRepository} from "../repositories/blog.repository";
 import {BlogType, ErrorMessageType} from "../types/blogTypes/blogType";
 
-export const blogController = {
-  getAllBlogs: (req: Request, res: Response) => {
-    const blogs: BlogType[] = blogRepository.findBlogs();
+import {RequestWithBody, URIParamsModel} from "../types";
+import {BlogViewModel} from "../models/BlogViewModel";
+import {WithId} from "mongodb";
+
+export  const  blogController =   {
+  getAllBlogs: async (req: Request, res: Response): Promise<void>  => {
+    const dbBlogs:WithId<BlogType>[] = await blogRepository.findBlogs();
+    const blogs: BlogViewModel[] = dbBlogs.map((el: WithId<BlogType>): BlogViewModel => {
+      return {
+        id: el._id.toString(),
+        name: el.name,
+        description: el.description,
+        websiteUrl: el.websiteUrl
+      }
+    })
     res.status(STATUS_CODE.OK_200).send(blogs);
   },
 
-  getBlogById: (req: Request, res: Response) => {
-    const blog: BlogType | undefined = blogRepository.findBlog(req.params.id);
-    if (!blog) {
+  getBlogById: async (req: RequestWithBody<URIParamsModel>, res: Response): Promise<void> => {
+    const dbBlog: WithId<BlogType> | null =  await  blogRepository.findBlog(req.params.id);
+    if (!dbBlog) {
       res.sendStatus(STATUS_CODE.NOT_FOUND_404);
       return;
     }
-    res.status(STATUS_CODE.OK_200).send(blog);
+    res.status(STATUS_CODE.OK_200).json({
+      id: dbBlog._id.toString(),
+      name: dbBlog.name,
+      description: dbBlog.description,
+      websiteUrl: dbBlog.websiteUrl
+    });
   },
 
-  postController: (req: Request, res: Response) => {
+  postController: async (req: Request, res: Response): Promise<void> => {
     const errors: ErrorMessageType[] = errorsArray(req);
     if (errors.length) {
       res.status(STATUS_CODE.BAD_REQUEST_400).send({ errorsMessages: errors });
       return;
     }
     const newBlog = {
-      id: Math.floor(+new Date()).toString(),
       name: req.body.name,
       description: req.body.description,
       websiteUrl: req.body.websiteUrl,
     };
-    blogRepository.createBlog(newBlog);
-    res.status(STATUS_CODE.CREATED_201).send(newBlog);
+    const blog: BlogViewModel = await blogRepository.createBlog(newBlog);
+    res.status(STATUS_CODE.CREATED_201).send(blog);
   },
 
-  putController: (req: Request, res: Response) => {
+  putController: async (req: Request, res: Response): Promise<void> => {
     const errors: ErrorMessageType[] = errorsArray(req);
-    const blog = blogRepository.findBlog(req.params.id);
     if (errors.length) {
       res.status(STATUS_CODE.BAD_REQUEST_400).send({ errorsMessages: errors });
       return;
     }
-    if (!blog) {
+    const result: Boolean = await blogRepository.updateBlog(req.body, req.params.id);
+    if(!result) {
       res.sendStatus(STATUS_CODE.NOT_FOUND_404);
+      return
     }
-    blogRepository.updateBlog(req.body, req.params.id);
-    res.sendStatus(STATUS_CODE.NO_CONTENT_404);
+    res.sendStatus(STATUS_CODE.NO_CONTENT_204)
   },
 
-  deleteController: (req: Request, res: Response) => {
-    const blog = blogRepository.findBlog(req.params.id);
+  deleteController: async (req: Request, res: Response): Promise<void> => {
+    const blog = await blogRepository.deleteBlog(req.params.id);
     if (!blog) {
       res.sendStatus(STATUS_CODE.NOT_FOUND_404);
       return;
     }
-    blogRepository.deleteBlog(req.params.id);
-    res.sendStatus(STATUS_CODE.NO_CONTENT_404);
+    res.sendStatus(STATUS_CODE.NO_CONTENT_204);
   },
 };
 

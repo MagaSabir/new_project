@@ -1,39 +1,32 @@
-import { db } from "../db/db.blogs";
-import { PostType } from "../types/postTypse/postType";
+import {PostType} from "../types/postTypse/postType";
+import {client} from "../db/mongoDb";
+import {InsertOneResult, ObjectId, WithId} from "mongodb";
+import {PostViewModel} from "../models/post.view.model";
 
 export const postRepository = {
-  findPosts(): PostType[] {
-    return db.posts;
+  async findPosts(): Promise<WithId<PostType>[]>  {
+    return await client.db('blogPlatform').collection<PostType>('posts').find().toArray()
   },
 
-  findPost(id: string): PostType | undefined {
-    return db.posts.find((el: PostType): boolean => el.id === id);
+  async findPost(id: string): Promise<WithId<PostType> | null> {
+    return await client.db('blogPlatform').collection<PostType>('posts').findOne({_id: new ObjectId(id)})
   },
 
-  createPost(newPost: PostType) {
-    return db.posts.push(newPost);
-  },
-
-  updatePost(newPost: PostType, id: string) {
-    const post: PostType | undefined = db.posts.find(
-      (el: PostType): boolean => el.id === id,
-    );
-    if (!post) {
-      return null;
+  async createPost(newPost: PostType): Promise<PostViewModel> {
+    const post: InsertOneResult<PostType> =  await client.db('blogPlatform').collection<PostType>('posts').insertOne(newPost)
+    return {
+      id: post.insertedId.toString(),
+      title: newPost.title,
+      shortDescription: newPost.shortDescription,
+      content: newPost.content,
+      blogId: newPost.blogId,
+      blogName: newPost.blogName,
+      createdAt: newPost.createdAt
     }
-    (post.title = newPost.title),
-      (post.shortDescription = newPost.shortDescription),
-      (post.content = newPost.content);
-    post.blogId = newPost.blogId;
-    return;
   },
 
-  deletePost(id: string) {
-    const index = db.posts.findIndex((el) => el.id === id);
-
-    if (index === -1) {
-      return null;
-    }
-    db.posts.splice(index, 1);
-  },
+  async deletePost(id: string): Promise<boolean> {
+    const result = await client.db('blogPlatform').collection('posts').deleteOne({_id: new ObjectId(id)})
+    return result.deletedCount === 1
+  }
 };

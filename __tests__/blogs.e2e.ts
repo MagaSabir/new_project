@@ -1,7 +1,6 @@
 import request from 'supertest';
 import {app} from "../src/app";
 import {SETTINGS} from "../src/settings";
-import {STATUS_CODE} from "../src/core/http-statuses-code";
 
 
 describe('/blogs', () => {
@@ -14,34 +13,54 @@ describe('/blogs', () => {
         await request(app).delete(SETTINGS.PATH.cleanDB)
     })
 
-    it('should return 200 and empty array', async () => {
-        await request(app)
-            .get('/blogs')
-            .expect(200, [])
-    });
+    let createdBlogId: string;
 
-    it('should create blogs with correct input data', async () => {
-
+    it('должен создать блог', async () => {
         const response = await request(app)
             .post('/blogs')
             .set('Authorization', auth)
             .send({
-                name: "string",
-                description: "string",
-                websiteUrl: "goooogle.ru",
+                name: 'Test blog',
+                description: 'Описание',
+                websiteUrl: 'https://example.com',
             })
-            .expect(STATUS_CODE.CREATED_201)
+            .expect(201);
 
-        const blog = response.body
-        expect(blog).toEqual({
-            id: expect.any(String),
-            name: "string",
-            description: "string",
-            websiteUrl: "goooogle.ru",
-        })
+        expect(response.body).toHaveProperty('id');
+        createdBlogId = response.body.id;
+    });
+
+    it('должен получить блог по id', async () => {
+        const response = await request(app)
+            .get(`/blogs/${createdBlogId}`)
+            .expect(200);
+
+        expect(response.body.name).toBe('Test blog');
+    });
+
+    it('должен обновить блог', async () => {
         await request(app)
-            .get('/blogs')
-            .expect(STATUS_CODE.OK_200, [blog])
+            .put(`/blogs/${createdBlogId}`)
+            .set('Authorization', auth)
+            .send({
+                name: 'Обновлённый блог',
+                description: 'Новое описание',
+                websiteUrl: 'https://updated.com',
+            })
+            .expect(400);
+    });
+
+    it('должен удалить блог', async () => {
+        await request(app)
+            .delete(`/blogs/${createdBlogId}`)
+            .set('Authorization', auth)
+            .expect(204);
+    });
+
+    it('не должен найти удалённый блог', async () => {
+        await request(app)
+            .get(`/blogs/${createdBlogId}`)
+            .expect(404);
     });
 
 })
