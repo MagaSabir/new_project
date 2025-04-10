@@ -16,7 +16,9 @@ export  const  blogController =   {
         id: el._id.toString(),
         name: el.name,
         description: el.description,
-        websiteUrl: el.websiteUrl
+        websiteUrl: el.websiteUrl,
+        createdAt: el.createdAt,
+        isMembership: el.isMembership,
       }
     })
     res.status(STATUS_CODE.OK_200).send(blogs);
@@ -32,7 +34,9 @@ export  const  blogController =   {
       id: dbBlog._id.toString(),
       name: dbBlog.name,
       description: dbBlog.description,
-      websiteUrl: dbBlog.websiteUrl
+      websiteUrl: dbBlog.websiteUrl,
+      createdAt: dbBlog.createdAt,
+      isMembership: dbBlog.isMembership
     });
   },
 
@@ -46,6 +50,8 @@ export  const  blogController =   {
       name: req.body.name,
       description: req.body.description,
       websiteUrl: req.body.websiteUrl,
+      createdAt: new Date().toISOString(),
+      isMembership: false
     };
     const blog: BlogViewModel = await blogRepository.createBlog(newBlog);
     res.status(STATUS_CODE.CREATED_201).send(blog);

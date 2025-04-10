@@ -4,7 +4,7 @@ import { errorsArray } from "../core/utils/errorMessage";
 import { blogRepository } from "../repositories/blog.repository";
 import { postRepository } from "../repositories/post.repository";
 import { PostType } from "../types/postTypse/postType";
-import {ErrorMessageType} from "../types/blogTypes/blogType";
+import {BlogType, ErrorMessageType} from "../types/blogTypes/blogType";
 import {WithId} from "mongodb";
 import {PostViewModel} from "../models/post.view.model";
 
@@ -49,21 +49,37 @@ export const postController = {
       res.status(STATUS_CODE.BAD_REQUEST_400).send({errorsMessages: errors});
       return;
     }
-    const blog = await blogRepository.findBlog(req.body.blogId);
+    const blog: WithId<BlogType> | null = await blogRepository.findBlog(req.body.blogId);
+    if(blog) {
       const newPost = {
         title: req.body.title,
         shortDescription: req.body.shortDescription,
         content: req.body.content,
         blogId: req.body.blogId,
-        blogName: blog!.name,
+        blogName: blog.name,
         createdAt: new Date().toISOString()
       };
       const post: PostType = await postRepository.createPost(newPost);
       res.status(STATUS_CODE.CREATED_201).send(post);
+    }
+  },
+
+  putController: async (req: Request, res: Response): Promise<void> => {
+    const errors: ErrorMessageType[] = errorsArray(req)
+    if(errors.length) {
+      res.status(STATUS_CODE.BAD_REQUEST_400).send({errorsMessages: errors})
+      return
+    }
+    const post: boolean = await postRepository.updatePost(req.params.id, req.body)
+    if(!post) {
+      res.sendStatus(STATUS_CODE.NOT_FOUND_404)
+      return
+    }
+    res.sendStatus(STATUS_CODE.NO_CONTENT_204)
   },
 
   deleteController: async (req: Request, res: Response): Promise<void> => {
-    const post = await blogRepository.deleteBlog(req.params.id)
+    const post: boolean = await postRepository.deletePost(req.params.id)
     if(!post) {
       res.sendStatus(STATUS_CODE.NOT_FOUND_404)
       return

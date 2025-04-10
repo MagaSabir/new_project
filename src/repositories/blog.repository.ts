@@ -18,7 +18,9 @@ export const blogRepository = {
       id: blog.insertedId.toString(),
       name: newBlog.name,
       description: newBlog.description,
-      websiteUrl: newBlog.websiteUrl
+      websiteUrl: newBlog.websiteUrl,
+      createdAt: newBlog.createdAt,
+      isMembership: newBlog.isMembership
     }
   },
 

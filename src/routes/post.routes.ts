@@ -13,14 +13,14 @@ export const postRouter = Router();
 postRouter
   .get("/", postController.getAllPosts)
   .get("/:id", postController.getPost)
-  // .put(
-  //   "/:id",
-  //   authMiddleware,
-  //   titleValidation,
-  //   shortDescriptionValidator,
-  //   contentValidator,
-  //   postController.putController,
-  // )
+  .put(
+    "/:id",
+    authMiddleware,
+    titleValidation,
+    shortDescriptionValidator,
+    contentValidator,
+    postController.putController,
+  )
   .delete("/:id", authMiddleware, postController.deleteController)
   .post(
     "/",

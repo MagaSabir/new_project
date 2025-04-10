@@ -1,6 +1,6 @@
 import {PostType} from "../types/postTypse/postType";
 import {client} from "../db/mongoDb";
-import {InsertOneResult, ObjectId, WithId} from "mongodb";
+import {InsertOneResult, ObjectId, UpdateResult, WithId} from "mongodb";
 import {PostViewModel} from "../models/post.view.model";
 
 export const postRepository = {
@@ -23,6 +23,12 @@ export const postRepository = {
       blogName: newPost.blogName,
       createdAt: newPost.createdAt
     }
+  },
+
+  async updatePost(id: string, newPost: PostType): Promise<boolean> {
+    const result: UpdateResult<PostType> = await client.db('blogPlatform').collection('posts').updateOne(
+        {_id: new ObjectId(id)}, {$set: newPost})
+    return result.matchedCount === 1
   },
 
   async deletePost(id: string): Promise<boolean> {
