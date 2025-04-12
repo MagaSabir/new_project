@@ -7,3 +7,4 @@ export type PostViewModel = {
     blogName: string
     createdAt: string
 }
+

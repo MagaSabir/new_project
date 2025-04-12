@@ -6,7 +6,14 @@ export type BlogType = {
   isMembership: boolean
 };
 
+export type DataReqBodyType = {
+  name: string;
+  description: string;
+  websiteUrl: string;
+}
+
 export type ErrorMessageType = {
   message: string;
   field: string;
 };
+

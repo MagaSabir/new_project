@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import {body} from "express-validator";
 
 export const nameValidator = body("name")
   .isString()
@@ -18,3 +18,4 @@ export const websiteUrlValidator = body("websiteUrl")
   .isLength({ max: 500 })
   .isURL()
   .withMessage(" not url");
+

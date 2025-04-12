@@ -1,45 +1,33 @@
-import { Request, Response } from "express";
-import { STATUS_CODE } from "../core/http-statuses-code";
-import { errorsArray } from "../core/utils/errorMessage";
-import { blogRepository } from "../repositories/blog.repository";
-import { postRepository } from "../repositories/post.repository";
-import { PostType } from "../types/postTypse/postType";
-import {BlogType, ErrorMessageType} from "../types/blogTypes/blogType";
-import {WithId} from "mongodb";
+import {Request, Response} from "express";
+import {STATUS_CODE} from "../core/http-statuses-code";
+import {errorsArray} from "../core/utils/errorMessage";
+import {PostType} from "../types/postTypse/postType";
+import {ErrorMessageType} from "../types/blogTypes/blogType";
 import {PostViewModel} from "../models/post.view.model";
+import {postService} from "../domain/post.servise";
 
 export const postController = {
   getAllPosts: async (req: Request, res: Response): Promise<void> => {
-    const dbPosts: WithId<PostType>[] = await postRepository.findPosts();
-    const posts: PostViewModel[] = dbPosts.map((el: WithId<PostType>): PostViewModel => {
-      return {
-        id: el._id.toString(),
-        title: el.title,
-        shortDescription: el.shortDescription,
-        content: el.content,
-        blogId: el.blogId,
-        blogName: el.blogName,
-        createdAt: el.createdAt
-      }
-    })
-    res.status(STATUS_CODE.OK_200).send(posts);
+    const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
+    const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
+    const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
+    const sortBy = req.query.sortBy || 'createdAt'
+    const items: {pagesCount: number,
+      page: number,
+      pageSize: number,
+      totalCount:number,
+      items: PostType[]} = await postService.getAllPostsService(pageNumber, pageSize, sortDirection, sortBy)
+
+    res.status(STATUS_CODE.OK_200).send(items);
   },
 
   getPost: async (req: Request, res: Response): Promise<void> => {
-    const dbPost: WithId<PostType> | null = await postRepository.findPost(req.params.id)
-    if(!dbPost) {
+    const post: PostViewModel | null = await postService.getPostService(req.params.id)
+    if(!post) {
       res.sendStatus(STATUS_CODE.NOT_FOUND_404)
       return
     }
-    res.json({
-      id: dbPost._id.toString(),
-      title: dbPost.title,
-      shortDescription: dbPost.shortDescription,
-      content: dbPost.content,
-      blogId: dbPost.blogId,
-      blogName: dbPost.blogName,
-      createdAt: dbPost.createdAt
-    })
+    res.status(STATUS_CODE.OK_200).send(post)
   },
 
 
@@ -49,19 +37,8 @@ export const postController = {
       res.status(STATUS_CODE.BAD_REQUEST_400).send({errorsMessages: errors});
       return;
     }
-    const blog: WithId<BlogType> | null = await blogRepository.findBlog(req.body.blogId);
-    if(blog) {
-      const newPost = {
-        title: req.body.title,
-        shortDescription: req.body.shortDescription,
-        content: req.body.content,
-        blogId: req.body.blogId,
-        blogName: blog.name,
-        createdAt: new Date().toISOString()
-      };
-      const post: PostType = await postRepository.createPost(newPost);
+      const post: PostViewModel | null = await postService.createPostService(req.body);
       res.status(STATUS_CODE.CREATED_201).send(post);
-    }
   },
 
   putController: async (req: Request, res: Response): Promise<void> => {
@@ -70,7 +47,7 @@ export const postController = {
       res.status(STATUS_CODE.BAD_REQUEST_400).send({errorsMessages: errors})
       return
     }
-    const post: boolean = await postRepository.updatePost(req.params.id, req.body)
+    const post: boolean | null = await postService.updatePostService(req.params.id, req.body)
     if(!post) {
       res.sendStatus(STATUS_CODE.NOT_FOUND_404)
       return
@@ -79,7 +56,7 @@ export const postController = {
   },
 
   deleteController: async (req: Request, res: Response): Promise<void> => {
-    const post: boolean = await postRepository.deletePost(req.params.id)
+    const post: boolean = await postService.deletePostService(req.params.id)
     if(!post) {
       res.sendStatus(STATUS_CODE.NOT_FOUND_404)
       return

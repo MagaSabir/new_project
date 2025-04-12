@@ -6,3 +6,10 @@ export type PostType = {
   blogName: string;
   createdAt: string
 };
+
+export type DataReqBodyPostType = {
+  title: string;
+  shortDescription: string;
+  content: string;
+  blogId: string
+};
