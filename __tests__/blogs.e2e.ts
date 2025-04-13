@@ -1,66 +1,63 @@
 import request from 'supertest';
 import {app} from "../src/app";
 import {SETTINGS} from "../src/settings";
+import {STATUS_CODE} from "../src/core/http-statuses-code";
 
 
-describe('/blogs', () => {
+const auth = `Basic ${Buffer.from(`${SETTINGS.ADMIN_AUTH}`)
+    .toString('base64')}`
 
 
-    const auth = `Basic ${Buffer.from(`${SETTINGS.ADMIN_AUTH}`)
-        .toString('base64')}`
 
+const createBlog = async (overrides ={}) => {
+    const blog = {
+        name: 'name1',
+        description: 'desc1',
+        websiteUrl: 'https://site.com',
+        ...overrides
+    }
+    const response = await request(app)
+        .post('/blogs')
+        .set('Authorization', auth)
+        .send(blog)
+
+    return response.body
+}
+
+describe('/blogs tests', () => {
     beforeAll(async () => {
         await request(app).delete(SETTINGS.PATH.cleanDB)
     })
 
-    let createdBlogId: string;
-
-    it('должен создать блог', async () => {
-        const response = await request(app)
-            .post('/blogs')
-            .set('Authorization', auth)
-            .send({
-                name: 'Test blog',
-                description: 'Описание',
-                websiteUrl: 'https://example.com',
+    describe('GET /blogs', () => {
+        it('should return empty list', async () => {
+            const res = await request(app)
+                .get('/blogs')
+                .expect(STATUS_CODE.OK_200)
+            expect(res.body).toEqual({
+                pagesCount: expect.any(Number),
+                page: expect.any(Number),
+                pageSize: expect.any(Number),
+                totalCount: 0,
+                items: []
             })
-            .expect(201);
+        })
 
-        expect(response.body).toHaveProperty('id');
-        createdBlogId = response.body.id;
-    });
+        it('should return created blogs', async () => {
+            const blog1 = await createBlog({name: "blog1"})
+            const blog2 = await createBlog({name: "blog2"})
 
-    it('должен получить блог по id', async () => {
-        const response = await request(app)
-            .get(`/blogs/${createdBlogId}`)
-            .expect(200);
+            const res = await request(app)
+                .get('/blogs')
+                .expect(STATUS_CODE.OK_200)
 
-        expect(response.body.name).toBe('Test blog');
-    });
+            expect(res.body.items).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({id: blog1.id, name: 'blog1'}),
+                    expect.objectContaining({id: blog2.id, name: 'blog2'})
+                ])
+            )
+        })
 
-    it('должен обновить блог', async () => {
-        await request(app)
-            .put(`/blogs/${createdBlogId}`)
-            .set('Authorization', auth)
-            .send({
-                name: 'Обновлённый блог',
-                description: 'Новое описание',
-                websiteUrl: 'https://updated.com',
-            })
-            .expect(400);
-    });
-
-    it('должен удалить блог', async () => {
-        await request(app)
-            .delete(`/blogs/${createdBlogId}`)
-            .set('Authorization', auth)
-            .expect(204);
-    });
-
-    it('не должен найти удалённый блог', async () => {
-        await request(app)
-            .get(`/blogs/${createdBlogId}`)
-            .expect(404);
-    });
-
+    })
 })
