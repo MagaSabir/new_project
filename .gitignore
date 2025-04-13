@@ -2,4 +2,3 @@
 .env
 dist/
 .idea
-./__tests__
