@@ -16,7 +16,6 @@ export  const  blogController =   {
     const sortBy = req.query.sortBy || 'createdAt'
     const items = await blogService.getBlogsService(pageNumber, pageSize, sortDirection, sortBy, searchNameTerm)
     res.status(STATUS_CODE.OK_200).send(items);
-    console.log(searchNameTerm)
   },
 
 
