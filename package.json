@@ -7,10 +7,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^9.7.0",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
-    "mongodb": "^6.15.0"
+    "mongodb": "^6.15.0",
+    "nanoid": "^5.1.5"
   },
   "devDependencies": {
     "@types/express": "^5.0.1",

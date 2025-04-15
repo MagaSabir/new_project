@@ -9,9 +9,9 @@ import {PostViewModel} from "../models/post.view.model";
 
 export  const  blogController =   {
   getAllBlogs: async (req: Request, res: Response): Promise<void>  => {
-    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1
-    const pageSize = req.query.pageSize ? +req.query.pageSize : 10
-    const sortDirection = req.query.sortDirection === 'asc' ? 1 : -1
+    const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
+    const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
+    const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
     const searchNameTerm = req.query.searchNameTerm
     const sortBy = req.query.sortBy || 'createdAt'
     const items = await blogService.getBlogsService(pageNumber, pageSize, sortDirection, sortBy, searchNameTerm)
@@ -22,9 +22,9 @@ export  const  blogController =   {
   getPostsByBlogID: async (req: Request, res: Response): Promise<void> => {
     const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
     const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
-    const sortDirection = req.query.sortDirection === 'asc' ? 1 : -1
+    const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
     const sortBy = req.query.sortBy || 'createdAt'
-    const id = req.params.id
+    const id: string = req.params.id
     const items = await blogService.getPostsService(pageNumber, pageSize, sortDirection, sortBy, id)
     if(items) res.status(STATUS_CODE.OK_200).send(items)
     res.sendStatus(STATUS_CODE.NOT_FOUND_404)

@@ -2,12 +2,11 @@ import request from 'supertest';
 import {app} from "../src/app";
 import {SETTINGS} from "../src/settings";
 import {STATUS_CODE} from "../src/core/http-statuses-code";
-import {describe} from "node:test";
+import {faker} from "@faker-js/faker/locale/ar";
 
 
 const auth = `Basic ${Buffer.from(`${SETTINGS.ADMIN_AUTH}`)
     .toString('base64')}`
-
 
 
 const createBlog = async (overrides ={}) => {
@@ -26,7 +25,7 @@ const createBlog = async (overrides ={}) => {
 }
 
 describe('/blogs tests', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
         await request(app).delete(SETTINGS.PATH.cleanDB)
 
     })
@@ -76,13 +75,6 @@ describe('/blogs tests', () => {
                 .expect(STATUS_CODE.OK_200)
             expect(res.body).toMatchObject({id: createdBlog.id})
 
-        });
-
-
-        it(`GET:/id /shouldn't return blog`, async () => {
-            await request(app)
-                .get(`/blogs/${10}`)
-                .expect(STATUS_CODE.NOT_FOUND_404)
         });
 
     })
@@ -150,4 +142,270 @@ describe('/blogs tests', () => {
                 .expect(STATUS_CODE.NOT_FOUND_404)
         });
     })
+
+    
+    //Тесты  с некорректными  значениями
+    describe('POST /blogs - with invalid input', () => {
+        it('should return 400 with errors messages if input has incorrect values', async () => {
+            const res = await request(app)
+                .post('/blogs')
+                .set('Authorization', auth)
+                .send({
+                    name: '',
+                    description: '',
+                    websiteUrl: '',
+                })
+                .expect(STATUS_CODE.BAD_REQUEST_400)
+            console.log(res.body)
+            expect(res.body).toMatchObject({
+                    errorsMessages: expect.arrayContaining([{
+                        field: 'name',
+                        message: expect.any(String)
+                    },
+                    {
+                        field: 'description',
+                        message: expect.any(String)
+                    },
+                    {
+                        field: 'websiteUrl',
+                        message: expect.any(String)
+                    }
+                ])})
+        });
+
+        it(`should return 400 with error messages if field "websiteUrl" contains incorrect value`, async () => {
+            const res = await request(app)
+                .post('/blogs')
+                .set('Authorization', auth)
+                .send({
+                    name: 'name',
+                    description: 'desc',
+                    websiteUrl: '',
+                })
+                .expect(STATUS_CODE.BAD_REQUEST_400)
+
+            expect(res.body).toMatchObject({
+                errorsMessages: expect.arrayContaining([{
+                    field: 'websiteUrl',
+                    message: expect.any(String)
+                }
+                ])
+            })
+        });
+
+        it(`should return 400 with error messages if field "name" contains incorrect value`, async () => {
+            const res = await request(app)
+                .post('/blogs')
+                .set('Authorization', auth)
+                .send({
+                    name: '',
+                    description: 'desc',
+                    websiteUrl: 'https://site.com',
+                })
+                .expect(STATUS_CODE.BAD_REQUEST_400)
+
+            expect(res.body).toMatchObject({
+                errorsMessages: expect.arrayContaining([{
+                    field: 'name',
+                    message: expect.any(String)
+                }
+                ])
+            })
+        });
+
+        it(`should return 400 with error messages if field "description" contains incorrect value`, async () => {
+            const res = await request(app)
+                .post('/blogs')
+                .set('Authorization', auth)
+                .send({
+                    name: 'name',
+                    description: '',
+                    websiteUrl: 'https://site.com',
+                })
+                .expect(STATUS_CODE.BAD_REQUEST_400)
+
+            expect(res.body).toMatchObject({
+                errorsMessages: expect.arrayContaining([{
+                    field: 'description',
+                    message: expect.any(String)
+                }
+                ])
+            })
+        });
+
+        it('should return 401 if user is not authorized',  async () => {
+            await request(app)
+                .post('/blogs')
+                .set('NotAuth', auth)
+                .expect(STATUS_CODE.UNAUTHORIZED_401)
+        });
+    })
+
+    describe('GET /blogs - with not exists id', () => {
+        it('should return 404 if specified blog is not exists', async () => {
+            await request(app)
+                .get(`/blogs/${100}`)
+                .expect(STATUS_CODE.NOT_FOUND_404)
+        });
+    })
+
+    describe('PUT /blogs - with invalid input', () => {
+        it('should return 401 if user is not authorized', async () => {
+            await request(app)
+                .put('/blogs/1')
+                .set('notAuth', auth)
+                .expect(STATUS_CODE.UNAUTHORIZED_401)
+        });
+
+        it('should return  404 if id is not exists', async () => {
+            await request(app)
+                .get(`/blogs/${100}`)
+                .expect(STATUS_CODE.NOT_FOUND_404)
+        });
+
+        it(`should return 400 with error messages if field "name" contains incorrect value`, async () => {
+            const createdBlog = await createBlog()
+            const res = await request(app)
+                .put(`/blogs/${createdBlog.id}`)
+                .set('Authorization', auth)
+                .send({
+                    name: '',
+                    description: 'desc',
+                    websiteUrl: 'http://site.com'
+                })
+                .expect(STATUS_CODE.BAD_REQUEST_400)
+            expect(res.body).toEqual({
+                errorsMessages: expect.arrayContaining([{
+                    field: 'name',
+                    message: expect.any(String)
+                }])
+            })
+
+            const res2 = await request(app)
+                .put(`/blogs/${createdBlog.id}`)
+                .set('Authorization', auth)
+                .send({
+                    name: 1,
+                    description: 'desc',
+                    websiteUrl: 'http://site.com'
+                })
+                .expect(STATUS_CODE.BAD_REQUEST_400)
+            expect(res2.body).toEqual({
+                errorsMessages: expect.arrayContaining([{
+                    field: 'name',
+                    message: expect.any(String)
+                }])
+            })
+
+            const res3 = await request(app)
+
+                .put(`/blogs/${createdBlog.id}`)
+                .set('Authorization', auth)
+                .send({
+                    name: faker.string.alphanumeric(16),
+                    description: 'desc',
+                    websiteUrl: 'http://site.com'
+                })
+                .expect(STATUS_CODE.BAD_REQUEST_400)
+            console.log(faker.string.alphanumeric(40))
+            expect(res3.body).toEqual({
+                errorsMessages: expect.arrayContaining([{
+                    field: 'name',
+                    message: expect.any(String)
+                }])
+            })
+        });
+
+        it(`should return 400 with error messages if field "description" contains incorrect value`, async () => {
+            const createdBlog = await createBlog()
+            const res = await request(app)
+                .put(`/blogs/${createdBlog.id}`)
+                .set('Authorization', auth)
+                .send({
+                    name: 'name',
+                    description: '',
+                    websiteUrl: 'http://site.com'
+                })
+                .expect(STATUS_CODE.BAD_REQUEST_400)
+            expect(res.body).toEqual({
+                errorsMessages: expect.arrayContaining([{
+                    field: 'description',
+                    message: expect.any(String)
+                }])
+            })
+
+            const res2 = await request(app)
+                .put(`/blogs/${createdBlog.id}`)
+                .set('Authorization', auth)
+                .send({
+                    name: 'name',
+                    description: 12,
+                    websiteUrl: 'http://site.com'
+                })
+                .expect(STATUS_CODE.BAD_REQUEST_400)
+            expect(res2.body).toEqual({
+                errorsMessages: expect.arrayContaining([{
+                    field: 'description',
+                    message: expect.any(String)
+                }])
+            })
+
+            const res3 = await request(app)
+
+                .put(`/blogs/${createdBlog.id}`)
+                .set('Authorization', auth)
+                .send({
+                    name: 'name',
+                    description: faker.string.alphanumeric(501),
+                    websiteUrl: 'http://site.com'
+                })
+                .expect(STATUS_CODE.BAD_REQUEST_400)
+            expect(res3.body).toEqual({
+                errorsMessages: expect.arrayContaining([{
+                    field: 'description',
+                    message: expect.any(String)
+                }])
+            })
+        });
+
+        it(`should return 400 with error messages if field "websiteUrl" contains incorrect value`, async () => {
+            const createdBlog = await createBlog()
+            const res = await request(app)
+                .put(`/blogs/${createdBlog.id}`)
+                .set('Authorization', auth)
+                .send({
+                    name: 'name',
+                    description: 'description',
+                    websiteUrl: ''
+                })
+                .expect(STATUS_CODE.BAD_REQUEST_400)
+            expect(res.body).toEqual({
+                errorsMessages: expect.arrayContaining([{
+                    field: 'websiteUrl',
+                    message: expect.any(String)
+                }])
+            })
+
+            const res2 = await request(app)
+                .put(`/blogs/${createdBlog.id}`)
+                .set('Authorization', auth)
+                .send({
+                    name: 'name',
+                    description: 'description',
+                    websiteUrl: 'http://site'
+                })
+                .expect(STATUS_CODE.BAD_REQUEST_400)
+            expect(res2.body).toEqual({
+                errorsMessages: expect.arrayContaining([{
+                    field: 'websiteUrl',
+                    message: expect.any(String)
+                }])
+            })
+        });
+    })
 })
+
+//toMatchObject
+// Частичное сравнение объектов
+//toEqual
+// Строгое сравнение:

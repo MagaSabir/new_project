@@ -15,7 +15,7 @@ export const websiteUrlValidator = body("websiteUrl")
   .isString()
   .withMessage("no string")
   .trim()
-  .isLength({ max: 500 })
+  .isLength({ max: 100 })
   .isURL()
   .withMessage(" not url");
 
