@@ -3,10 +3,20 @@ import {app} from "../src/app";
 import {SETTINGS} from "../src/settings";
 import {STATUS_CODE} from "../src/core/http-statuses-code";
 import {faker} from "@faker-js/faker/locale/ar";
+import {testClient} from "../src/db/mongoDb";
 
 
 const auth = `Basic ${Buffer.from(`${SETTINGS.ADMIN_AUTH}`)
     .toString('base64')}`
+
+const err = (field: string) => {
+    return {
+        errorsMessages: expect.arrayContaining([{
+            field: field,
+            message: expect.any(String)
+        }])
+    }
+}
 
 
 const createBlog = async (overrides ={}) => {
@@ -25,6 +35,11 @@ const createBlog = async (overrides ={}) => {
 }
 
 describe('/blogs tests', () => {
+
+    beforeAll(async () => {
+        await testClient.connect()
+        console.log('testDB')
+    })
     beforeEach(async () => {
         await request(app).delete(SETTINGS.PATH.cleanDB)
 
@@ -59,10 +74,18 @@ describe('/blogs tests', () => {
                     expect.objectContaining({
                         id: createdBlog1.id,
                         name: 'blog1',
+                        description: expect.any(String),
+                        websiteUrl: expect.any(String),
+                        createdAt: expect.any(String),
+                        isMembership: false
                     }),
                     expect.objectContaining({
                         id: createdBlog2.id,
                         name: 'blog2',
+                        description: expect.any(String),
+                        websiteUrl: expect.any(String),
+                        createdAt: expect.any(String),
+                        isMembership: false
                     })
                 ])
             })
@@ -184,14 +207,9 @@ describe('/blogs tests', () => {
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
 
-            expect(res.body).toMatchObject({
-                errorsMessages: expect.arrayContaining([{
-                    field: 'websiteUrl',
-                    message: expect.any(String)
-                }
-                ])
-            })
+            expect(res.body).toMatchObject(err('websiteUrl'))
         });
+
 
         it(`should return 400 with error messages if field "name" contains incorrect value`, async () => {
             const res = await request(app)
@@ -224,13 +242,7 @@ describe('/blogs tests', () => {
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
 
-            expect(res.body).toMatchObject({
-                errorsMessages: expect.arrayContaining([{
-                    field: 'description',
-                    message: expect.any(String)
-                }
-                ])
-            })
+            expect(res.body).toMatchObject(err('description'))
         });
 
         it('should return 401 if user is not authorized',  async () => {
@@ -274,12 +286,7 @@ describe('/blogs tests', () => {
                     websiteUrl: 'http://site.com'
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(res.body).toEqual({
-                errorsMessages: expect.arrayContaining([{
-                    field: 'name',
-                    message: expect.any(String)
-                }])
-            })
+            expect(res.body).toEqual(err('name'))
 
             const res2 = await request(app)
                 .put(`/blogs/${createdBlog.id}`)
@@ -290,12 +297,7 @@ describe('/blogs tests', () => {
                     websiteUrl: 'http://site.com'
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(res2.body).toEqual({
-                errorsMessages: expect.arrayContaining([{
-                    field: 'name',
-                    message: expect.any(String)
-                }])
-            })
+            expect(res2.body).toEqual(err('name'))
 
             const res3 = await request(app)
 
@@ -308,12 +310,7 @@ describe('/blogs tests', () => {
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
             console.log(faker.string.alphanumeric(40))
-            expect(res3.body).toEqual({
-                errorsMessages: expect.arrayContaining([{
-                    field: 'name',
-                    message: expect.any(String)
-                }])
-            })
+            expect(res3.body).toEqual(err('name'))
         });
 
         it(`should return 400 with error messages if field "description" contains incorrect value`, async () => {
@@ -327,12 +324,7 @@ describe('/blogs tests', () => {
                     websiteUrl: 'http://site.com'
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(res.body).toEqual({
-                errorsMessages: expect.arrayContaining([{
-                    field: 'description',
-                    message: expect.any(String)
-                }])
-            })
+            expect(res.body).toEqual(err('description'))
 
             const res2 = await request(app)
                 .put(`/blogs/${createdBlog.id}`)
@@ -343,12 +335,7 @@ describe('/blogs tests', () => {
                     websiteUrl: 'http://site.com'
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(res2.body).toEqual({
-                errorsMessages: expect.arrayContaining([{
-                    field: 'description',
-                    message: expect.any(String)
-                }])
-            })
+            expect(res2.body).toEqual(err('description'))
 
             const res3 = await request(app)
 
@@ -360,12 +347,7 @@ describe('/blogs tests', () => {
                     websiteUrl: 'http://site.com'
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(res3.body).toEqual({
-                errorsMessages: expect.arrayContaining([{
-                    field: 'description',
-                    message: expect.any(String)
-                }])
-            })
+            expect(res3.body).toEqual(err('description'))
         });
 
         it(`should return 400 with error messages if field "websiteUrl" contains incorrect value`, async () => {
@@ -379,12 +361,7 @@ describe('/blogs tests', () => {
                     websiteUrl: ''
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(res.body).toEqual({
-                errorsMessages: expect.arrayContaining([{
-                    field: 'websiteUrl',
-                    message: expect.any(String)
-                }])
-            })
+            expect(res.body).toEqual(err('websiteUrl'))
 
             const res2 = await request(app)
                 .put(`/blogs/${createdBlog.id}`)
@@ -395,12 +372,7 @@ describe('/blogs tests', () => {
                     websiteUrl: 'http://site'
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(res2.body).toEqual({
-                errorsMessages: expect.arrayContaining([{
-                    field: 'websiteUrl',
-                    message: expect.any(String)
-                }])
-            })
+            expect(res2.body).toEqual(err('websiteUrl'))
         });
     })
 })

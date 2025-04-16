@@ -1,7 +1,8 @@
 import {MongoClient} from "mongodb";
 const localDBString = "mongodb://0.0.0.0:27017/mm"
-const URI = /*process.env.MONGO_URL ||*/ localDBString
+const URI = process.env.MONGO_URL || localDBString
 export const client = new MongoClient(URI)
+export const testClient = new MongoClient("mongodb://0.0.0.0:27017/mm")
 
 export async function runDb() {
     try {
