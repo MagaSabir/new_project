@@ -7,15 +7,16 @@ import {userRouter} from "./routes/users";
 
 export const app = express();
 app.use(express.json());
-
+app.use("/users", userRouter)
 app.use(SETTINGS.PATH.blogs, blogRouter);
 app.use(SETTINGS.PATH.posts, postRouter);
-app.use('/user', userRouter)
+
 
 app.use("/testing/all-data", async (req: Request, res: Response) => {
   await client.db('blogPlatform').collection('blogs').deleteMany()
   await client.db('blogPlatform').collection('posts').deleteMany()
   res.sendStatus(204);
 });
+
 
 
