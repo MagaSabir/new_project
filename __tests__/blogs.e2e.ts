@@ -36,10 +36,7 @@ const createBlog = async (overrides ={}) => {
 
 describe('/blogs tests', () => {
 
-    beforeAll(async () => {
-        await testClient.connect()
-        console.log('testDB')
-    })
+
     beforeEach(async () => {
         await request(app).delete(SETTINGS.PATH.cleanDB)
 
@@ -61,6 +58,8 @@ describe('/blogs tests', () => {
         it('GET / should return list blogs', async () => {
             const createdBlog1 = await createBlog({name: 'blog1'})
             const createdBlog2 = await createBlog({name: 'blog2'})
+            const createdBlog3 = await createBlog({name: 'log'})
+            console.log(createdBlog3)
 
             const res = await request(app)
                 .get('/blogs')
@@ -82,6 +81,14 @@ describe('/blogs tests', () => {
                     expect.objectContaining({
                         id: createdBlog2.id,
                         name: 'blog2',
+                        description: expect.any(String),
+                        websiteUrl: expect.any(String),
+                        createdAt: expect.any(String),
+                        isMembership: false
+                    }),
+                    expect.objectContaining({
+                        id: createdBlog2.id,
+                        name: 'log',
                         description: expect.any(String),
                         websiteUrl: expect.any(String),
                         createdAt: expect.any(String),
