@@ -3,7 +3,6 @@ import {app} from "../src/app";
 import {SETTINGS} from "../src/settings";
 import {STATUS_CODE} from "../src/core/http-statuses-code";
 import {faker} from "@faker-js/faker/locale/ar";
-import {testClient} from "../src/db/mongoDb";
 
 
 const auth = `Basic ${Buffer.from(`${SETTINGS.ADMIN_AUTH}`)

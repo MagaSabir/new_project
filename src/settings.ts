@@ -9,5 +9,6 @@ export const SETTINGS = {
     posts: "/posts",
     cleanDB: "/testing/all-data",
   },
+  DB_NAME: 'blogPlatform',
   ADMIN_AUTH: "admin:qwerty",
 };
