@@ -1,15 +1,22 @@
 import {client, db} from "../db/mongoDb";
 import {ObjectId} from "mongodb";
-import {log} from "node:util";
 
 export const usersRepository = {
     async createUser (body:any) {
         const result = await client.db('blogPlatform').collection('users').insertOne(body)
         return result
     },
-    async getUser (pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: string, searchNameTerm: any) {
-        const totalCountUsers = await db.collection('users').countDocuments()
-        const filter = searchNameTerm ? {$or : [{login: {$regex:searchNameTerm, $options: 'i'}}, {email: {$regex: searchNameTerm, $options: 'i'}}]} : {}
+    async getUser (pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: string, searchLoginTerm: any,searchEmailTerm: any) {
+        const orConditions = [];
+        if (searchLoginTerm) {
+            orConditions.push({ login: { $regex: searchLoginTerm, $options: 'i' } });
+        }
+        if (searchEmailTerm) {
+            orConditions.push({ email: { $regex: searchEmailTerm, $options: 'i' } });
+        }
+        const filter = orConditions.length > 0 ? { $or: orConditions } : {};
+        const totalCountUsers = await db.collection('users').countDocuments(filter)
+
 
         const users = await db.collection('users')
             .find(filter)
@@ -26,7 +33,7 @@ export const usersRepository = {
         return result.deletedCount === 1
     },
 
-    async fundOne (email: string) {
-        return await db.collection('users').findOne({email})
+    async findLoginOrEmail (email: string, login: string) {
+        return await db.collection('users').findOne({$or: [{email}, {login}]})
     }
 }

@@ -1,14 +1,11 @@
 import {usersRepository} from "../repositories/users.repository";
 import bcrypt from 'bcrypt';
-import {body} from "express-validator";
-
-import {postRepository} from "../repositories/post.repository";
-import {an} from "@faker-js/faker/dist/airline-BUL6NtOJ";
 
 export const userService = {
     async createUserService  (bodyReq: any)  {
-        const userEmail = await usersRepository.fundOne(bodyReq.email)
+        const userEmail = await usersRepository.findLoginOrEmail(bodyReq.email, bodyReq.login)
         if(userEmail) {
+            console.log("11")
             return false
         }
         const hash = await bcrypt.hash(bodyReq.password, 10)
@@ -27,13 +24,15 @@ export const userService = {
         }
     },
 
-    async getUsers (pageNumber:number, pageSize:number, sortDirection: any, sortBy: any, searchNameTerm: any): Promise<any> {
+    async getUsers (pageNumber:number, pageSize:number, sortDirection: any, sortBy: any, searchLoginTerm: any, searchEmailTerm: any): Promise<any> {
         const { users, totalCountUsers } = await usersRepository.getUser(
             pageNumber,
             pageSize,
             sortDirection,
             sortBy,
-            searchNameTerm
+            searchLoginTerm,
+            searchEmailTerm
+
         )
 
         const newUser = users.map(el => {
