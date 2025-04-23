@@ -3,6 +3,7 @@ import {app} from "../src/app";
 import {SETTINGS} from "../src/settings";
 import {STATUS_CODE} from "../src/core/http-statuses-code";
 import {faker} from "@faker-js/faker/locale/ar";
+import {runDb} from "../src/db/mongoDb";
 
 
 const auth = `Basic ${Buffer.from(`${SETTINGS.ADMIN_AUTH}`)
@@ -34,6 +35,10 @@ const createBlog = async (overrides ={}) => {
 }
 
 describe('/blogs tests', () => {
+
+    beforeAll(async () => {
+        await runDb(); // иначе коллекции будут undefined
+    });
 
 
     beforeEach(async () => {
@@ -67,7 +72,7 @@ describe('/blogs tests', () => {
                 pagesCount: expect.any(Number),
                 page: expect.any(Number),
                 pageSize: expect.any(Number),
-                totalCount: 2,
+                totalCount: 3,
                 items: expect.arrayContaining([
                     expect.objectContaining({
                         id: createdBlog1.id,
@@ -86,7 +91,7 @@ describe('/blogs tests', () => {
                         isMembership: false
                     }),
                     expect.objectContaining({
-                        id: createdBlog2.id,
+                        id: createdBlog3.id,
                         name: 'log',
                         description: expect.any(String),
                         websiteUrl: expect.any(String),

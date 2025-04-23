@@ -5,7 +5,7 @@ import {
   contentValidator,
   shortDescriptionValidator,
   titleValidation,
-} from "../validations/blogValidation/postValidation";
+} from "../validations/blogValidation/posts.validations";
 import { authMiddleware } from "../core/middlewares/authMiddleware";
 
 export const postRouter = Router();

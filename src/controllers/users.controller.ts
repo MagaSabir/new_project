@@ -7,7 +7,7 @@ import {errorsArray} from "../core/utils/errorMessage";
 
 
 export const usersController = {
-    postController: async (req: Request, res: Response) => {
+    postController: async (req: Request, res: Response):Promise<void> => {
         const errors: ErrorMessageType[] = errorsArray(req)
         if(errors.length) {
             res.status(STATUS_CODE.BAD_REQUEST_400).send({errorsMessages: errors})
@@ -24,7 +24,7 @@ export const usersController = {
         }
         res.status(201).send(user)
     },
-    async getUserController(req: Request, res: Response) {
+    async getUserController(req: Request, res: Response): Promise<void> {
         const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
         const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
         const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
@@ -41,8 +41,8 @@ export const usersController = {
         res.status(STATUS_CODE.OK_200).send(items)
     },
 
-     deleteUserController: async (req: Request, res: Response) => {
-        const result = await userService.deleteUserByID(req.params.id)
+     deleteUserController: async (req: Request, res: Response): Promise<void> => {
+        const result: boolean = await userService.deleteUserByID(req.params.id)
         console.log(result)
         if(!result) {
             res.sendStatus(STATUS_CODE.NOT_FOUND_404)

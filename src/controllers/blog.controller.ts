@@ -7,8 +7,8 @@ import {BlogViewModel} from "../models/BlogViewModel";
 import {blogService} from "../domain/blog.servise";
 import {PostViewModel} from "../models/post.view.model";
 
-export  const  blogController =   {
-  getAllBlogs: async (req: Request, res: Response): Promise<void>  => {
+export  const  blogController = {
+  getAllBlogs: async (req: Request, res: Response): Promise<void> => {
     const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
     const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
     const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
@@ -19,7 +19,7 @@ export  const  blogController =   {
   },
 
 
-  getPostsByBlogID: async (req: Request, res: Response): Promise<void> => {
+  getPostsByBlogID: async (req: RequestWithBody<URIParamsModel>, res: Response): Promise<void> => {
     const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
     const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
     const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1

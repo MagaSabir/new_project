@@ -1,11 +1,13 @@
 import {usersRepository} from "../repositories/users.repository";
 import bcrypt from 'bcrypt';
+import {InsertOneResult, WithId} from "mongodb";
+import {UserViewModel} from "../models/UserViewModel";
+import {userType} from "../types/userType/userType";
 
 export const userService = {
-    async createUserService  (bodyReq: any)  {
-        const userEmail = await usersRepository.findLoginOrEmail(bodyReq.email, bodyReq.login)
+    async createUserService  (bodyReq: any): Promise<UserViewModel | boolean>  {
+        const userEmail: WithId<userType> | null = await usersRepository.findLoginOrEmail(bodyReq.email, bodyReq.login)
         if(userEmail) {
-            console.log("11")
             return false
         }
         const hash = await bcrypt.hash(bodyReq.password, 10)
@@ -17,7 +19,7 @@ export const userService = {
         }
         const newUser = await usersRepository.createUser(user)
         return {
-            id: newUser.insertedId,
+            id: newUser.insertedId.toString(),
             login: user.login,
             email: user.email,
             createdAt: user.createdAt
@@ -35,13 +37,12 @@ export const userService = {
 
         )
 
-        const newUser = users.map(el => {
+        const newUser: UserViewModel[] = users.map((el:WithId<userType>): UserViewModel => {
             return {
                 id: el._id.toString(),
                 login: el.login,
                 email: el.email,
                 createdAt: el.createdAt
-
             }
         })
         return {

@@ -1,6 +1,5 @@
 import { body } from "express-validator";
 import { blogRepository } from "../../repositories/blog.repository";
-
 export const titleValidation = body("title")
   .isString()
   .withMessage("not string")
@@ -23,3 +22,14 @@ export const blogIdValidator = body("blogId")
     return await blogRepository.findBlog(blogId) ? true : false;
   })
   .withMessage("no blogId");
+
+
+
+
+
+
+
+
+
+
+

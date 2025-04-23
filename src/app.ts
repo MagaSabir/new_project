@@ -1,12 +1,14 @@
 import express, { Request, Response } from "express";
-import { blogRouter } from "./routes/blog.routes";
-import { postRouter } from "./routes/post.routes";
+import { blogRouter } from "./routes/blogs.routes";
+import { postRouter } from "./routes/posts.routes";
 import { SETTINGS } from "./settings";
 import {client, db} from "./db/mongoDb";
-import {userRouter} from "./routes/users";
+import {userRouter} from "./routes/users.routes";
 import {authRoutes} from "./routes/auth.routes";
+import {setupSwagger} from "./setup-swagger";
 
 export const app = express();
+setupSwagger(app)
 app.use(express.json());
 app.use(SETTINGS.PATH.blogs, blogRouter);
 app.use(SETTINGS.PATH.posts, postRouter);

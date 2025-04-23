@@ -4,13 +4,13 @@ import {
   descriptionValidator,
   nameValidator,
   websiteUrlValidator,
-} from "../validations/blogValidation/blog.validation";
+} from "../validations/blogValidation/blogs.validations";
 import { authMiddleware } from "../core/middlewares/authMiddleware";
 import {
   contentValidator,
   shortDescriptionValidator,
   titleValidation
-} from "../validations/blogValidation/postValidation";
+} from "../validations/blogValidation/posts.validations";
 
 export const blogRouter = Router();
 

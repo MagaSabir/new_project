@@ -4,4 +4,5 @@ export type RequestWithBody<T> = Request<T>
 
 export type URIParamsModel = {
     id: string
+    param: string
 }

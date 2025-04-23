@@ -15,8 +15,6 @@ export let client: MongoClient;
 export let blogCollection: Collection<BlogType>
 export let postCollection: Collection<PostType>
 export let db: Db
-export const testClient = new MongoClient("mongodb://0.0.0.0:27017/test")
-
 export async function runDb() {
      client = new MongoClient(URI)
      db = client.db(SETTINGS.DB_NAME)
@@ -26,8 +24,12 @@ export async function runDb() {
     try {
         await client.connect()
         await client.db('blogPlatform').command({ping: 1})
-       if(URI === process.env.MONGO_URL) console.log("You successfully connected to atlas MongoDB!")
-       else  console.log("You successfully connected to local MongoDB!")
+       if(URI === process.env.MONGO_URL) {
+           console.log("You successfully connected to atlas MongoDB!")
+       }
+       else{
+           console.log("You successfully connected to local MongoDB!")
+       }
     } catch {
         await client.close()
     }
