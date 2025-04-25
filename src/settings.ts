@@ -8,6 +8,8 @@ export const SETTINGS = {
     blogs: "/blogs",
     posts: "/posts",
     cleanDB: "/testing/all-data",
+    users: "/users",
+    auth: "/auth/login"
   },
   DB_NAME: 'blogPlatform',
   ADMIN_AUTH: "admin:qwerty",

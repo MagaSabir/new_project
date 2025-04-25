@@ -107,4 +107,25 @@ describe('/posts tests', () => {
             })
         });
     })
+
+    describe('POST / create posts', () => {
+        it('should create new post and return', async () => {
+            const createdBlog = await createBlog()
+            const res = await request(app)
+                .post(SETTINGS.PATH.posts)
+                .set('Authorization', auth)
+                .send({
+                    title: 'post1',
+                    shortDescription: 'desc1',
+                    content: 'content',
+                    blogId: createdBlog.id
+                })
+                .expect(STATUS_CODE.CREATED_201)
+            expect(res.body).toMatchObject({
+                id: expect.any(String),
+                title: 'post1',
+                blogId: createdBlog.id
+            })
+        });
+    })
 })
