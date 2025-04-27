@@ -2,8 +2,8 @@ import {Collection, Db, MongoClient} from "mongodb";
 const localDBString = "mongodb://0.0.0.0:27017/test"
 import dotenv from 'dotenv'
 import {SETTINGS} from "../settings";
-import {BlogType} from "../types/blogTypes/blogType";
-import {PostType} from "../types/postTypse/postType";
+import {BlogType} from "../common/types/blogTypes/blogType";
+import {PostType} from "../common/types/postTypse/postType";
 dotenv.config()
 
 const URI = process.env.MONGO_URL || localDBString

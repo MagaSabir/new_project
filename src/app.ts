@@ -1,11 +1,11 @@
 import express, { Request, Response } from "express";
-import { blogRouter } from "./routes/blogs.routes";
-import { postRouter } from "./routes/posts.routes";
+import { blogRouter } from "./modules/blogs/blogs.routes";
+import { postRouter } from "./modules/posts/posts.routes";
 import { SETTINGS } from "./settings";
 import { db} from "./db/mongoDb";
-import {userRouter} from "./routes/users.routes";
-import {authRoutes} from "./routes/auth.routes";
-import {setupSwagger} from "./setup-swagger";
+import {userRouter} from "./modules/users/users.routes";
+import {authRoutes} from "./modules/auth/auth.routes";
+import {setupSwagger} from "./swagger/setup-swagger";
 
 export const app = express();
 setupSwagger(app)
