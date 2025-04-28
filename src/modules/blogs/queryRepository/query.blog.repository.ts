@@ -1,7 +1,7 @@
 import {ObjectId, WithId} from "mongodb";
 import {BlogType} from "../../../common/types/blogTypes/blogType";
 import {blogCollection, client, postCollection} from "../../../db/mongoDb";
-import {mapper} from "../../../mapper";
+import {mapper} from "../../../common/utils/mapper";
 import {BlogViewModel} from "../../../models/BlogViewModel";
 import {PostType} from "../../../common/types/postTypse/postType";
 import {PostViewModel} from "../../../models/post.view.model";
@@ -75,19 +75,5 @@ export const queryBlogRepository = {
         } return null
     },
 
-    async findPost(id: string): Promise<PostViewModel | undefined> {
-        const post  =  await postCollection.findOne({_id: new ObjectId(id)})
-        if(post) {
-            return {
-                id: post._id.toString(),
-                title: post.title,
-                shortDescription: post.shortDescription,
-                content: post.content,
-                blogId: post.blogId,
-                blogName: post.blogName,
-                createdAt: post.createdAt
 
-            }
-        }
-    }
 }

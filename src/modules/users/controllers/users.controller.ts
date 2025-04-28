@@ -4,6 +4,8 @@ import {STATUS_CODE} from "../../../common/utils/http-statuses-code";
 import {PostType} from "../../../common/types/postTypse/postType";
 import {ErrorMessageType} from "../../../common/types/blogTypes/blogType";
 import {errorsArray} from "../../../common/utils/errorMessage";
+import {queryPostRepository} from "../../posts/queryRepository/query.post.repository";
+import {queryUsersRepository} from "../queryRepository/query.users.repository";
 
 
 export const usersController = {
@@ -12,8 +14,9 @@ export const usersController = {
         if(errors.length) {
             res.status(STATUS_CODE.BAD_REQUEST_400).send({errorsMessages: errors})
         }
-        const user = await userService.createUserService(req.body)
-        if(!user) {
+        const userId: any = await userService.createUserService(req.body)
+        const createdUser = await queryUsersRepository.getCreatedUser(userId)
+        if(!createdUser) {
             res.status(400).send({
                 errorsMessages: [
                     {
@@ -22,8 +25,9 @@ export const usersController = {
                     }
                 ]})
         }
-        res.status(201).send(user)
+            res.status(201).send(createdUser)
     },
+
     async getUserController(req: Request, res: Response): Promise<void> {
         const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
         const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
@@ -32,18 +36,12 @@ export const usersController = {
         const searchLoginTerm = req.query.searchLoginTerm
         const searchEmailTerm = req.query.searchEmailTerm
 
-        const items: {pagesCount: number,
-            page: number,
-            pageSize: number,
-            totalCount:number,
-            items: PostType[]} = await userService.getUsers(pageNumber,pageSize,sortDirection, sortBy, searchLoginTerm, searchEmailTerm)
-
-        res.status(STATUS_CODE.OK_200).send(items)
+        const user = await queryUsersRepository.getUser(pageNumber,pageSize,sortDirection, sortBy as string, searchLoginTerm, searchEmailTerm)
+        res.status(STATUS_CODE.OK_200).send(user)
     },
 
      deleteUserController: async (req: Request, res: Response): Promise<void> => {
         const result: boolean = await userService.deleteUserByID(req.params.id)
-        console.log(result)
         if(!result) {
             res.sendStatus(STATUS_CODE.NOT_FOUND_404)
             return

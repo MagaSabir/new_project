@@ -1,11 +1,11 @@
-import { Router } from "express";
-import { blogController } from "./controllers/blog.controller";
+import {Router} from "express";
+import {blogController} from "./controllers/blog.controller";
 import {
   descriptionValidator,
   nameValidator,
   websiteUrlValidator,
 } from "../../common/middlewares/blogValidation/blogs.validations";
-import { authMiddleware } from "../../common/middlewares/authMiddleware";
+import {authMiddleware} from "../../common/middlewares/authMiddleware";
 import {
   contentValidator,
   shortDescriptionValidator,

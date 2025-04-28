@@ -6,7 +6,8 @@ import {RequestWithBody, URIParamsModel} from "../../../common/types/types";
 import {BlogViewModel} from "../../../models/BlogViewModel";
 import {blogService} from "../services/blog.servise";
 import {queryBlogRepository} from "../queryRepository/query.blog.repository";
-import {PostType} from "../../../common/types/postTypse/postType";
+import {queryPostRepository} from "../../posts/queryRepository/query.post.repository";
+import {PostViewModel} from "../../../models/post.view.model";
 
 export  const  blogController = {
   getAllBlogs: async (req: Request, res: Response): Promise<void> => {
@@ -101,7 +102,7 @@ export  const  blogController = {
     if(!id) {
       res.sendStatus(STATUS_CODE.NOT_FOUND_404)
     } else {
-      const post: PostType | null = await queryBlogRepository.findPost(id)
+      const post: PostViewModel | null = await queryPostRepository.findPost(id)
       res.status(STATUS_CODE.CREATED_201).send(post)
     }
   }

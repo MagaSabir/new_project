@@ -4,6 +4,7 @@ import {blogRepository} from "../repositories/blog.repository";
 import {InsertOneResult} from "mongodb";
 import {DataReqBodyPostType, PostType} from "../../../common/types/postTypse/postType";
 import {queryBlogRepository} from "../queryRepository/query.blog.repository";
+import {postRepository} from "../../posts/repositories/post.repository";
 
 export const blogService = {
 
@@ -35,7 +36,7 @@ export const blogService = {
             blogName: blog.name,
             createdAt: new Date().toISOString()
         }
-        const result: InsertOneResult<PostType> = await blogRepository.createPostByBlogId(newPost)
+        const result: InsertOneResult<PostType> = await postRepository.createPost(newPost)
         return result.insertedId.toString()
     }
 }

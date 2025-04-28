@@ -1,8 +1,8 @@
-import {BlogType} from "./common/types/blogTypes/blogType";
+import {BlogType} from "../types/blogTypes/blogType";
 import {WithId} from "mongodb";
-import {BlogViewModel} from "./models/BlogViewModel";
-import {PostType} from "./common/types/postTypse/postType";
-import {PostViewModel} from "./models/post.view.model";
+import {BlogViewModel} from "../../models/BlogViewModel";
+import {PostType} from "../types/postTypse/postType";
+import {PostViewModel} from "../../models/post.view.model";
 
 export const mapper = (el: WithId<BlogType>): BlogViewModel => {
     return {
