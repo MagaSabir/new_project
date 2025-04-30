@@ -6,17 +6,6 @@ import {UserViewModel} from "../../../models/UserViewModel";
 export const queryUsersRepository = {
     async getUser (pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: string, searchLoginTerm: any,searchEmailTerm: any) {
 
-        // const loginOrEmail = []
-        //     if(searchLoginTerm || searchEmailTerm) {
-        //         if(searchLoginTerm) {
-        //             loginOrEmail.push({login: {$regex: searchLoginTerm, $options: 'i'}})
-        //         }
-        //         if(searchEmailTerm) {
-        //             loginOrEmail.push({email: {$regex: searchEmailTerm, $options: 'i'}})
-        //         }
-        //     }
-        //     const filter = loginOrEmail.length > 0 ? {$or: loginOrEmail} : {}
-
         const filter2 = {$or: [{login: {$regex: searchLoginTerm, $options: 'i'}}, {email:{ $regex: searchEmailTerm, $options: 'i'}}]}
         const newFilter = searchEmailTerm || searchLoginTerm ? filter2: {}
         const totalCountUsers:number = await db.collection<userType>('users').countDocuments(newFilter)
