@@ -32,10 +32,6 @@ export const postService = {
         return  await postRepository.deletePost(id)
     },
 
-    async createPostService (id: string, data: CommentType) {
-        const result = await queryPostRepository.findPost(id)
-        if(!result) return null
-    }
 }
 
 
