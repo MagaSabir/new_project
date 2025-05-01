@@ -1,5 +1,5 @@
 import {PostType} from "../../../common/types/postTypse/postType";
-import {postCollection} from "../../../db/mongoDb";
+import {client, commentCollection, db, postCollection} from "../../../db/mongoDb";
 import {DeleteResult, InsertOneResult, ObjectId, UpdateResult} from "mongodb";
 
 export const postRepository = {
@@ -16,5 +16,9 @@ export const postRepository = {
   async deletePost(id: string): Promise<boolean> {
     const result: DeleteResult = await postCollection.deleteOne({_id: new ObjectId(id)})
     return result.deletedCount === 1
+  },
+
+  async createPostById(data) {
+    const result = await commentCollection.insertOne()
   }
 };

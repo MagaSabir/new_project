@@ -6,7 +6,5 @@ export const authService = {
         const user = await authRepository.auth(loginOrEmail)
         if(!user) return false
         return  await bcrypt.compare(password, user.password)
-
-
     }
 }

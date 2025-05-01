@@ -10,16 +10,19 @@ const URI = process.env.MONGO_URL || localDBString
 const USER_COLLECTION = 'users'
 const BLOG_COLLECTION = 'blogs'
 const POST_COLLECTION = 'posts'
+const COMMENT_COLLECTIONS = 'comments'
 
 export let client: MongoClient;
 export let blogCollection: Collection<BlogType>
 export let postCollection: Collection<PostType>
+export let commentCollection: Collection<Document>
 export let db: Db
 export async function runDb() {
      client = new MongoClient(URI)
      db = client.db(SETTINGS.DB_NAME)
     blogCollection = db.collection(BLOG_COLLECTION)
     postCollection = db.collection(POST_COLLECTION)
+    commentCollection = db.collection(COMMENT_COLLECTIONS)
 
     try {
         await client.connect()
