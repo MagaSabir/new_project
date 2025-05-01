@@ -17,8 +17,4 @@ export const postRepository = {
     const result: DeleteResult = await postCollection.deleteOne({_id: new ObjectId(id)})
     return result.deletedCount === 1
   },
-
-  async createPostById(data) {
-    const result = await commentCollection.insertOne()
-  }
 };
