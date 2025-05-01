@@ -3,6 +3,8 @@ import {InsertOneResult, ObjectId} from "mongodb";
 import {DataReqBodyPostType, PostType} from "../../../common/types/postTypse/postType";
 import {queryBlogRepository} from "../../blogs/queryRepository/query.blog.repository";
 import {BlogViewModel} from "../../../models/BlogViewModel";
+import {queryPostRepository} from "../queryRepository/query.post.repository";
+import {CommentType} from "../../../models/CommentModel";
 
 export const postService = {
     async createPostService (reqBody: DataReqBodyPostType): Promise<string | null> {
@@ -28,5 +30,12 @@ export const postService = {
 
     async deletePostService (id: string): Promise<boolean> {
         return  await postRepository.deletePost(id)
+    },
+
+    async createPostService (id: string, data: CommentType) {
+        const result = await queryPostRepository.findPost(id)
+        if(!result) return null
     }
 }
+
+

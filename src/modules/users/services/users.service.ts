@@ -1,7 +1,6 @@
 import {usersRepository} from "../repositories/users.repository";
 import bcrypt from 'bcrypt';
 import {ObjectId, WithId} from "mongodb";
-import {UserViewModel} from "../../../models/UserViewModel";
 import {userType} from "../../../common/types/userType/userType";
 
 export const userService = {
@@ -21,34 +20,6 @@ export const userService = {
         return newUser.insertedId
 
     },
-
-    // async getUsers (pageNumber:number, pageSize:number, sortDirection: any, sortBy: any, searchLoginTerm: any, searchEmailTerm: any): Promise<any> {
-    //     const { users, totalCountUsers } = await usersRepository.getUser(
-    //         pageNumber,
-    //         pageSize,
-    //         sortDirection,
-    //         sortBy,
-    //         searchLoginTerm,
-    //         searchEmailTerm
-    //
-    //     )
-    //
-    //     const newUser: UserViewModel[] = users.map((el:WithId<userType>): UserViewModel => {
-    //         return {
-    //             id: el._id.toString(),
-    //             login: el.login,
-    //             email: el.email,
-    //             createdAt: el.createdAt
-    //         }
-    //     })
-    //     return {
-    //         pagesCount: Math.ceil(totalCountUsers/ pageSize),
-    //         page: pageNumber,
-    //         pageSize: pageSize,
-    //         totalCount: totalCountUsers,
-    //         items: newUser
-    //     }
-    // },
 
     async deleteUserByID (id: string): Promise<boolean> {
         return await usersRepository.deleteUser(id)
