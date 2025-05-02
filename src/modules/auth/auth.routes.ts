@@ -5,4 +5,5 @@ import {loginOrEmail, passwordValidation} from "../../common/middlewares/postVal
 export const authRoutes = Router()
 
 authRoutes
-.post('/',loginOrEmail, passwordValidation, authController.getAuth)
+.post('/login',loginOrEmail, passwordValidation, authController.getAuth)
+.get('/me', authController.getUser)
