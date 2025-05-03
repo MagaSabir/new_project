@@ -1,4 +1,4 @@
-import {postCollection} from "../../../db/mongoDb";
+import {client, postCollection} from "../../../db/mongoDb";
 import {ObjectId, WithId} from "mongodb";
 import {PostType} from "../../../common/types/postTypse/postType";
 import {PostViewModel} from "../../../models/post.view.model";
@@ -42,4 +42,16 @@ export const queryPostRepository = {
         }
         return null
     },
+
+    async getCommentById(id: string) {
+        const comment = await client.db('blogPlatform').collection('comments').findOne({_id: new ObjectId(id)})
+        if(!comment) return null
+        return {
+            id: comment._id.toString(),
+            content: comment.content,
+            commentatorInfo: comment.commentatorInfo,
+            createdAt: comment.createdAt
+
+        }
+    }
 }

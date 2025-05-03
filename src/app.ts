@@ -6,6 +6,7 @@ import { db} from "./db/mongoDb";
 import {userRouter} from "./modules/users/users.routes";
 import {authRoutes} from "./modules/auth/auth.routes";
 import {setupSwagger} from "./swagger/setup-swagger";
+import {commentsRoutes} from "./modules/comments/comments.routes";
 
 export const app = express();
 setupSwagger(app)
@@ -14,6 +15,7 @@ app.use(SETTINGS.PATH.blogs, blogRouter);
 app.use(SETTINGS.PATH.posts, postRouter);
 app.use(SETTINGS.PATH.users, userRouter)
 app.use(SETTINGS.PATH.auth, authRoutes)
+app.use('/comments', commentsRoutes)
 
 
 app.use("/testing/all-data", async (req: Request, res: Response) => {

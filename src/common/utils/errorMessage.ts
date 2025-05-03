@@ -1,13 +1,16 @@
-import { FieldValidationError, validationResult } from "express-validator";
-import { Request } from "express";
+import { validationResult } from "express-validator";
+import { Request, Response, NextFunction } from "express";
 
-export const errorsArray = (req: Request): { message: string; field: string }[] => {
-  // @ts-ignore
-  return validationResult(req).formatWith((errors: FieldValidationError) => ({
-      message: errors.msg,
-      field: errors.path,
-    }))
-    .array({ onlyFirstError: true });
+export const inputValidationErrors = (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req).formatWith((error: any) => ({
+        message: error.msg,
+        field: error.path,
+    }));
+
+    if (!errors.isEmpty()) {
+        res.status(400).json({ errorsMessages: errors.array({ onlyFirstError: true }) });
+        return
+    }
+
+    next();
 };
-
-

@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
 import {STATUS_CODE} from "../../../common/utils/http-statuses-code";
-import {errorsArray} from "../../../common/utils/errorMessage";
+// import {errorsArray} from "../../../common/utils/errorMessage";
 import {ErrorMessageType} from "../../../common/types/blogTypes/blogType";
 import {RequestWithBody, URIParamsModel} from "../../../common/types/types";
 import {BlogViewModel} from "../../../models/BlogViewModel";
@@ -54,12 +54,6 @@ export  const  blogController = {
   },
 
   postController: async (req: Request, res: Response): Promise<void> => {
-    const errors: ErrorMessageType[] = errorsArray(req);
-    if (errors.length) {
-      res.status(STATUS_CODE.BAD_REQUEST_400).send({ errorsMessages: errors });
-      return;
-    }
-
     const id: string = await blogService.createBlogService(req.body)
     const blog: BlogViewModel | null = await queryBlogRepository.findBlog(id)
     res.status(STATUS_CODE.CREATED_201).send(blog);

@@ -12,6 +12,7 @@ import {
   titleValidation
 } from "../../common/middlewares/blogValidation/posts.validations";
 import {IDisValid} from "../../common/middlewares/IDisValidMiddleware";
+import {inputValidation, inputValidationErrors} from "../../common/utils/errorMessage";
 
 export const blogRouter = Router();
 
@@ -23,12 +24,12 @@ blogRouter
     authMiddleware,
     nameValidator,
     descriptionValidator,
-    websiteUrlValidator,
+    websiteUrlValidator,inputValidationErrors,
     blogController.postController,
   )
-  .post("/:id/posts", IDisValid, authMiddleware, titleValidation,
+  .post("/:id/posts",   IDisValid, authMiddleware, titleValidation,
       shortDescriptionValidator,
-      contentValidator, blogController.postControllerByBlogId)
+      contentValidator,inputValidationErrors, blogController.postControllerByBlogId)
   .get("/:id/posts", IDisValid, blogController.getPostsByBlogID)
   .put(
     "/:id",

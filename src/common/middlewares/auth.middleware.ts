@@ -14,9 +14,9 @@ export const accessTokenMiddleware = async (req: Request, res: Response, next: N
     }
     const payload = await jwtService.verifyToken(token)
     if(payload) {
-        const {userId} = payload
+        console.log(payload)
         // @ts-ignore
-        req.user = { id: userId}
+        req.user = { id: payload.userId, login: payload.userLogin}
         next()
         return
     }

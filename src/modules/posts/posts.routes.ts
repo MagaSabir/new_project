@@ -32,4 +32,4 @@ postRouter
     contentValidator,
     postsController.createPost,
   )
-  .post(':id/comments', accessTokenMiddleware, postsController.createCommentByPostId)
+  .post('/:id/comments', accessTokenMiddleware, postsController.createCommentByPostId)

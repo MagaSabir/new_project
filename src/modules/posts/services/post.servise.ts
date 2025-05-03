@@ -5,6 +5,8 @@ import {queryBlogRepository} from "../../blogs/queryRepository/query.blog.reposi
 import {BlogViewModel} from "../../../models/BlogViewModel";
 import {queryPostRepository} from "../queryRepository/query.post.repository";
 import {CommentType} from "../../../models/CommentModel";
+import {contentValidator} from "../../../common/middlewares/blogValidation/posts.validations";
+import {commentRepository} from "../../comments/repositories/comment.repository";
 
 export const postService = {
     async createPostService (reqBody: DataReqBodyPostType): Promise<string | null> {
@@ -31,6 +33,20 @@ export const postService = {
     async deletePostService (id: string): Promise<boolean> {
         return  await postRepository.deletePost(id)
     },
+
+    async createCommentById (content:string, user: any) {
+        const comment = {
+            content,
+            commentatorInfo: {
+                userId: user.id,
+                userLogin: user.login
+            },
+            createdAt: new Date().toISOString()
+        }
+        const result = await commentRepository.createPost(comment)
+
+        return result.insertedId.toString()
+    }
 
 }
 

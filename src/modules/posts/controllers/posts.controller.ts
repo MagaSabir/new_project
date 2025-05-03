@@ -71,8 +71,10 @@ export const postsController = {
       res.sendStatus(STATUS_CODE.NOT_FOUND_404)
       return
     }
-    const comment = await commentService.createCommentService(req.body)
-
+    // @ts-ignore
+    const commentId = await postService.createCommentById(req.body.content, req.user)
+    const comment = await queryPostRepository.getCommentById(commentId)
+    res.status(200).send(comment)
   }
 
 }
