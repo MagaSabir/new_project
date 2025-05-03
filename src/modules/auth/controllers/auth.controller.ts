@@ -4,6 +4,8 @@ import {ErrorMessageType} from "../../../common/types/blogTypes/blogType";
 import {errorsArray} from "../../../common/utils/errorMessage";
 import {STATUS_CODE} from "../../../common/utils/http-statuses-code";
 import {jwtService} from "../../../common/jwt.service";
+import {usersRepository} from "../../users/repositories/users.repository";
+import {queryUsersRepository} from "../../users/queryRepository/query.users.repository";
 
 export const authController = {
    async getAuth (req: Request, res: Response)  {
@@ -23,28 +25,8 @@ export const authController = {
     },
 
     getUser: async (req: Request, res: Response) => {
-        const authHeader = req.headers.authorization;
-
-        if (!authHeader) {
-            return res.sendStatus(401);
-        }
-
-        const [authType, token] = authHeader.split(' ');
-
-        if (authType !== 'Bearer' || !token) {
-            return res.sendStatus(401);
-        }
-
-        try {
-            const payload = await jwtService.verifyToken(token);
-            console.log(payload)
-
-            return res.status(200).json({
-                message: 'Welcome!',
-                userId: payload.userId,
-            });
-        } catch (e) {
-            return res.sendStatus(401);
-        }
+        // @ts-ignore
+        const user = await queryUsersRepository.getUseById(req.user.id)
+       res.status(200).send(user)
     },
 }

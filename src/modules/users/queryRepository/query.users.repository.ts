@@ -34,7 +34,7 @@ export const queryUsersRepository = {
         }
     },
 
-    async getCreatedUser (userId: ObjectId): Promise<UserViewModel | null> {
+    async getCreatedUser (userId: string): Promise<UserViewModel | null> {
         const user =  await db.collection('users').findOne({_id: new ObjectId(userId)})
         if(user)
         return {
@@ -44,6 +44,17 @@ export const queryUsersRepository = {
             createdAt: user.createdAt
         }
         return null
-    }
+    },
+
+    async getUseById (userId: string) {
+        const user =  await db.collection('users').findOne({_id: new ObjectId(userId)})
+        if(user)
+            return {
+                email: user.email,
+                login: user.login,
+                userId: userId
+            }
+        return null
+    },
 
 }

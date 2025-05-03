@@ -4,10 +4,10 @@ import {ObjectId, WithId} from "mongodb";
 import {userType} from "../../../common/types/userType/userType";
 
 export const userService = {
-    async createUserService  (bodyReq: any): Promise<ObjectId | boolean>  {
+    async createUserService  (bodyReq: any) {
         const userEmail: WithId<userType> | null = await usersRepository.findLoginOrEmail(bodyReq.email, bodyReq.login)
         if(userEmail) {
-            return false
+            return null
         }
         const hash = await bcrypt.hash(bodyReq.password, 10)
         const user = {
@@ -17,7 +17,7 @@ export const userService = {
             createdAt: new Date().toISOString()
         }
         const newUser = await usersRepository.createUser(user)
-        return newUser.insertedId
+        return newUser.insertedId.toString()
 
     },
 

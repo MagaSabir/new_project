@@ -14,9 +14,9 @@ export const usersController = {
         if(errors.length) {
             res.status(STATUS_CODE.BAD_REQUEST_400).send({errorsMessages: errors})
         }
-        const userId: any = await userService.createUserService(req.body)
-        const createdUser = await queryUsersRepository.getCreatedUser(userId)
-        if(!createdUser) {
+        const userId = await userService.createUserService(req.body)
+
+        if(!userId) {
             res.status(400).send({
                 errorsMessages: [
                     {
@@ -24,7 +24,9 @@ export const usersController = {
                         field: "loginOrEmail"
                     }
                 ]})
+            return
         }
+        const createdUser = await queryUsersRepository.getCreatedUser(userId)
             res.status(201).send(createdUser)
     },
 

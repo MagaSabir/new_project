@@ -5,19 +5,21 @@ import {ErrorMessageType} from "../../../common/types/blogTypes/blogType";
 import {PostViewModel} from "../../../models/post.view.model";
 import {postService} from "../services/post.servise";
 import {queryPostRepository} from "../queryRepository/query.post.repository";
+import {commentRepository} from "../../comments/repositories/comment.repository";
+import {commentService} from "../../comments/services/comment.service";
 
 
 export const postsController = {
-  getAllPosts: async (req: Request, res: Response): Promise<void> => {
+  getPosts: async (req: Request, res: Response): Promise<void> => {
     const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
     const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
     const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
     const sortBy = req.query.sortBy || 'createdAt'
-const posts = await queryPostRepository.findPosts(pageNumber, pageSize, sortDirection, sortBy)
+    const posts = await queryPostRepository.findPosts(pageNumber, pageSize, sortDirection, sortBy)
     res.status(STATUS_CODE.OK_200).send(posts);
   },
 
-  getPost: async (req: Request, res: Response): Promise<void> => {
+  getPostById: async (req: Request, res: Response): Promise<void> => {
     const post: PostViewModel | null = await queryPostRepository.findPost(req.params.id)
     if(!post) {
       res.sendStatus(STATUS_CODE.NOT_FOUND_404)
@@ -27,7 +29,7 @@ const posts = await queryPostRepository.findPosts(pageNumber, pageSize, sortDire
   },
 
 
-  postController: async (req: Request, res: Response): Promise<void> => {
+  createPost: async (req: Request, res: Response): Promise<void> => {
     const errors: ErrorMessageType[] = errorsArray(req);
     if (errors.length) {
       res.status(STATUS_CODE.BAD_REQUEST_400).send({errorsMessages: errors});
@@ -40,7 +42,7 @@ const posts = await queryPostRepository.findPosts(pageNumber, pageSize, sortDire
     }
   },
 
-  putController: async (req: Request, res: Response): Promise<void> => {
+  updatePost: async (req: Request, res: Response): Promise<void> => {
     const errors: ErrorMessageType[] = errorsArray(req)
     if(errors.length) {
       res.status(STATUS_CODE.BAD_REQUEST_400).send({errorsMessages: errors})
@@ -54,12 +56,23 @@ const posts = await queryPostRepository.findPosts(pageNumber, pageSize, sortDire
     res.sendStatus(STATUS_CODE.NO_CONTENT_204)
   },
 
-  deleteController: async (req: Request, res: Response): Promise<void> => {
+  deletePost: async (req: Request, res: Response): Promise<void> => {
     const post: boolean = await postService.deletePostService(req.params.id)
     if(!post) {
       res.sendStatus(STATUS_CODE.NOT_FOUND_404)
       return
     }
     res.sendStatus(STATUS_CODE.NO_CONTENT_204)
+  },
+
+  createCommentByPostId: async (req: Request, res: Response): Promise<void> => {
+    const post = await queryPostRepository.findPost(req.params.id)
+    if(!post) {
+      res.sendStatus(STATUS_CODE.NOT_FOUND_404)
+      return
+    }
+    const comment = await commentService.createCommentService(req.body)
+
   }
+
 }
