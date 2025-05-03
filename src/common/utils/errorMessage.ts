@@ -11,7 +11,5 @@ export const inputValidationErrors = (req: Request, res: Response, next: NextFun
         res.status(400).json({ errorsMessages: errors.array({ onlyFirstError: true }) });
         return
     }
-
-
     next();
 };
