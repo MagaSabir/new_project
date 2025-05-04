@@ -5,14 +5,14 @@ import {
   nameValidator,
   websiteUrlValidator,
 } from "../../common/middlewares/blogValidation/blogs.validations";
-import {authMiddleware} from "../../common/middlewares/authMiddleware";
+import {basicAuthMiddleware} from "../../common/middlewares/basic.auth.middleware";
 import {
   contentValidator,
   shortDescriptionValidator,
   titleValidation
 } from "../../common/middlewares/blogValidation/posts.validations";
 import {IDisValid} from "../../common/middlewares/IDisValidMiddleware";
-import {inputValidation, inputValidationErrors} from "../../common/utils/errorMessage";
+import { inputValidationErrors} from "../../common/utils/errorMessage";
 
 export const blogRouter = Router();
 
@@ -21,23 +21,24 @@ blogRouter
   .get("/", blogController.getAllBlogs)
   .post(
     "/",
-    authMiddleware,
+    basicAuthMiddleware,
     nameValidator,
     descriptionValidator,
     websiteUrlValidator,inputValidationErrors,
     blogController.postController,
   )
-  .post("/:id/posts",   IDisValid, authMiddleware, titleValidation,
+  .post("/:id/posts",   IDisValid, basicAuthMiddleware, titleValidation,
       shortDescriptionValidator,
       contentValidator,inputValidationErrors, blogController.postControllerByBlogId)
-  .get("/:id/posts", IDisValid, blogController.getPostsByBlogID)
+  .get("/:id/posts", IDisValid,inputValidationErrors, blogController.getPostsByBlogID)
   .put(
     "/:id",
       IDisValid,
-    authMiddleware,
+    basicAuthMiddleware,
     nameValidator,
     descriptionValidator,
     websiteUrlValidator,
+      inputValidationErrors,
     blogController.putController,
   )
-  .delete("/:id", IDisValid, authMiddleware, blogController.deleteController);
+  .delete("/:id", IDisValid, basicAuthMiddleware, inputValidationErrors, blogController.deleteController);

@@ -2,7 +2,7 @@ import { NextFunction, Response, Request } from "express";
 import { STATUS_CODE } from "../utils/http-statuses-code";
 import { SETTINGS } from "../../settings";
 
-export const authMiddleware = (
+export const basicAuthMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction,

@@ -1,21 +1,42 @@
 import {Request, Response} from "express";
-import {queryPostRepository} from "../../posts/queryRepository/query.post.repository";
 import {commentService} from "../services/comment.service";
 import {STATUS_CODE} from "../../../common/utils/http-statuses-code";
+import {queryRepoComment} from "../queryRepositories/query.repo.comment";
 
 export const commentController = {
     async getComment(req: Request, res: Response) {
-        const comment = await queryPostRepository.getCommentById(req.params.id)
-        console.log(comment)
+        const comment = await queryRepoComment.getCommentById(req.params.id)
         res.status(200).send(comment)
+        return
     },
 
     async deleteCommentByID(req: Request, res: Response) {
-        const result = await commentService.deleteCommentService(req.params.id)
-        if(!result) {
+        const comment = await queryRepoComment.getCommentById(req.params.id)
+        if(!comment) {
             res.sendStatus(STATUS_CODE.NOT_FOUND_404)
             return
         }
-        res.sendStatus(STATUS_CODE.NO_CONTENT_204)
+
+        if(req.user!.id !== comment.commentatorInfo.userId) {
+            res.sendStatus(403)
+            return
+        }
+        await commentService.deleteCommentService(req.params.id)
+        res.sendStatus(204)
+    },
+
+    async updateComment(req: Request, res: Response) {
+        const comment = await queryRepoComment.getCommentById(req.params.id)
+        if(!comment){
+            console.log(comment)
+            res.sendStatus(STATUS_CODE.NOT_FOUND_404)
+            return
+        }
+        if(req.user!.id !== comment.commentatorInfo.userId) {
+            res.sendStatus(403)
+            return
+        }
+        await commentService.updateComment(req.params.id, req.body)
+        res.sendStatus(204)
     }
 }

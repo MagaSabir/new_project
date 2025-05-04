@@ -5,6 +5,6 @@ export const jwtService = {
         return jwt.sign({userId, userLogin}, JWT_SECRET, {expiresIn: '30m'})
 },
     async verifyToken  (token: string) {
-        return jwt.verify(token, JWT_SECRET) as {userId: string}
+        return jwt.verify(token, JWT_SECRET) as {userId: string, userLogin: string}
     }
 }

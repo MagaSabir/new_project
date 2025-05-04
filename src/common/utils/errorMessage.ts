@@ -12,4 +12,5 @@ export const inputValidationErrors = (req: Request, res: Response, next: NextFun
         return
     }
     next();
+    return;
 };

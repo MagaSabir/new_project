@@ -12,14 +12,16 @@ export const accessTokenMiddleware = async (req: Request, res: Response, next: N
         res.sendStatus(401);
         return
     }
-    const payload = await jwtService.verifyToken(token)
-    if(payload) {
-        console.log(payload)
-        // @ts-ignore
-        req.user = { id: payload.userId, login: payload.userLogin}
-        next()
+    try {
+        const payload = await jwtService.verifyToken(token)
+        if (payload) {
+            const {userId, userLogin} = payload
+            req.user = {id: userId, login: userLogin}
+            next()
+            return
+        }
+    } catch (e) {
+        res.sendStatus(401)
         return
     }
-    res.sendStatus(401)
-    return
 }

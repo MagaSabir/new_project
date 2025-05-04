@@ -22,8 +22,10 @@ app.use("/testing/all-data", async (req: Request, res: Response) => {
   await db.collection('blogs').deleteMany()
   await db.collection('posts').deleteMany()
   await db.collection('users').deleteMany()
+  await db.collection('comments').deleteMany()
   res.sendStatus(204);
 });
+
 
 
 

@@ -1,12 +1,9 @@
 import {Request, Response} from "express";
 import {STATUS_CODE} from "../../../common/utils/http-statuses-code";
-import {errorsArray} from "../../../common/utils/errorMessage";
-import {ErrorMessageType} from "../../../common/types/blogTypes/blogType";
 import {PostViewModel} from "../../../models/post.view.model";
 import {postService} from "../services/post.servise";
 import {queryPostRepository} from "../queryRepository/query.post.repository";
-import {commentRepository} from "../../comments/repositories/comment.repository";
-import {commentService} from "../../comments/services/comment.service";
+import {queryRepoComment} from "../../comments/queryRepositories/query.repo.comment";
 
 
 export const postsController = {
@@ -30,11 +27,6 @@ export const postsController = {
 
 
   createPost: async (req: Request, res: Response): Promise<void> => {
-    const errors: ErrorMessageType[] = errorsArray(req);
-    if (errors.length) {
-      res.status(STATUS_CODE.BAD_REQUEST_400).send({errorsMessages: errors});
-      return;
-    }
       const postId: string | null = await postService.createPostService(req.body);
     if(postId) {
       const post: PostViewModel | null = await queryPostRepository.findPost(postId)
@@ -43,11 +35,6 @@ export const postsController = {
   },
 
   updatePost: async (req: Request, res: Response): Promise<void> => {
-    const errors: ErrorMessageType[] = errorsArray(req)
-    if(errors.length) {
-      res.status(STATUS_CODE.BAD_REQUEST_400).send({errorsMessages: errors})
-      return
-    }
     const post: boolean | null = await postService.updatePostService(req.params.id, req.body)
     if(!post) {
       res.sendStatus(STATUS_CODE.NOT_FOUND_404)
@@ -73,8 +60,12 @@ export const postsController = {
     }
     // @ts-ignore
     const commentId = await postService.createCommentById(req.body.content, req.user)
-    const comment = await queryPostRepository.getCommentById(commentId)
-    res.status(200).send(comment)
+    const comment = await queryRepoComment.getCommentById(commentId)
+    res.status(201).send(comment)
+  },
+
+  async getPostsById(req: Request, res: Response) {
+    const comments = await queryPostRepository
   }
 
 }

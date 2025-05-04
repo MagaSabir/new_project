@@ -1,5 +1,5 @@
 import {PostType} from "../../../common/types/postTypse/postType";
-import {client, commentCollection, db, postCollection} from "../../../db/mongoDb";
+import {postCollection} from "../../../db/mongoDb";
 import {DeleteResult, InsertOneResult, ObjectId, UpdateResult} from "mongodb";
 
 export const postRepository = {
@@ -17,6 +17,4 @@ export const postRepository = {
     const result: DeleteResult = await postCollection.deleteOne({_id: new ObjectId(id)})
     return result.deletedCount === 1
   },
-
-
 };

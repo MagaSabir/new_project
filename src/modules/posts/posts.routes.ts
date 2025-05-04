@@ -6,8 +6,10 @@ import {
   shortDescriptionValidator,
   titleValidation,
 } from "../../common/middlewares/blogValidation/posts.validations";
-import { authMiddleware } from "../../common/middlewares/authMiddleware";
+import { basicAuthMiddleware } from "../../common/middlewares/basic.auth.middleware";
 import {accessTokenMiddleware} from "../../common/middlewares/auth.middleware";
+import {inputValidationErrors} from "../../common/utils/errorMessage";
+import {contentValidation} from "../../common/middlewares/commentValidation/comment.validation";
 
 export const postRouter = Router();
 
@@ -16,20 +18,22 @@ postRouter
   .get("/:id", postsController.getPostById)
   .put(
     "/:id",
-    authMiddleware,
+    basicAuthMiddleware,
     titleValidation,
     shortDescriptionValidator,
     contentValidator,
+      inputValidationErrors,
     postsController.updatePost,
   )
-  .delete("/:id", authMiddleware, postsController.deletePost)
+  .delete("/:id", basicAuthMiddleware, postsController.deletePost)
   .post(
     "/",
-    authMiddleware,
+    basicAuthMiddleware,
     blogIdValidator,
     titleValidation,
     shortDescriptionValidator,
     contentValidator,
+      inputValidationErrors,
     postsController.createPost,
   )
-  .post('/:id/comments', accessTokenMiddleware, postsController.createCommentByPostId)
+  .post('/:id/comments',contentValidation, accessTokenMiddleware,inputValidationErrors, postsController.createCommentByPostId)
