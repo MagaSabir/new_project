@@ -34,9 +34,10 @@ export const postService = {
         return  await postRepository.deletePost(id)
     },
 
-    async createCommentById (content:string, user: any) {
+    async createCommentById (content:string, user: any, id: string) {
         const comment = {
             content,
+            postId: id,
             commentatorInfo: {
                 userId: user.id,
                 userLogin: user.login

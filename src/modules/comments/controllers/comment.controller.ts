@@ -6,9 +6,11 @@ import {queryRepoComment} from "../queryRepositories/query.repo.comment";
 export const commentController = {
     async getComment(req: Request, res: Response) {
         const comment = await queryRepoComment.getCommentById(req.params.id)
+        if(!comment) return res.sendStatus(STATUS_CODE.NOT_FOUND_404)
         res.status(200).send(comment)
         return
     },
+
 
     async deleteCommentByID(req: Request, res: Response) {
         const comment = await queryRepoComment.getCommentById(req.params.id)
@@ -32,7 +34,7 @@ export const commentController = {
             res.sendStatus(STATUS_CODE.NOT_FOUND_404)
             return
         }
-        if(req.user!.id !== comment.commentatorInfo.userId) {
+        if(req.user.id !== comment.commentatorInfo.userId) {
             res.sendStatus(403)
             return
         }

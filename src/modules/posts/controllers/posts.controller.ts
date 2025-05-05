@@ -58,14 +58,25 @@ export const postsController = {
       res.sendStatus(STATUS_CODE.NOT_FOUND_404)
       return
     }
-    // @ts-ignore
-    const commentId = await postService.createCommentById(req.body.content, req.user)
+
+    const commentId = await postService.createCommentById(req.body.content, req.user, req.params.id)
     const comment = await queryRepoComment.getCommentById(commentId)
     res.status(201).send(comment)
   },
 
-  async getPostsById(req: Request, res: Response) {
-    const comments = await queryPostRepository
+  getComments: async(req: Request, res: Response) => {
+    const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
+    const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
+    const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
+    const sortBy = req.query.sortBy || 'createdAt'
+    const postId = req.params.id
+    const comment = await queryRepoComment.getComments(postId, pageNumber, pageSize, sortDirection, sortBy)
+    if(!comment.items.length){
+      res.sendStatus(STATUS_CODE.NOT_FOUND_404)
+      return
+    }
+    res.status(STATUS_CODE.OK_200).send(comment)
+    return
   }
 
 }

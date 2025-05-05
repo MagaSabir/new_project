@@ -37,3 +37,4 @@ postRouter
     postsController.createPost,
   )
   .post('/:id/comments',contentValidation, accessTokenMiddleware,inputValidationErrors, postsController.createCommentByPostId)
+  .get('/:id/comments', postsController.getComments)

@@ -12,10 +12,21 @@ const BLOG_COLLECTION = 'blogs'
 const POST_COLLECTION = 'posts'
 const COMMENT_COLLECTIONS = 'comments'
 
+export type CommentType = {
+
+    content: string,
+    postId: string
+    commentatorInfo: {
+    userId: string,
+        userLogin: string
+},
+    createdAt: string
+}
+
 export let client: MongoClient;
 export let blogCollection: Collection<BlogType>
 export let postCollection: Collection<PostType>
-export let commentCollection: Collection<Document>
+export let commentCollection: Collection<CommentType>
 export let db: Db
 export async function runDb() {
      client = new MongoClient(URI)
