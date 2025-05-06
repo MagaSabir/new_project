@@ -2,11 +2,12 @@ import {userService} from "../services/users.service";
 import {Request, Response} from "express";
 import {STATUS_CODE} from "../../../common/utils/http-statuses-code";
 import {queryUsersRepository} from "../queryRepository/query.users.repository";
+import {UserViewModel} from "../../../models/UserViewModel";
 
 
 export const usersController = {
     postController: async (req: Request, res: Response):Promise<void> => {
-        const userId = await userService.createUserService(req.body)
+        const userId: string | null = await userService.createUserService(req.body)
 
         if(!userId) {
             res.status(400).send({
@@ -18,7 +19,7 @@ export const usersController = {
                 ]})
             return
         }
-        const createdUser = await queryUsersRepository.getCreatedUser(userId)
+        const createdUser: UserViewModel | null = await queryUsersRepository.getCreatedUser(userId)
             res.status(201).send(createdUser)
     },
 
