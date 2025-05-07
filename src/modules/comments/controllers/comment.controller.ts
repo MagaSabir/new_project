@@ -5,10 +5,17 @@ import {queryRepoComment} from "../queryRepositories/query.repo.comment";
 
 export const commentController = {
     async getComment(req: Request, res: Response) {
-        const comment = await queryRepoComment.getCommentById(req.params.id)
-        if(!comment) return res.sendStatus(STATUS_CODE.NOT_FOUND_404)
-        res.status(200).send(comment)
-        return
+       try {
+           const comment = await queryRepoComment.getCommentById(req.params.id)
+           if(!comment) {
+               res.sendStatus(STATUS_CODE.NOT_FOUND_404)
+               return
+           }
+           res.status(200).send(comment)
+
+       } catch (error) {
+           res.sendStatus(STATUS_CODE.SERVER_ERROR)
+       }
     },
 
 

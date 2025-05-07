@@ -4,6 +4,7 @@ import {PostViewModel} from "../../../models/post.view.model";
 import {postService} from "../services/post.servise";
 import {queryPostRepository} from "../queryRepository/query.post.repository";
 import {queryRepoComment} from "../../comments/queryRepositories/query.repo.comment";
+import {PaginationType} from "../../../common/types/types";
 
 
 export const postsController = {
@@ -12,7 +13,7 @@ export const postsController = {
     const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
     const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
     const sortBy = req.query.sortBy || 'createdAt'
-    const posts = await queryPostRepository.findPosts(pageNumber, pageSize, sortDirection, sortBy)
+    const posts: PaginationType<PostViewModel> = await queryPostRepository.findPosts(pageNumber, pageSize, sortDirection, sortBy)
     res.status(STATUS_CODE.OK_200).send(posts);
   },
 
@@ -53,13 +54,13 @@ export const postsController = {
   },
 
   createCommentByPostId: async (req: Request, res: Response): Promise<void> => {
-    const post = await queryPostRepository.findPost(req.params.id)
+    const post: PostViewModel | null = await queryPostRepository.findPost(req.params.id)
     if(!post) {
       res.sendStatus(STATUS_CODE.NOT_FOUND_404)
       return
     }
 
-    const commentId = await postService.createCommentById(req.body.content, req.user, req.params.id)
+    const commentId: string = await postService.createCommentById(req.body.content, req.user, req.params.id)
     const comment = await queryRepoComment.getCommentById(commentId)
     res.status(201).send(comment)
   },
@@ -69,7 +70,7 @@ export const postsController = {
     const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
     const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
     const sortBy = req.query.sortBy || 'createdAt'
-    const postId = req.params.id
+    const postId:string = req.params.id
     const comment = await queryRepoComment.getComments(postId, pageNumber, pageSize, sortDirection, sortBy)
     if(!comment.items.length){
       res.sendStatus(STATUS_CODE.NOT_FOUND_404)

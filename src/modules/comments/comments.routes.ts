@@ -7,6 +7,6 @@ import {inputValidationErrors} from "../../common/utils/errorMessage";
 export const commentsRoutes = Router()
 
 commentsRoutes
-.get('/:id', commentController.getComment)
-.delete('/:id', accessTokenMiddleware, commentController.deleteCommentByID)
-.put('/:id',contentValidation, accessTokenMiddleware, inputValidationErrors, commentController.updateComment)
+    .get('/:id', commentController.getComment)
+    .delete('/:id', accessTokenMiddleware, commentController.deleteCommentByID)
+    .put('/:id',contentValidation, accessTokenMiddleware, inputValidationErrors, commentController.updateComment)

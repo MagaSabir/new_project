@@ -3,6 +3,8 @@ import {Request, Response} from "express";
 import {STATUS_CODE} from "../../../common/utils/http-statuses-code";
 import {queryUsersRepository} from "../queryRepository/query.users.repository";
 import {UserViewModel} from "../../../models/UserViewModel";
+import {PaginationType} from "../../../common/types/types";
+import {CreatedUserType} from "../../../common/types/userType/userType";
 
 
 export const usersController = {
@@ -31,7 +33,7 @@ export const usersController = {
         const searchLoginTerm = req.query.searchLoginTerm
         const searchEmailTerm = req.query.searchEmailTerm
 
-        const user = await queryUsersRepository.getUser(pageNumber,pageSize,sortDirection, sortBy as string, searchLoginTerm, searchEmailTerm)
+        const user: PaginationType<CreatedUserType> = await queryUsersRepository.getUser(pageNumber,pageSize,sortDirection, sortBy as string, searchLoginTerm, searchEmailTerm)
         res.status(STATUS_CODE.OK_200).send(user)
     },
 
