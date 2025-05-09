@@ -14,7 +14,7 @@ import {auth} from "../common/utils/helper.e2e.helper";
 describe('/blogs tests', () => {
 
     beforeAll(async () => {
-        await runDb(); // иначе коллекции будут undefined
+        await runDb();
     });
 
 
@@ -242,7 +242,7 @@ describe('/blogs tests', () => {
         it('should return 404 if specified blog is not exists', async () => {
             await request(app)
                 .get(`/blogs/${100}`)
-                .expect(STATUS_CODE.BAD_REQUEST_400)
+                .expect(STATUS_CODE.NOT_FOUND_404)
         });
     })
 

@@ -20,7 +20,7 @@ export const contentValidator: ValidationChain = body("content")
 export const blogIdValidator: ValidationChain = body("blogId")
   .trim()
   .custom(async (blogId: string): Promise<boolean> => {
-    return await queryBlogRepository.findBlog(blogId) ? true : false;
+    return await queryBlogRepository.getBlog(blogId) ? true : false;
   })
   .withMessage("no blogId");
 

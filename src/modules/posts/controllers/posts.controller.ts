@@ -5,14 +5,17 @@ import {postService} from "../services/post.servise";
 import {queryPostRepository} from "../queryRepository/query.post.repository";
 import {queryRepoComment} from "../../comments/queryRepositories/query.repo.comment";
 import {PaginationType} from "../../../common/types/types";
+import {sortQueryFields} from "../../../common/utils/sortQueryFields";
 
 
 export const postsController = {
   getPosts: async (req: Request, res: Response): Promise<void> => {
-    const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
-    const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
-    const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
-    const sortBy = req.query.sortBy || 'createdAt'
+    // const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
+    // const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
+    // const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
+    // const sortBy = req.query.sortBy || 'createdAt'
+
+    const { pageNumber, pageSize, sortDirection, sortBy } = sortQueryFields(req.params)
     const posts: PaginationType<PostViewModel> = await queryPostRepository.findPosts(pageNumber, pageSize, sortDirection, sortBy)
     res.status(STATUS_CODE.OK_200).send(posts);
   },
@@ -66,11 +69,14 @@ export const postsController = {
   },
 
   getComments: async(req: Request, res: Response) => {
-    const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
-    const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
-    const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
-    const sortBy = req.query.sortBy || 'createdAt'
+    // const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
+    // const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
+    // const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
+    // const sortBy = req.query.sortBy || 'createdAt'
+
     const postId:string = req.params.id
+    const {pageNumber, pageSize, sortDirection, sortBy} = sortQueryFields(req.params)
+
     const comment = await queryRepoComment.getComments(postId, pageNumber, pageSize, sortDirection, sortBy)
     if(!comment.items.length){
       res.sendStatus(STATUS_CODE.NOT_FOUND_404)

@@ -5,6 +5,7 @@ import {queryUsersRepository} from "../queryRepository/query.users.repository";
 import {UserViewModel} from "../../../models/UserViewModel";
 import {PaginationType} from "../../../common/types/types";
 import {CreatedUserType} from "../../../common/types/userType/userType";
+import {sortQueryFields} from "../../../common/utils/sortQueryFields";
 
 
 export const usersController = {
@@ -26,14 +27,17 @@ export const usersController = {
     },
 
     async getUserController(req: Request, res: Response): Promise<void> {
-        const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
-        const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
-        const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
-        const sortBy = req.query.sortBy || 'createdAt'
+        // const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
+        // const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
+        // const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
+        // const sortBy = req.query.sortBy || 'createdAt'
+
         const searchLoginTerm = req.query.searchLoginTerm
         const searchEmailTerm = req.query.searchEmailTerm
 
-        const user: PaginationType<CreatedUserType> = await queryUsersRepository.getUser(pageNumber,pageSize,sortDirection, sortBy as string, searchLoginTerm, searchEmailTerm)
+        const { pageNumber, pageSize, sortDirection, sortBy} = sortQueryFields(req.params)
+
+        const user: PaginationType<CreatedUserType> = await queryUsersRepository.getUser(pageNumber,pageSize,sortDirection, sortBy, searchLoginTerm, searchEmailTerm)
         res.status(STATUS_CODE.OK_200).send(user)
     },
 

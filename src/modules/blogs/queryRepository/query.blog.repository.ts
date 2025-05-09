@@ -1,5 +1,5 @@
 import {ObjectId, WithId} from "mongodb";
-import {BlogType} from "../../../common/types/blogTypes/blogType";
+import {BlogQuery, BlogType} from "../../../common/types/blogTypes/blogType";
 import {blogCollection, client, postCollection} from "../../../db/mongoDb";
 import {mapper} from "../../../common/utils/mapper";
 import {BlogViewModel} from "../../../models/BlogViewModel";
@@ -7,7 +7,8 @@ import {PostType} from "../../../common/types/postTypse/postType";
 import {PostViewModel} from "../../../models/post.view.model";
 
 export const queryBlogRepository = {
-    async findBlogs(pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: string, searchNameTerm: string) {
+    async getBlogs(params: BlogQuery) {
+        const { pageNumber, pageSize, sortDirection, sortBy, searchNameTerm} = params
         const filter = searchNameTerm ? {name: {$regex: searchNameTerm, $options:'i'}} : {}
 
         const totalCountBlogs: number = await blogCollection.countDocuments(filter)
@@ -31,7 +32,7 @@ export const queryBlogRepository = {
         }
     },
 
-    async findPosts(pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: string, id: string) {
+    async getPosts(pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: string, id: string) {
         const totalCountPosts: number = await postCollection.countDocuments({blogId: id})
         if(!totalCountPosts) return false
         const posts: WithId<PostType>[] = await postCollection.find({blogId: id})
@@ -61,7 +62,8 @@ export const queryBlogRepository = {
         }
     },
 
-    async findBlog(id: string): Promise<BlogViewModel | null>{
+    async getBlog(id: string): Promise<BlogViewModel | null>{
+        if(!ObjectId.isValid(id)) return null
         const dbBlog: WithId<BlogType> | null = await blogCollection.findOne({_id: new ObjectId(id)});
         if(dbBlog) {
             return {
@@ -74,6 +76,4 @@ export const queryBlogRepository = {
             }
         } return null
     },
-
-
 }

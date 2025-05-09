@@ -12,8 +12,11 @@ export type DataReqBodyType = {
   websiteUrl: string;
 }
 
-export type ErrorMessageType = {
-  message: string;
-  field: string;
-};
+export type BlogQuery = {
+  pageNumber: number;
+  pageSize: number;
+  sortBy: string;
+  sortDirection: 1 | -1;
+  searchNameTerm?: string;
+}
 

@@ -28,7 +28,7 @@ export const blogService = {
     },
 
     async createPostByBlogIdService(reqBody: DataReqBodyPostType, blogId: string): Promise<string | null> {
-        const blog: BlogViewModel| null = await queryBlogRepository.findBlog(blogId)
+        const blog: BlogViewModel| null = await queryBlogRepository.getBlog(blogId)
         if (!blog) return null
         const newPost = {
             ...reqBody,

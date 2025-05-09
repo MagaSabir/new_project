@@ -25,11 +25,11 @@ blogRouter
     nameValidator,
     descriptionValidator,
     websiteUrlValidator,inputValidationErrors,
-    blogController.postController,
+    blogController.createBlog,
   )
   .post("/:id/posts",   IDisValid, basicAuthMiddleware, titleValidation,
       shortDescriptionValidator,
-      contentValidator,inputValidationErrors, blogController.postControllerByBlogId)
+      contentValidator,inputValidationErrors, blogController.createPostByBlogId)
   .get("/:id/posts", IDisValid,inputValidationErrors, blogController.getPostsByBlogID)
   .put(
     "/:id",
@@ -39,6 +39,6 @@ blogRouter
     descriptionValidator,
     websiteUrlValidator,
       inputValidationErrors,
-    blogController.putController,
+    blogController.updateBlog,
   )
-  .delete("/:id", IDisValid, basicAuthMiddleware, inputValidationErrors, blogController.deleteController);
+  .delete("/:id", IDisValid, basicAuthMiddleware, inputValidationErrors, blogController.deleteBlog);

@@ -1,9 +1,9 @@
 import {client, db} from "../../../db/mongoDb";
 import {DeleteResult, InsertOneResult, ObjectId, WithId} from "mongodb";
-import {userType} from "../../../common/types/userType/userType";
+import {UserType} from "../../../common/types/userType/userType";
 
 export const usersRepository = {
-    async createUser (body:any):Promise<InsertOneResult<userType>> {
+    async createUser (body:any):Promise<InsertOneResult<UserType>> {
         return await client.db('blogPlatform').collection('users').insertOne(body)
     },
 
@@ -13,7 +13,7 @@ export const usersRepository = {
         return result.deletedCount === 1
     },
 
-    async findLoginOrEmail (email: string, login: string): Promise<WithId<userType> | null> {
-        return await db.collection<userType>('users').findOne({$or: [{email}, {login}]})
+    async findLoginOrEmail (email: string, login: string): Promise<WithId<UserType> | null> {
+        return await db.collection<UserType>('users').findOne({$or: [{email}, {login}]})
     }
 }

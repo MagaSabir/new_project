@@ -14,3 +14,21 @@ export type PaginationType<T> = {
     totalCount: number,
     items: T[]
 }
+
+export type QueryFieldParamsTypes = {
+    pageNumber?: string;
+    pageSize?: string;
+    sortBy?: string;
+    sortDirection?: 'asc' | 'desc';
+    searchNameTerm?: string;
+    id?: string;
+};
+
+export type ParsedQueryParamsType = {
+    pageNumber: number;
+    pageSize: number;
+    sortBy: string;
+    sortDirection: 1 | -1;
+    searchNameTerm?: string;
+    id?: string;
+};
