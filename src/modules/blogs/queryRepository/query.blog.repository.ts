@@ -1,7 +1,7 @@
 import {ObjectId, WithId} from "mongodb";
 import {BlogQuery, BlogType} from "../../../common/types/blogTypes/blogType";
 import {blogCollection, client, postCollection} from "../../../db/mongoDb";
-import {mapper} from "../../../common/utils/mapper";
+import {mapper} from "../../../common/adapters/mapper";
 import {BlogViewModel} from "../../../models/BlogViewModel";
 import {PostType} from "../../../common/types/postTypse/postType";
 import {PostViewModel} from "../../../models/post.view.model";

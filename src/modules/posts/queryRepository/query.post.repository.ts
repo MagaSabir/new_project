@@ -2,7 +2,7 @@ import {postCollection} from "../../../db/mongoDb";
 import {ObjectId, WithId} from "mongodb";
 import {PostType} from "../../../common/types/postTypse/postType";
 import {PostViewModel} from "../../../models/post.view.model";
-import {postMapper} from "../../../common/utils/mapper";
+import {postMapper} from "../../../common/adapters/mapper";
 
 export const queryPostRepository = {
     async findPosts(pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: any)  {

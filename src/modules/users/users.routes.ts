@@ -6,7 +6,7 @@ import {
     loginValidation,
     passwordValidation
 } from "../../common/middlewares/postValidation/users.validation";
-import {inputValidationErrors} from "../../common/utils/errorMessage";
+import {inputValidationErrors} from "../../common/adapters/errorMessage";
 
 export const userRouter = Router()
 

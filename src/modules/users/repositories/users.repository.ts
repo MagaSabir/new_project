@@ -13,7 +13,30 @@ export const usersRepository = {
         return result.deletedCount === 1
     },
 
-    async findLoginOrEmail (email: string, login: string): Promise<WithId<UserType> | null> {
-        return await db.collection<UserType>('users').findOne({$or: [{email}, {login}]})
+    async findLoginOrEmail (email: string, login: string){
+        return await db.collection('users').findOne({$or: [{email}, {login}]})
+    },
+
+    async findUserByEmail (email: string){
+        return await db.collection('users').findOne({email})
+    },
+
+    async findUserByConfirmationCode (code: string) {
+        return await db.collection('users').findOne({confirmationCode: code})
+    },
+
+    async updateConfirmation (_id: ObjectId) {
+        const result = await db.collection('users').updateOne({_id}, {
+            $set: { isConfirmed: true , createdAt: new Date().toISOString()},
+            $unset: { confirmationCode: "", confirmationCodeExpiration: "" },
+        })
+        return result.modifiedCount === 1
+    },
+
+    async updateResendConfirmation (email: string, code: string, expiration: string) {
+        const result = await db.collection('users').updateOne({email}, {
+            $set: {confirmationCode: code, confirmationCodeExpiration: expiration}
+        })
+        return result.modifiedCount === 1
     }
 }

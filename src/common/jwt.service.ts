@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken'
-const JWT_SECRET = '12345'
+
 export const jwtService = {
     async generateToken (userId: string, userLogin: string) {
-        return jwt.sign({userId, userLogin}, JWT_SECRET, {expiresIn: '30m'})
+        return jwt.sign({userId, userLogin}, process.env.JWT_SECRET!, {expiresIn: '30m'})
 },
     async verifyToken  (token: string) {
-        return jwt.verify(token, JWT_SECRET) as {userId: string, userLogin: string}
+        return jwt.verify(token, process.env.JWT_SECRET!) as {userId: string, userLogin: string}
     }
 }

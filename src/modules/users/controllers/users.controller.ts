@@ -1,6 +1,6 @@
 import {userService} from "../services/users.service";
 import {Request, Response} from "express";
-import {STATUS_CODE} from "../../../common/utils/http-statuses-code";
+import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 import {queryUsersRepository} from "../queryRepository/query.users.repository";
 import {UserViewModel} from "../../../models/UserViewModel";
 import {PaginationType} from "../../../common/types/types";

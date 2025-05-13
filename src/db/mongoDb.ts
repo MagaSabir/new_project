@@ -6,7 +6,7 @@ import {BlogType} from "../common/types/blogTypes/blogType";
 import {PostType} from "../common/types/postTypse/postType";
 dotenv.config()
 
-const URI =  process.env.MONGO_URL || localDBString
+const URI =  /*process.env.MONGO_URL ||*/ localDBString
 const USER_COLLECTION = 'users'
 const BLOG_COLLECTION = 'blogs'
 const POST_COLLECTION = 'posts'

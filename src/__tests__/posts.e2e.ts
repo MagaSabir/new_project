@@ -1,9 +1,9 @@
 import request from "supertest";
 import {app} from "../app";
 import {SETTINGS} from "../settings";
-import {STATUS_CODE} from "../common/utils/http-statuses-code";
+import {STATUS_CODE} from "../common/adapters/http-statuses-code";
 import {runDb} from "../db/mongoDb";
-import {auth, createBlog, createPost, err} from '../common/utils/helper.e2e.helper'
+import {auth, createBlog, createPost, err} from '../common/adapters/helper.e2e.helper'
 
 
 describe('/posts tests', () => {

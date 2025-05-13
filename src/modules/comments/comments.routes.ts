@@ -2,7 +2,7 @@ import {Router} from "express";
 import {commentController} from "./controllers/comment.controller";
 import {accessTokenMiddleware} from "../../common/middlewares/auth.middleware";
 import {contentValidation} from "../../common/middlewares/commentValidation/comment.validation";
-import {inputValidationErrors} from "../../common/utils/errorMessage";
+import {inputValidationErrors} from "../../common/adapters/errorMessage";
 
 export const commentsRoutes = Router()
 

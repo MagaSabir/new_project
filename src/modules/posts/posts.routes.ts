@@ -8,7 +8,7 @@ import {
 } from "../../common/middlewares/blogValidation/posts.validations";
 import { basicAuthMiddleware } from "../../common/middlewares/basic.auth.middleware";
 import {accessTokenMiddleware} from "../../common/middlewares/auth.middleware";
-import {inputValidationErrors} from "../../common/utils/errorMessage";
+import {inputValidationErrors} from "../../common/adapters/errorMessage";
 import {contentValidation} from "../../common/middlewares/commentValidation/comment.validation";
 
 export const postRouter = Router();

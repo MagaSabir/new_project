@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
 import {commentService} from "../services/comment.service";
-import {STATUS_CODE} from "../../../common/utils/http-statuses-code";
+import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 import {queryRepoComment} from "../queryRepositories/query.repo.comment";
 
 export const commentController = {

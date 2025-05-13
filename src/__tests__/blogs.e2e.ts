@@ -1,12 +1,12 @@
 import request from 'supertest';
 import {app} from "../app";
 import {SETTINGS} from "../settings";
-import {STATUS_CODE} from "../common/utils/http-statuses-code";
+import {STATUS_CODE} from "../common/adapters/http-statuses-code";
 import {faker} from "@faker-js/faker/locale/ar";
 import {runDb} from "../db/mongoDb";
-import {createBlog} from "../common/utils/helper.e2e.helper";
-import {err} from "../common/utils/helper.e2e.helper";
-import {auth} from "../common/utils/helper.e2e.helper";
+import {createBlog} from "../common/adapters/helper.e2e.helper";
+import {err} from "../common/adapters/helper.e2e.helper";
+import {auth} from "../common/adapters/helper.e2e.helper";
 
 
 

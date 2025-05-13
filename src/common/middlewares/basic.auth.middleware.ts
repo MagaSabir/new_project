@@ -1,5 +1,5 @@
 import { NextFunction, Response, Request } from "express";
-import { STATUS_CODE } from "../utils/http-statuses-code";
+import { STATUS_CODE } from "../adapters/http-statuses-code";
 import { SETTINGS } from "../../settings";
 
 export const basicAuthMiddleware = (

@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {STATUS_CODE} from "../../../common/utils/http-statuses-code";
+import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 import {RequestWithBody, URIParamsModel} from "../../../common/types/types";
 import {BlogViewModel} from "../../../models/BlogViewModel";
 import {blogService} from "../services/blog.servise";

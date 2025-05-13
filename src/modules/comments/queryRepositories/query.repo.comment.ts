@@ -2,7 +2,7 @@ import {client, commentCollection, CommentType, postCollection} from "../../../d
 import {ObjectId, WithId} from "mongodb";
 import {PostType} from "../../../common/types/postTypse/postType";
 import {PostViewModel} from "../../../models/post.view.model";
-import {postMapper} from "../../../common/utils/mapper";
+import {postMapper} from "../../../common/adapters/mapper";
 
 export const queryRepoComment = {
     async getCommentById(id: string) {
