@@ -39,4 +39,5 @@ export const usersRepository = {
         })
         return result.modifiedCount === 1
     }
+
 }
