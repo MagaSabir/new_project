@@ -6,33 +6,19 @@ import {blogService} from "../services/blog.servise";
 import {queryBlogRepository} from "../queryRepository/query.blog.repository";
 import {queryPostRepository} from "../../posts/queryRepository/query.post.repository";
 import {PostViewModel} from "../../../models/post.view.model";
-import {sortQueryFields} from "../../../common/utils/sortQueryFields";
+import {sortQueryFields} from "../../../common/types/sortQueryFields";
 
 export  const  blogController = {
   getAllBlogs: async (req: Request, res: Response): Promise<void> => {
-    // const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
-    // const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
-    // const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
-    // const searchNameTerm = req.query.searchNameTerm
-    // const sortBy = req.query.sortBy || 'createdAt'
-
-    // const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } = sortQueryFields(req.query);
     const query = sortQueryFields(req.query)
-
     const items = await queryBlogRepository.getBlogs(query)
     res.status(STATUS_CODE.OK_200).send(items);
   },
 
 
   getPostsByBlogID: async (req: RequestWithBody<URIParamsModel>, res: Response): Promise<void> => {
-    // const pageNumber: number = req.query.pageNumber ? +req.query.pageNumber : 1
-    // const pageSize: number = req.query.pageSize ? +req.query.pageSize : 10
-    // const sortDirection: 1 | -1 = req.query.sortDirection === 'asc' ? 1 : -1
-    // const sortBy: string | any = req.query.sortBy || 'createdAt'
     const id: string = req.params.id
-
     const { pageNumber, pageSize, sortDirection, sortBy} = sortQueryFields(req.query);
-
     const items = await queryBlogRepository.getPosts(pageNumber, pageSize, sortDirection, sortBy, id)
     if(items) {
       res.status(STATUS_CODE.OK_200).send(items)

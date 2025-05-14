@@ -1,5 +1,5 @@
-import {db} from "../../../db/mongoDb";
-import {CreatedUserType, UserType} from "../../../common/types/userType/userType";
+import { usersCollections} from "../../../db/mongoDb";
+import {CreatedUserType} from "../../../common/types/userType/userType";
 import {ObjectId, WithId} from "mongodb";
 import {UserViewModel} from "../../../models/UserViewModel";
 import {PaginationType} from "../../../common/types/types";
@@ -9,9 +9,9 @@ export const queryUsersRepository = {
 
         const filter2 = {$or: [{login: {$regex: searchLoginTerm, $options: 'i'}}, {email:{ $regex: searchEmailTerm, $options: 'i'}}]}
         const newFilter = searchEmailTerm || searchLoginTerm ? filter2: {}
-        const totalCountUsers:number = await db.collection<CreatedUserType>('users').countDocuments(newFilter)
+        const totalCountUsers:number = await usersCollections.countDocuments(newFilter)
 
-        const users: WithId<CreatedUserType>[] = await db.collection<CreatedUserType>('users')
+        const users: WithId<CreatedUserType>[] = await usersCollections
             .find(newFilter)
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
@@ -36,7 +36,7 @@ export const queryUsersRepository = {
     },
 
     async getCreatedUser (userId: string): Promise<UserViewModel | null> {
-        const user: WithId<CreatedUserType> | null =  await db.collection<CreatedUserType>('users').findOne({_id: new ObjectId(userId)})
+        const user: WithId<CreatedUserType> | null =  await usersCollections.findOne({_id: new ObjectId(userId)})
         if(user)
         return {
             id: user._id.toString(),
@@ -47,8 +47,8 @@ export const queryUsersRepository = {
         return null
     },
 
-    async getUseById (userId: string): Promise<UserType | null> {
-        const user: WithId<UserType> | null =  await db.collection<UserType>('users').findOne({_id: new ObjectId(userId)})
+    async getUseById (userId: string) {
+        const user: WithId<CreatedUserType> | null =  await usersCollections.findOne({_id: new ObjectId(userId)})
         if(user)
             return {
                 email: user.email,

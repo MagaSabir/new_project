@@ -5,6 +5,8 @@ import {randomUUID} from "node:crypto";
 import {add} from "date-fns";
 import {usersRepository} from "../../users/repositories/users.repository";
 import {ResultStatus} from "../../../common/types/resultStatuse";
+import {WithId} from "mongodb";
+import {CreatedUserType} from "../../../common/types/userType/userType";
 
 export const authService = {
     async auth(loginOrEmail: string, password: string) {
@@ -17,6 +19,8 @@ export const authService = {
 
         return user
     },
+
+
 
     async createUserService(login: string, password: string, email: string) {
         const user = await usersRepository.findLoginOrEmail(email, login)
@@ -52,10 +56,10 @@ export const authService = {
     },
 
     async confirmationUserService(code: string) {
-        const user = await usersRepository.findUserByConfirmationCode(code)
+        const user: WithId<CreatedUserType> | null = await usersRepository.findUserByConfirmationCode(code)
         if (!user) return false
         if (user.isConfirmed) return false
-        if (user.confirmationCodeExpiration < new Date()) return false
+        if (user.confirmationCodeExpiration! < new Date().toISOString()) return false
 
         return  await usersRepository.updateConfirmation(user._id)
     },

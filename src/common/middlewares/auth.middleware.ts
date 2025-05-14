@@ -1,5 +1,5 @@
 import {NextFunction, Response, Request} from "express";
-import {jwtService} from "../jwt.service";
+import {jwtService} from "../adapters/jwt.service";
 
 export const accessTokenMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const authHeader = req.headers.authorization;

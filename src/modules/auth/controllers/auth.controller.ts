@@ -1,6 +1,6 @@
 import {authService} from "../services/auth.service";
 import {Request, Response} from "express";
-import {jwtService} from "../../../common/jwt.service";
+import {jwtService} from "../../../common/adapters/jwt.service";
 import {queryUsersRepository} from "../../users/queryRepository/query.users.repository";
 import {ResultStatus} from "../../../common/types/resultStatuse";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";

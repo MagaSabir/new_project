@@ -4,6 +4,8 @@ import dotenv from 'dotenv'
 import {SETTINGS} from "../settings";
 import {BlogType} from "../common/types/blogTypes/blogType";
 import {PostType} from "../common/types/postTypse/postType";
+import {CommentType} from "../models/CommentModel";
+import {CreatedUserType} from "../common/types/userType/userType";
 dotenv.config()
 
 const URI =  /*process.env.MONGO_URL ||*/ localDBString
@@ -12,21 +14,13 @@ const BLOG_COLLECTION = 'blogs'
 const POST_COLLECTION = 'posts'
 const COMMENT_COLLECTIONS = 'comments'
 
-export type CommentType = {
 
-    content: string,
-    postId: string
-    commentatorInfo: {
-    userId: string,
-        userLogin: string
-},
-    createdAt: string
-}
 
 export let client: MongoClient;
 export let blogCollection: Collection<BlogType>
 export let postCollection: Collection<PostType>
 export let commentCollection: Collection<CommentType>
+export let usersCollections: Collection<CreatedUserType>
 export let db: Db
 export async function runDb() {
      client = new MongoClient(URI)
@@ -34,6 +28,7 @@ export async function runDb() {
     blogCollection = db.collection(BLOG_COLLECTION)
     postCollection = db.collection(POST_COLLECTION)
     commentCollection = db.collection(COMMENT_COLLECTIONS)
+    usersCollections = db.collection(USER_COLLECTION)
 
     try {
         await client.connect()

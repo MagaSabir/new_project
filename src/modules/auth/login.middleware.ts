@@ -1,5 +1,4 @@
-import { body } from 'express-validator';
-import {usersRepository} from "../users/repositories/users.repository";
+import {body} from 'express-validator';
 import {authRepository} from "./repositories/auth.repository";
 
 

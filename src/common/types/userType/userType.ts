@@ -1,11 +1,10 @@
 export type CreatedUserType = {
     login: string,
     email: string,
-    createdAt: string
+    createdAt: string,
+    isConfirmed?: boolean,
+    confirmationCodeExpiration?: string
 }
 
-export type UserType = {
-    email: string,
-    login: string,
-    userId: string
-}
+
+
