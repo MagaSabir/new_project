@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer'
-import {inflate} from "node:zlib";
+
 export const nodemailerService = {
 
 async sendEmail (email:string, code: string) {
@@ -8,14 +8,14 @@ async sendEmail (email:string, code: string) {
             port: 465,
             secure: true,
             auth: {
-                user: 'testnodemailer001@mail.ru',
-                pass: 'cutgeMzZNNY13MR6UpfC',
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
             },
         })
 
 
        let mail =  await transporter.sendMail({
-            from: `"My App" testnodemailer001@mail.ru`,
+            from: `"My App" ${process.env.EMAIL_USER}`,
             to: email,
             subject: 'Email Confirmation',
             html: ` <h1>Thanks for your registration</h1>

@@ -28,9 +28,13 @@ export const authController = {
         const {login, email, password } = req.body
 
         const result = await authService.createUserService(login, password, email)
-        if(result.status === ResultStatus.Success) {
+
+        if (result.status === ResultStatus.BadRequest) {
+            res.status(STATUS_CODE.BAD_REQUEST_400).json({ errorsMessages: result.errorsMessages })
+        }
+
+        if (result.status === ResultStatus.Success) {
             res.sendStatus(STATUS_CODE.NO_CONTENT_204)
-            return
         }
     },
 

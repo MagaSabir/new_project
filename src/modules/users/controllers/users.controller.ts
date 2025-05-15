@@ -16,7 +16,7 @@ export const usersController = {
             res.status(400).send({
                 errorsMessages: [
                     {
-                        message: "string",
+                        message: "already exists",
                         field: "loginOrEmail"
                     }
                 ]})

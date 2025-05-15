@@ -22,6 +22,8 @@ export let postCollection: Collection<PostType>
 export let commentCollection: Collection<CommentType>
 export let usersCollections: Collection<CreatedUserType>
 export let db: Db
+
+
 export async function runDb() {
      client = new MongoClient(URI)
      db = client.db(SETTINGS.DB_NAME)

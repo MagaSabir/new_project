@@ -2,11 +2,7 @@ import { NextFunction, Response, Request } from "express";
 import { STATUS_CODE } from "../adapters/http-statuses-code";
 import { SETTINGS } from "../../settings";
 
-export const basicAuthMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const basicAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const auth = req.headers["authorization"];
 
   if (!auth) {

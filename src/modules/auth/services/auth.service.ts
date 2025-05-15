@@ -25,8 +25,17 @@ export const authService = {
     async createUserService(login: string, password: string, email: string) {
         const user = await usersRepository.findLoginOrEmail(email, login)
         if(user) {
+            const isEmail = user.email === email
+            const isLogin = user.login === login
+
+            const errors = []
+
+            if (isLogin) errors.push({message: 'Email already exists', field: 'email'})
+            if (isEmail) errors.push({message: 'Login already exists', field: 'login'})
+
             return {
-                status: ResultStatus.BadRequest
+                status: ResultStatus.BadRequest,
+                errorsMessages: errors
             }
         }
 
