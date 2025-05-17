@@ -13,7 +13,8 @@ export const queryBlogRepository = {
 
         const totalCountBlogs: number = await blogCollection.countDocuments(filter)
 
-        const blog: WithId<BlogType>[] =  await client.db('blogPlatform').collection<BlogType>('blogs').find(filter)
+        const blog: WithId<BlogType>[] =  await client.db('blogPlatform').collection<BlogType>('blogs')
+            .find(filter)
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
             .sort({[sortBy]: sortDirection})

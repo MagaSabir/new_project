@@ -18,4 +18,3 @@ export const websiteUrlValidator = body("websiteUrl")
   .isLength({ max: 100 })
   .isURL()
   .withMessage(" not url");
-

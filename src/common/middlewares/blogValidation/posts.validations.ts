@@ -18,7 +18,7 @@ export const contentValidator: ValidationChain = body("content")
   .isLength({ min: 1, max: 1000 })
   .withMessage("length");
 export const blogIdValidator: ValidationChain = body("blogId")
-  .trim()
+  .trim().isMongoId()
   .custom(async (blogId: string): Promise<boolean> => {
     return await queryBlogRepository.getBlog(blogId) ? true : false;
   })

@@ -18,7 +18,7 @@ app.use(SETTINGS.PATH.auth, authRoutes)
 app.use('/comments', commentsRoutes)
 
 
-app.use("/testing/all-data", async (req: Request, res: Response) => {
+app.delete("/testing/all-data", async (req: Request, res: Response) => {
   await db.collection('blogs').deleteMany()
   await db.collection('posts').deleteMany()
   await db.collection('users').deleteMany()

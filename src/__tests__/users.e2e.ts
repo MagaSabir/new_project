@@ -6,19 +6,16 @@ import {auth} from "../common/adapters/helper.e2e.helper";
 import {STATUS_CODE} from "../common/adapters/http-statuses-code";
 
 
-describe('/users tests', () => {
+describe('/users tests',  () => {
+
     beforeAll(async () => {
-        await runDb()
-    })
+        await runDb();
+    });
 
     beforeEach(async () => {
         await request(app).delete(SETTINGS.PATH.cleanDB)
     })
 
-
-    afterAll(async () => {
-        await request(app).delete(SETTINGS.PATH.cleanDB)
-    })
     describe('POST/ -> users', () => {
         it('should create and return new confirmed user', async () => {
             const firstUser = {

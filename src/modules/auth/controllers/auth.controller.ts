@@ -14,9 +14,14 @@ export const authController = {
                 return
             }
 
-            const token: string = await jwtService.generateToken(user._id.toString(), user.login)
+       const token: string = await jwtService.generateToken(user._id.toString(), user.login)
+       const refresh = await jwtService.generateRefreshToken((user._id.toString()), user.login)
 
-        res.status(200).json({accessToken: token})
+       // res.status(200).json({accessToken: token})
+       res
+           .cookie('refreshToken', refresh, { httpOnly: true, secure: true })
+           .header('Authorization', token)
+           .json({accessToken: token});
     },
 
     getUser: async (req: Request, res: Response): Promise<void> => {

@@ -27,10 +27,13 @@ export const postsController = {
 
   createPost: async (req: Request, res: Response): Promise<void> => {
       const postId: string | null = await postService.createPostService(req.body);
+
     if(postId) {
       const post: PostViewModel | null = await queryPostRepository.findPost(postId)
       res.status(STATUS_CODE.CREATED_201).send(post);
+      return
     }
+
   },
 
   updatePost: async (req: Request, res: Response): Promise<void> => {

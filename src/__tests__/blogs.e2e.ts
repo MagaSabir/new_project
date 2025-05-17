@@ -4,24 +4,20 @@ import {SETTINGS} from "../settings";
 import {STATUS_CODE} from "../common/adapters/http-statuses-code";
 import {faker} from "@faker-js/faker/locale/ar";
 import {runDb} from "../db/mongoDb";
-import {createBlog} from "../common/adapters/helper.e2e.helper";
-import {err} from "../common/adapters/helper.e2e.helper";
-import {auth} from "../common/adapters/helper.e2e.helper";
-
-
+import {auth, createBlog, err} from "../common/adapters/helper.e2e.helper";
 
 
 describe('/blogs tests', () => {
+
 
     beforeAll(async () => {
         await runDb();
     });
 
-
     beforeEach(async () => {
         await request(app).delete(SETTINGS.PATH.cleanDB)
-
     })
+
     describe('GET /blogs', () => {
         it('should return empty list', async () => {
             const res = await request(app)
@@ -257,7 +253,7 @@ describe('/blogs tests', () => {
         it('should return  404 if id is not exists', async () => {
             await request(app)
                 .get(`/blogs/${100}`)
-                .expect(STATUS_CODE.BAD_REQUEST_400)
+                .expect(STATUS_CODE.NOT_FOUND_404)
         });
 
         it(`should return 400 with error messages if field "name" contains incorrect value`, async () => {

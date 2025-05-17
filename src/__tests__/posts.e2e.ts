@@ -16,6 +16,7 @@ describe('/posts tests', () => {
     beforeEach(async () => {
         await request(app).delete(SETTINGS.PATH.cleanDB)
     })
+
     describe('GET/ posts', () => {
         it('should return empty posts', async () => {
             const res = await request(app)
