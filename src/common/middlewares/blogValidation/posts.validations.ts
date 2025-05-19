@@ -28,9 +28,3 @@ export const blogIdValidator: ValidationChain = body("blogId")
 
 
 
-
-
-
-
-
-

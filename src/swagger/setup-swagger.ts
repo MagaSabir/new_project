@@ -17,15 +17,6 @@ const swaggerOptions = {
 
 
 
-
-
-
-
-
-
-
-
-
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 export const setupSwagger = (app: Express) => {
