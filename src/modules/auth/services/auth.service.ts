@@ -7,24 +7,28 @@ import {usersRepository} from "../../users/repositories/users.repository";
 import {ResultStatus} from "../../../common/types/resultStatuse";
 import {WithId} from "mongodb";
 import {CreatedUserType} from "../../../common/types/userType/userType";
+import {jwtService} from "../../../common/adapters/jwt.service";
+import {uuidv4} from "mongodb-memory-server-core/lib/util/utils";
 
+export const tokenBlacklist = new Set()
 export const authService = {
     async auth(loginOrEmail: string, password: string) {
         const user = await authRepository.findUser(loginOrEmail)
-        console.log(user)
         if (!user) return false;
 
         const isValid: boolean = await bcrypt.compare(password, user.password)
         if (!isValid) return false
 
-        return user
+        const tokenId = uuidv4();
+        const accessToken: string = await jwtService.generateToken(user._id.toString(), user.login)
+        const newRefreshToken = await jwtService.generateRefreshToken((user._id.toString()), user.login, tokenId)
+        return { accessToken, newRefreshToken };
     },
-
 
 
     async createUserService(login: string, password: string, email: string) {
         const user = await usersRepository.findLoginOrEmail(email, login)
-        if(user) {
+        if (user) {
             const isEmail = user.email === email
             const isLogin = user.login === login
 
@@ -70,14 +74,14 @@ export const authService = {
         if (user.isConfirmed) return false
         if (user.confirmationCodeExpiration! < new Date().toISOString()) return false
 
-        return  await usersRepository.updateConfirmation(user._id)
+        return await usersRepository.updateConfirmation(user._id)
     },
 
-    async resendConfirmCodeService(email: string){
+    async resendConfirmCodeService(email: string) {
         const user = await usersRepository.findUserByEmail(email)
-        if(!user) return {status: ResultStatus.BadRequest}
+        if (!user) return {status: ResultStatus.BadRequest}
 
-        if(user.isConfirmed) {
+        if (user.isConfirmed) {
             return {
                 status: ResultStatus.BadRequest
             }
@@ -90,13 +94,42 @@ export const authService = {
         }).toISOString()
 
         const result = await usersRepository.updateResendConfirmation(email, newCode, newExpiration)
-        if(result) {
+        if (result) {
             await nodemailerService.sendEmail(email, newCode)
             return {
                 status: ResultStatus.NotContent
             }
         } else {
-            return { status: ResultStatus.NotFound}
+            return {status: ResultStatus.NotFound}
         }
+    },
+
+    async refreshTokenService(refreshToken: string) {
+        if (!refreshToken) return null;
+
+        try {
+            const payload = await jwtService.verifyToken(refreshToken) as any;
+            if (tokenBlacklist.has(payload.tokenId)) return null;
+
+            tokenBlacklist.add(payload.tokenId);
+
+            const newTokenId = uuidv4();
+            const accessToken = await jwtService.generateToken(payload.userId, payload.userLogin);
+            const newRefreshToken = await jwtService.generateRefreshToken(payload.userId, payload.userLogin, newTokenId);
+
+            return { accessToken, refreshToken: newRefreshToken };
+        } catch (err) {
+            return null;
+        }
+    },
+
+    async logOutService(refreshToken: string) {
+        if(!refreshToken) return null
+
+            const payload = await jwtService.verifyToken(refreshToken)
+            tokenBlacklist.add(refreshToken)
+            return payload
     }
 }
+
+

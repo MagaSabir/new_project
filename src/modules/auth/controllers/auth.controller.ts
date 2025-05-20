@@ -1,28 +1,60 @@
-import {authService} from "../services/auth.service";
+import {authService, tokenBlacklist} from "../services/auth.service";
 import {Request, Response} from "express";
-import {jwtService} from "../../../common/adapters/jwt.service";
 import {queryUsersRepository} from "../../users/queryRepository/query.users.repository";
 import {ResultStatus} from "../../../common/types/resultStatuse";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 
+
 export const authController = {
-   async getAuth (req: Request, res: Response): Promise<void>  {
-            const user = await authService.auth(req.body.loginOrEmail, req.body.password)
-       console.log(user)
-            if(!user) {
-                res.sendStatus(401)
+   async getAuth (req: Request, res: Response)  {
+            const tokens = await authService.auth(req.body.loginOrEmail, req.body.password)
+
+       if (!tokens) {
+            res.sendStatus(401);
+       }
+       else {
+           res
+               .cookie('refreshToken', tokens.newRefreshToken, { httpOnly: true, secure: true })
+               .header('Authorization', tokens.accessToken)
+               .status(200)
+               .send({ accessToken: tokens.accessToken });
+       }
+    },
+
+    async refreshToken(req: Request, res: Response) {
+        try {
+            const tokens = await authService.refreshTokenService(req.cookies.refreshToken);
+            console.log(!tokens)
+            if (!tokens) {
+                console.log(tokens)
+                 res.sendStatus(401);
                 return
             }
-
-       const token: string = await jwtService.generateToken(user._id.toString(), user.login)
-       const refresh = await jwtService.generateRefreshToken((user._id.toString()), user.login)
-
-       // res.status(200).json({accessToken: token})
-       res
-           .cookie('refreshToken', refresh, { httpOnly: true, secure: true })
-           .header('Authorization', token)
-           .json({accessToken: token});
+            if (tokenBlacklist.has(tokens.refreshToken)){
+                res.sendStatus(401)
+            }
+            res
+                .cookie('refreshToken', tokens.refreshToken, { httpOnly: true, secure: true })
+                .header('Authorization', tokens.accessToken)
+                .status(200)
+                .send({ accessToken: tokens.accessToken });
+        } catch (e) {
+             res.sendStatus(401);
+        }
     },
+
+    async logOut(req: Request, res: Response) {
+       const token = await authService.logOutService(req.cookies.refreshToken)
+           try {
+               if (!token){
+                   res.sendStatus(401)
+               }
+               res.clearCookie('refreshToken').sendStatus(204)
+           } catch (e) {
+               res.sendStatus(401)
+           }
+    },
+
 
     getUser: async (req: Request, res: Response): Promise<void> => {
         const user = await queryUsersRepository.getUseById(req.user.id)
@@ -34,13 +66,19 @@ export const authController = {
 
         const result = await authService.createUserService(login, password, email)
 
-        if (result.status === ResultStatus.BadRequest) {
-            res.status(STATUS_CODE.BAD_REQUEST_400).json({ errorsMessages: result.errorsMessages })
+        try {
+            if (result.status === ResultStatus.BadRequest) {
+                res.status(STATUS_CODE.BAD_REQUEST_400).json({ errorsMessages: result.errorsMessages })
+            }
+
+
+            if (result.status === ResultStatus.Success) {
+                res.sendStatus(STATUS_CODE.NO_CONTENT_204)
+            }
+        } catch (err) {
+            res.sendStatus(500)
         }
 
-        if (result.status === ResultStatus.Success) {
-            res.sendStatus(STATUS_CODE.NO_CONTENT_204)
-        }
     },
 
     async userConfirmation (req: Request, res: Response) {

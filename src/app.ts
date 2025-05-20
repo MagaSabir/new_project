@@ -7,10 +7,12 @@ import {userRouter} from "./modules/users/users.routes";
 import {authRoutes} from "./modules/auth/auth.routes";
 import {setupSwagger} from "./swagger/setup-swagger";
 import {commentsRoutes} from "./modules/comments/comments.routes";
+import cookieParser from 'cookie-parser'
 
 export const app = express();
 setupSwagger(app)
 app.use(express.json());
+app.use(cookieParser())
 app.use(SETTINGS.PATH.blogs, blogRouter);
 app.use(SETTINGS.PATH.posts, postRouter);
 app.use(SETTINGS.PATH.users, userRouter)

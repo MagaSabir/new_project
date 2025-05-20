@@ -16,4 +16,6 @@ authRoutes
     .post('/registration', passwordValidation, inputValidationErrors, authController.userRegistration)
     .post('/registration-confirmation', authController.userConfirmation)
     .post('/registration-email-resending', emailValidation, inputValidationErrors, authController.resendConfirm)
+    .post('/refresh-token', authController.refreshToken)
+    .post('/logout', authController.logOut)
 
