@@ -6,9 +6,8 @@ import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 
 
 export const authController = {
-   async getAuth (req: Request, res: Response)  {
-            const tokens = await authService.auth(req.body.loginOrEmail, req.body.password)
-
+   async login (req: Request, res: Response)  {
+       const tokens = await authService.auth(req.body.loginOrEmail, req.body.password)
        if (!tokens) {
             res.sendStatus(401);
        }
@@ -22,38 +21,27 @@ export const authController = {
     },
 
     async refreshToken(req: Request, res: Response) {
-        try {
             const tokens = await authService.refreshTokenService(req.cookies.refreshToken);
-            console.log(!tokens)
             if (!tokens) {
-                console.log(tokens)
                  res.sendStatus(401);
                 return
             }
-            if (tokenBlacklist.has(tokens.refreshToken)){
-                res.sendStatus(401)
-            }
+
             res
                 .cookie('refreshToken', tokens.refreshToken, { httpOnly: true, secure: true })
                 .header('Authorization', tokens.accessToken)
                 .status(200)
                 .send({ accessToken: tokens.accessToken });
-        } catch (e) {
-             res.sendStatus(401);
-        }
     },
 
     async logOut(req: Request, res: Response) {
        const token = await authService.logOutService(req.cookies.refreshToken)
-           try {
-               if (!token){
-                   res.sendStatus(401)
-               }
-               res.clearCookie('refreshToken').sendStatus(204)
-           } catch (e) {
-               res.sendStatus(401)
-           }
+        if (!token){
+            res.sendStatus(401)
+        }
+        res.clearCookie('refreshToken').sendStatus(204)
     },
+
 
 
     getUser: async (req: Request, res: Response): Promise<void> => {
@@ -63,22 +51,13 @@ export const authController = {
 
     async userRegistration (req: Request,res: Response) {
         const {login, email, password } = req.body
-
         const result = await authService.createUserService(login, password, email)
-
-        try {
             if (result.status === ResultStatus.BadRequest) {
                 res.status(STATUS_CODE.BAD_REQUEST_400).json({ errorsMessages: result.errorsMessages })
             }
-
-
             if (result.status === ResultStatus.Success) {
                 res.sendStatus(STATUS_CODE.NO_CONTENT_204)
             }
-        } catch (err) {
-            res.sendStatus(500)
-        }
-
     },
 
     async userConfirmation (req: Request, res: Response) {
@@ -94,8 +73,7 @@ export const authController = {
     },
 
     async resendConfirm (req: Request, res: Response) {
-       const { email } = req.body
-        const result = await authService.resendConfirmCodeService(email)
+        const result = await authService.resendConfirmCodeService(req.body.email)
         if(result.status === ResultStatus.NotContent) {
             res.sendStatus(204)
             return

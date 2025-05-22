@@ -4,7 +4,7 @@ import {SETTINGS} from "../settings";
 import {STATUS_CODE} from "../common/adapters/http-statuses-code";
 import {faker} from "@faker-js/faker/locale/ar";
 import {runDb} from "../db/mongoDb";
-import {auth, createBlog, err} from "../common/adapters/helper.e2e.helper";
+import {auth, creator,} from "./helpers/helper.e2e.helper";
 
 
 describe('/blogs tests', () => {
@@ -33,9 +33,9 @@ describe('/blogs tests', () => {
         })
 
         it('GET / should return list blogs', async () => {
-            const createdBlog1 = await createBlog({name: 'blog1'})
-            const createdBlog2 = await createBlog({name: 'blog2'})
-            const createdBlog3 = await createBlog({name: 'log'})
+            const createdBlog1 = await creator.createBlog({name: 'blog1'})
+            const createdBlog2 = await creator.createBlog({name: 'blog2'})
+            const createdBlog3 = await creator.createBlog({name: 'log'})
             const res = await request(app)
                 .get('/blogs')
                 .expect(STATUS_CODE.OK_200)
@@ -74,7 +74,7 @@ describe('/blogs tests', () => {
         });
 
         it('GET:/id /should return blog by id', async () => {
-            const createdBlog = await createBlog({name: 'byId'})
+            const createdBlog = await creator.createBlog({name: 'byId'})
             const res = await request(app)
                 .get(`/blogs/${createdBlog.id}`)
                 .expect(STATUS_CODE.OK_200)
@@ -108,7 +108,7 @@ describe('/blogs tests', () => {
 
     describe('PUT /blogs', () => {
         it('PUT:/id /should update blog', async () => {
-            const createdBlog = await createBlog({name: 'UpdatedBlog'})
+            const createdBlog = await creator.createBlog({name: 'UpdatedBlog'})
              await request(app)
                 .put(`/blogs/${createdBlog.id}`)
                 .set('Authorization', auth)
@@ -134,7 +134,7 @@ describe('/blogs tests', () => {
 
     describe('DELETE /blogs', () => {
         it('POST-> GET-> DELETE /should create a blog, check it exists, and delete it', async () => {
-            const createdBlog = await createBlog({name: 'deletedBlog'})
+            const createdBlog = await creator.createBlog({name: 'deletedBlog'})
              await request(app)
                 .get(`/blogs/${createdBlog.id}`)
                 .expect(STATUS_CODE.OK_200)
@@ -188,7 +188,7 @@ describe('/blogs tests', () => {
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
 
-            expect(res.body).toMatchObject(err('websiteUrl'))
+            expect(res.body).toMatchObject(creator.err('websiteUrl'))
         });
 
 
@@ -223,7 +223,7 @@ describe('/blogs tests', () => {
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
 
-            expect(res.body).toMatchObject(err('description'))
+            expect(res.body).toMatchObject(creator.err('description'))
         });
 
         it('should return 401 if user is not authorized',  async () => {
@@ -257,7 +257,7 @@ describe('/blogs tests', () => {
         });
 
         it(`should return 400 with error messages if field "name" contains incorrect value`, async () => {
-            const createdBlog = await createBlog()
+            const createdBlog = await creator.createBlog()
             const res = await request(app)
                 .put(`/blogs/${createdBlog.id}`)
                 .set('Authorization', auth)
@@ -267,7 +267,7 @@ describe('/blogs tests', () => {
                     websiteUrl: 'http://site.com'
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(res.body).toEqual(err('name'))
+            expect(res.body).toEqual(creator.err('name'))
 
             const res2 = await request(app)
                 .put(`/blogs/${createdBlog.id}`)
@@ -278,7 +278,7 @@ describe('/blogs tests', () => {
                     websiteUrl: 'http://site.com'
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(res2.body).toEqual(err('name'))
+            expect(res2.body).toEqual(creator.err('name'))
 
             const res3 = await request(app)
 
@@ -290,11 +290,11 @@ describe('/blogs tests', () => {
                     websiteUrl: 'http://site.com'
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(res3.body).toEqual(err('name'))
+            expect(res3.body).toEqual(creator.err('name'))
         });
 
         it(`should return 400 with error messages if field "description" contains incorrect value`, async () => {
-            const createdBlog = await createBlog()
+            const createdBlog = await creator.createBlog()
             const res = await request(app)
                 .put(`/blogs/${createdBlog.id}`)
                 .set('Authorization', auth)
@@ -304,7 +304,7 @@ describe('/blogs tests', () => {
                     websiteUrl: 'http://site.com'
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(res.body).toEqual(err('description'))
+            expect(res.body).toEqual(creator.err('description'))
 
             const res2 = await request(app)
                 .put(`/blogs/${createdBlog.id}`)
@@ -315,7 +315,7 @@ describe('/blogs tests', () => {
                     websiteUrl: 'http://site.com'
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(res2.body).toEqual(err('description'))
+            expect(res2.body).toEqual(creator.err('description'))
 
             const res3 = await request(app)
 
@@ -327,11 +327,11 @@ describe('/blogs tests', () => {
                     websiteUrl: 'http://site.com'
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(res3.body).toEqual(err('description'))
+            expect(res3.body).toEqual(creator.err('description'))
         });
 
         it(`should return 400 with error messages if field "websiteUrl" contains incorrect value`, async () => {
-            const createdBlog = await createBlog()
+            const createdBlog = await creator.createBlog()
             const res = await request(app)
                 .put(`/blogs/${createdBlog.id}`)
                 .set('Authorization', auth)
@@ -341,7 +341,7 @@ describe('/blogs tests', () => {
                     websiteUrl: ''
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(res.body).toEqual(err('websiteUrl'))
+            expect(res.body).toEqual(creator.err('websiteUrl'))
 
             const res2 = await request(app)
                 .put(`/blogs/${createdBlog.id}`)
@@ -352,7 +352,7 @@ describe('/blogs tests', () => {
                     websiteUrl: 'http://site'
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(res2.body).toEqual(err('websiteUrl'))
+            expect(res2.body).toEqual(creator.err('websiteUrl'))
         });
     })
 })

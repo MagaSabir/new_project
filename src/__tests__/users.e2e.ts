@@ -2,7 +2,7 @@ import {runDb} from "../db/mongoDb";
 import request from "supertest";
 import {app} from "../app";
 import {SETTINGS} from "../settings";
-import {auth} from "../common/adapters/helper.e2e.helper";
+import {auth} from "./helpers/helper.e2e.helper";
 import {STATUS_CODE} from "../common/adapters/http-statuses-code";
 
 

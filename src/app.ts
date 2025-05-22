@@ -17,7 +17,7 @@ app.use(SETTINGS.PATH.blogs, blogRouter);
 app.use(SETTINGS.PATH.posts, postRouter);
 app.use(SETTINGS.PATH.users, userRouter)
 app.use(SETTINGS.PATH.auth, authRoutes)
-app.use('/comments', commentsRoutes)
+app.use(SETTINGS.PATH.comments, commentsRoutes)
 
 
 app.delete("/testing/all-data", async (req: Request, res: Response) => {

@@ -11,7 +11,7 @@ import {inputValidationErrors} from "../../common/adapters/errorMessage";
 export const authRoutes = Router()
 
 authRoutes
-.post('/login',loginOrEmail, passwordValidation, inputValidationErrors, authController.getAuth)
+.post('/login',loginOrEmail, passwordValidation, inputValidationErrors, authController.login)
 .get('/me', accessTokenMiddleware, inputValidationErrors, authController.getUser)
     .post('/registration', passwordValidation, inputValidationErrors, authController.userRegistration)
     .post('/registration-confirmation', authController.userConfirmation)

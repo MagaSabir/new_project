@@ -56,14 +56,18 @@ export const postsController = {
 
   createCommentByPostId: async (req: Request, res: Response): Promise<void> => {
     const post: PostViewModel | null = await queryPostRepository.findPost(req.params.id)
-    if(!post) {
-      res.sendStatus(STATUS_CODE.NOT_FOUND_404)
-      return
-    }
+   try {
+     if(!post) {
+       res.sendStatus(STATUS_CODE.NOT_FOUND_404)
+       return
+     }
 
-    const commentId: string = await postService.createCommentById(req.body.content, req.user, req.params.id)
-    const comment = await queryRepoComment.getCommentById(commentId)
-    res.status(201).send(comment)
+     const commentId: string = await postService.createCommentById(req.body.content, req.user, req.params.id)
+     const comment = await queryRepoComment.getCommentById(commentId)
+     res.status(201).send(comment)
+   } catch (e) {
+     console.error('error : ->', e)
+   }
   },
 
   getComments: async(req: Request, res: Response) => {

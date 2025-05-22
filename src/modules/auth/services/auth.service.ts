@@ -126,9 +126,16 @@ export const authService = {
     async logOutService(refreshToken: string) {
         if(!refreshToken) return null
 
-            const payload = await jwtService.verifyToken(refreshToken)
-            tokenBlacklist.add(refreshToken)
+        try {
+            const payload = await jwtService.verifyToken(refreshToken) as any
+            if (!payload.tokenId) return null
+            if(tokenBlacklist.has(payload.tokenId)) return null
+            tokenBlacklist.add(payload.tokenId)
             return payload
+        } catch (e) {
+            return null
+        }
+
     }
 }
 

@@ -3,14 +3,16 @@ import {app} from "../app";
 import {SETTINGS} from "../settings";
 import {STATUS_CODE} from "../common/adapters/http-statuses-code";
 import {runDb} from "../db/mongoDb";
-import {auth, createBlog, createPost, err} from '../common/adapters/helper.e2e.helper'
+import {auth, creator,} from './helpers/helper.e2e.helper'
+import jwt from "jsonwebtoken";
+import {jwtService} from "../common/adapters/jwt.service";
 
 
 describe('/posts tests', () => {
     let blogId: string
     beforeAll(async () => {
         await runDb()
-        blogId = (await createBlog()).id
+        blogId = (await creator.createBlog()).id
     })
 
     beforeEach(async () => {
@@ -32,9 +34,9 @@ describe('/posts tests', () => {
         });
 
         it('should return list posts', async () => {
-            const createdBlog = await createBlog({name:'blog'})
-            const createdPost1 = await createPost({title: 'post1',blogId: createdBlog.id})
-            const createdPost2 = await createPost({title: 'post2', blogId: createdBlog.id})
+            const createdBlog = await creator.createBlog({name:'blog'})
+            const createdPost1 = await creator.createPost({title: 'post1',blogId: createdBlog.id})
+            const createdPost2 = await creator.createPost({title: 'post2', blogId: createdBlog.id})
 
             const res = await request(app)
                 .get('/posts')
@@ -68,8 +70,8 @@ describe('/posts tests', () => {
         });
 
         it('should return post by id', async () => {
-            const createdBlog = await createBlog({name:'blog'})
-            const createdPost = await createPost({blogId: createdBlog.id, title: 'post2'})
+            const createdBlog = await creator.createBlog({name:'blog'})
+            const createdPost = await creator.createPost({blogId: createdBlog.id, title: 'post2'})
             const res = await request(app)
                 .get(`/posts/${createdPost.id}`)
                 .expect(STATUS_CODE.OK_200)
@@ -87,7 +89,7 @@ describe('/posts tests', () => {
 
     describe('POST / create posts', () => {
         it('should create new post and return', async () => {
-            const createdBlog = await createBlog()
+            const createdBlog = await creator.createBlog()
             const res = await request(app)
                 .post(SETTINGS.PATH.posts)
                 .set('Authorization', auth)
@@ -108,8 +110,8 @@ describe('/posts tests', () => {
 
     describe('PUT /update post and check updated post', () => {
         it('should update post', async () => {
-            const createdBlog = await createBlog()
-            const createdPost = await createPost({blogId: createdBlog.id})
+            const createdBlog = await creator.createBlog()
+            const createdPost = await creator.createPost({blogId: createdBlog.id})
               await request(app)
                 .put(`${SETTINGS.PATH.posts}/${createdPost.id}`)
                 .set('Authorization', auth)
@@ -131,8 +133,8 @@ describe('/posts tests', () => {
 
     describe('DELETE /post', () => {
         it('should delete post by id', async () => {
-            const createdBlog = await createBlog()
-            const createdPost = await createPost({blogId: createdBlog.id})
+            const createdBlog = await creator.createBlog()
+            const createdPost = await creator.createPost({blogId: createdBlog.id})
             const res = await request(app)
                 .delete(`${SETTINGS.PATH.posts}/${createdPost.id}`)
                 .set('Authorization', auth)
@@ -141,52 +143,84 @@ describe('/posts tests', () => {
         });
     })
 
+    describe('POST /post{id}comments', () => {
+        it('should create comments by postId and return created comment. Before all should create user and login.', async () => {
+            const user = await creator.createUser()
+            const blog = await creator.createBlog()
+            const post = await creator.createPost({blogId: blog.id})
+            const response = await request(app)
+                .post(`${SETTINGS.PATH.auth}/login`)
+                .send({
+                    loginOrEmail: 'user123',
+                    password: 'string'
+                })
+                .expect(STATUS_CODE.OK_200)
+            const accessToken = response.body.accessToken
+            expect(accessToken).toBeDefined()
+
+            const secondResponse = await request(app)
+                .post(`${SETTINGS.PATH.posts}/${post.id}/comments`)
+                .set('Authorization', `Bearer ${accessToken}`)
+                .send({content: 'Some long text with many symbols'})
+                .expect(201)
+            expect(secondResponse.body).toEqual({
+                    id: expect.any(String),
+                    content: secondResponse.body.content,
+                    commentatorInfo: {
+                        userId: user.id,
+                        userLogin: user.login
+                    },
+                    createdAt: expect.any(String)
+            })
+        });
+    })
+
     //Invalid input data
 
     describe('POST /posts', () => {
         it('should return 400 with error messages if input data has incorrect values', async ()  => {
-            let createdPost = await createPost({blogId: blogId, title:''})
+            let createdPost = await creator.createPost({blogId: blogId, title:''})
 
             const responseWithTitle = await request(app)
                 .post(SETTINGS.PATH.posts)
                 .set('Authorization', auth)
                 .send(createdPost)
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(responseWithTitle.body).toEqual(err('title'))
+            expect(responseWithTitle.body).toEqual(creator.err('title'))
         });
 
         it('should return 400 with error if field `ShortDescription` - has a incorrect value', async () => {
-            const createdPost = await createPost({shortDescription: '', blogId: blogId})
+            const createdPost = await creator.createPost({shortDescription: '', blogId: blogId})
             const responseWithShortDesc = await request(app)
                 .post(SETTINGS.PATH.posts)
                 .set('Authorization', auth)
                 .send(createdPost)
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(responseWithShortDesc.body).toEqual(err('shortDescription'))
+            expect(responseWithShortDesc.body).toEqual(creator.err('shortDescription'))
         });
 
         it('should return 400 with error if field `content` - has a incorrect value', async () => {
-            const createdPost = await createPost({content: '', blogId: blogId})
+            const createdPost = await creator.createPost({content: '', blogId: blogId})
             const responseWithContent = await request(app)
                 .post(SETTINGS.PATH.posts)
                 .set('Authorization', auth)
                 .send(createdPost)
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(responseWithContent.body).toEqual(err('content'))
+            expect(responseWithContent.body).toEqual(creator.err('content'))
         });
 
         it('should return 400 with error if field `blogID` - has a incorrect value', async () => {
-            const createdPost = await createPost()
+            const createdPost = await creator.createPost()
             const responseWithBlogId = await request(app)
                 .post(SETTINGS.PATH.posts)
                 .set('Authorization', auth)
                 .send(createdPost)
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(responseWithBlogId.body).toEqual(err('blogId'))
+            expect(responseWithBlogId.body).toEqual(creator.err('blogId'))
         });
 
         it('should return 400 with errors if all fields  has  incorrect values', async () => {
-            const createdPost = await createPost({title: '', shortDescription: '', content: '', blogId: ''})
+            const createdPost = await creator.createPost({title: '', shortDescription: '', content: '', blogId: ''})
             const responseWithBlogId = await request(app)
                 .post(SETTINGS.PATH.posts)
                 .set('Authorization', auth)
@@ -223,7 +257,7 @@ describe('/posts tests', () => {
                     blogId: blogId
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(response.body).toEqual(err('title'))
+            expect(response.body).toEqual(creator.err('title'))
         });
 
         it('should return 400 with error if field shortDescription length > 100 symbols', async () => {
@@ -237,7 +271,7 @@ describe('/posts tests', () => {
                     blogId: blogId
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(response.body).toEqual(err('shortDescription'))
+            expect(response.body).toEqual(creator.err('shortDescription'))
         });
 
         it('should return 400 with error if field content length > 1000 symbols', async () => {
@@ -251,7 +285,7 @@ describe('/posts tests', () => {
                     blogId: blogId
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(response.body).toEqual(err('content'))
+            expect(response.body).toEqual(creator.err('content'))
         });
 
         it('should return 400 with error if field blogId is empty', async () => {
@@ -265,45 +299,45 @@ describe('/posts tests', () => {
                     blogId: ''
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(response.body).toEqual(err('blogId'))
+            expect(response.body).toEqual(creator.err('blogId'))
         });
     })
 
     describe('PUT =>/posts', () => {
 
         it('should return 400 with error request with incorrect values', async () => {
-            const createdPost = await createPost({title: '', blogId: blogId})
+            const createdPost = await creator.createPost({title: '', blogId: blogId})
 
             const response = await request(app)
                 .put(`${SETTINGS.PATH.posts}/111`)
                 .set('Authorization', auth)
                 .send(createdPost)
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(response.body).toEqual(err('title'))
+            expect(response.body).toEqual(creator.err('title'))
 
         });
 
         it('should return 400 with error request with incorrect values', async () => {
-            const createdPost = await createPost({shortDescription: '', blogId: blogId})
+            const createdPost = await creator.createPost({shortDescription: '', blogId: blogId})
 
             const response = await request(app)
                 .put(`${SETTINGS.PATH.posts}/${createdPost.id}`)
                 .set('Authorization', auth)
                 .send(createdPost)
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(response.body).toEqual(err('shortDescription'))
+            expect(response.body).toEqual(creator.err('shortDescription'))
 
         });
 
         it('should return 400 with error request with incorrect values', async () => {
-            const createdPost = await createPost({content: '', blogId: blogId})
+            const createdPost = await creator.createPost({content: '', blogId: blogId})
 
             const response = await request(app)
                 .put(`${SETTINGS.PATH.posts}/111`)
                 .set('Authorization', auth)
                 .send(createdPost)
                 .expect(STATUS_CODE.BAD_REQUEST_400)
-            expect(response.body).toEqual(err('content'))
+            expect(response.body).toEqual(creator.err('content'))
 
         });
     })
@@ -317,8 +351,8 @@ describe('/posts tests', () => {
         });
 
         it('should delete post by id', async () => {
-            const blog = await createBlog();
-            const post = await createPost({blogId: blog.id});
+            const blog = await creator.createBlog();
+            const post = await creator.createPost({blogId: blog.id});
             await request(app)
                 .delete(`${SETTINGS.PATH.posts}/${post.id}`)
                 .set('Authorization', auth)
