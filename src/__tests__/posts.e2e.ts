@@ -3,9 +3,11 @@ import {app} from "../app";
 import {SETTINGS} from "../settings";
 import {STATUS_CODE} from "../common/adapters/http-statuses-code";
 import {runDb} from "../db/mongoDb";
-import {auth, creator,} from './helpers/helper.e2e.helper'
+import {auth, creator,} from './helpers/helpers.e2e.helper'
 import jwt from "jsonwebtoken";
 import {jwtService} from "../common/adapters/jwt.service";
+import {as} from "@faker-js/faker/dist/airline-BUL6NtOJ";
+import {response} from "express";
 
 
 describe('/posts tests', () => {
@@ -148,6 +150,7 @@ describe('/posts tests', () => {
             const user = await creator.createUser()
             const blog = await creator.createBlog()
             const post = await creator.createPost({blogId: blog.id})
+
             const response = await request(app)
                 .post(`${SETTINGS.PATH.auth}/login`)
                 .send({
@@ -155,6 +158,7 @@ describe('/posts tests', () => {
                     password: 'string'
                 })
                 .expect(STATUS_CODE.OK_200)
+
             const accessToken = response.body.accessToken
             expect(accessToken).toBeDefined()
 
@@ -171,6 +175,61 @@ describe('/posts tests', () => {
                         userLogin: user.login
                     },
                     createdAt: expect.any(String)
+            })
+        });
+    })
+
+    describe('GET /post{id}comments', () => {
+        it('should return all comments by post id', async () => {
+            const user = await creator.createUser()
+            const blog = await creator.createBlog()
+            const post = await creator.createPost({blogId: blog.id})
+
+            const response = await request(app)
+                .post(`${SETTINGS.PATH.auth}/login`)
+                .send({
+                    loginOrEmail: 'user123',
+                    password: 'string'
+                })
+                .expect(STATUS_CODE.OK_200)
+
+            const accessToken = response.body.accessToken
+            expect(accessToken).toBeDefined()
+
+            const createResponse = await request(app)
+                .post(`${SETTINGS.PATH.posts}/${post.id}/comments`)
+                .set('Authorization', `Bearer ${accessToken}`)
+                .send({content: 'Some long text with many symbols'})
+                .expect(201)
+            expect(createResponse.body).toEqual({
+                id: expect.any(String),
+                content: createResponse.body.content,
+                commentatorInfo: {
+                    userId: user.id,
+                    userLogin: user.login
+                },
+                createdAt: expect.any(String)
+            })
+
+            const getResponse = await request(app)
+                .get(`${SETTINGS.PATH.posts}/${post.id}/comments`)
+                .set('Authorization', `Bearer ${accessToken}`)
+                .expect(STATUS_CODE.OK_200)
+            console.log(getResponse.body)
+            expect(getResponse.body).toEqual({
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [{
+                    id: expect.any(String),
+                    content: createResponse.body.content,
+                    commentatorInfo: {
+                        userId: user.id,
+                        userLogin: user.login
+                    },
+                    createdAt: expect.any(String)
+                }]
             })
         });
     })
@@ -343,8 +402,8 @@ describe('/posts tests', () => {
     })
     
     describe('DELETE =>/posts', () => {
-        it('should return Unauthorized', async () => {
 
+        it('should return Unauthorized', async () => {
             await request(app)
                 .delete(`${SETTINGS.PATH.posts}/12121}`)
                 expect(STATUS_CODE.UNAUTHORIZED_401)

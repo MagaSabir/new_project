@@ -57,5 +57,4 @@ export const queryUsersRepository = {
             }
         return null
     },
-
 }

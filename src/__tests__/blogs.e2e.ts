@@ -4,7 +4,7 @@ import {SETTINGS} from "../settings";
 import {STATUS_CODE} from "../common/adapters/http-statuses-code";
 import {faker} from "@faker-js/faker/locale/ar";
 import {runDb} from "../db/mongoDb";
-import {auth, creator,} from "./helpers/helper.e2e.helper";
+import {auth, creator,} from "./helpers/helpers.e2e.helper";
 
 
 describe('/blogs tests', () => {
