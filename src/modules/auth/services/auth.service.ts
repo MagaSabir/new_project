@@ -72,7 +72,7 @@ export const authService = {
         const user: WithId<CreatedUserType> | null = await usersRepository.findUserByConfirmationCode(code)
         if (!user) return false
         if (user.isConfirmed) return false
-        if (user.confirmationCodeExpiration! < new Date().toISOString()) return false
+        if (user.confirmationCodeExpiration! < new Date()) return false
 
         return await usersRepository.updateConfirmation(user._id)
     },
@@ -99,6 +99,7 @@ export const authService = {
             return {
                 status: ResultStatus.NotContent
             }
+
         } else {
             return {status: ResultStatus.NotFound}
         }
@@ -108,18 +109,30 @@ export const authService = {
         if (!refreshToken) return null;
 
         try {
-            const payload = await jwtService.verifyToken(refreshToken) as any;
-            if (tokenBlacklist.has(payload.tokenId)) return null;
+            const payload = await jwtService.verifyToken(refreshToken) as { userId: string; userLogin: string; tokenId: string}
 
-            tokenBlacklist.add(payload.tokenId);
+
+                const isTokenBlack = await authRepository.findTokenInBlacklist(payload.tokenId)
+            if(isTokenBlack) return null
+
+            await authRepository.blackList(payload.tokenId)
+
+            // if (tokenBlacklist.has(payload.userId)) return null;
+            //
+            // tokenBlacklist.add(payload.tokenId);
+
 
             const newTokenId = uuidv4();
             const accessToken = await jwtService.generateToken(payload.userId, payload.userLogin);
             const newRefreshToken = await jwtService.generateRefreshToken(payload.userId, payload.userLogin, newTokenId);
+            console.log(accessToken)
 
             return { accessToken, refreshToken: newRefreshToken };
+
         } catch (err) {
+
             return null;
+
         }
     },
 
@@ -129,13 +142,12 @@ export const authService = {
         try {
             const payload = await jwtService.verifyToken(refreshToken) as any
             if (!payload.tokenId) return null
-            if(tokenBlacklist.has(payload.tokenId)) return null
-            tokenBlacklist.add(payload.tokenId)
+            const isTokenBlack = await authRepository.findTokenInBlacklist(payload.tokenId)
+            if(isTokenBlack) return null
             return payload
         } catch (e) {
             return null
         }
-
     }
 }
 

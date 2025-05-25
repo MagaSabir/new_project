@@ -3,7 +3,7 @@ export type CreatedUserType = {
     email: string,
     createdAt: string,
     isConfirmed?: boolean,
-    confirmationCodeExpiration?: string
+    confirmationCodeExpiration?: string | Date
 }
 
 

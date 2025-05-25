@@ -8,7 +8,7 @@ import {CommentType} from "../models/CommentModel";
 import {CreatedUserType} from "../common/types/userType/userType";
 dotenv.config()
 
-const URI =  process.env.MONGO_URL || localDBString
+const URI =/*  process.env.MONGO_URL ||*/ localDBString
 const USER_COLLECTION = 'users'
 const BLOG_COLLECTION = 'blogs'
 const POST_COLLECTION = 'posts'

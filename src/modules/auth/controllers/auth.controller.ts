@@ -3,6 +3,8 @@ import {Request, Response} from "express";
 import {queryUsersRepository} from "../../users/queryRepository/query.users.repository";
 import {ResultStatus} from "../../../common/types/resultStatuse";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
+import {authRepository} from "../repositories/auth.repository";
+import {jwtService} from "../../../common/adapters/jwt.service";
 
 
 export const authController = {
@@ -26,7 +28,6 @@ export const authController = {
                  res.sendStatus(401);
                 return
             }
-
             res
                 .cookie('refreshToken', tokens.refreshToken, { httpOnly: true, secure: true })
                 .header('Authorization', tokens.accessToken)

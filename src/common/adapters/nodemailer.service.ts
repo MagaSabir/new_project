@@ -4,7 +4,7 @@ export const nodemailerService = {
 
 async sendEmail (email:string, code: string) {
     const transporter = nodemailer.createTransport({
-            host: 'smtp.mail.ru',
+            host: process.env.HOST,
             port: 465,
             secure: true,
             auth: {
@@ -14,7 +14,7 @@ async sendEmail (email:string, code: string) {
         })
 
 
-       let mail =  await transporter.sendMail({
+    await transporter.sendMail({
             from: `"My App" ${process.env.EMAIL_USER}`,
             to: email,
             subject: 'Email Confirmation',
@@ -23,6 +23,5 @@ async sendEmail (email:string, code: string) {
                   <a href='https://some-site.com/confirm-email?code=${code}'>complete registration</a>
               </p>`
         });
-    return !!mail
     }
 }
