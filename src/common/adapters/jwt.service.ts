@@ -9,7 +9,7 @@ export const jwtService = {
     },
 
     async verifyToken  (token: string) {
-        return jwt.verify(token, process.env.JWT_SECRET!) as {userId: string, userLogin: string}
+        return jwt.verify(token, process.env.JWT_SECRET!) as {userId: string, userLogin: string, tokenId:string}
     }
 }
 

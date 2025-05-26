@@ -8,7 +8,7 @@ import {ResultStatus} from "../../../common/types/resultStatuse";
 import {WithId} from "mongodb";
 import {CreatedUserType} from "../../../common/types/userType/userType";
 import {jwtService} from "../../../common/adapters/jwt.service";
-import {uuidv4} from "mongodb-memory-server-core/lib/util/utils";
+
 
 export const tokenBlacklist = new Set()
 export const authService = {
@@ -19,10 +19,10 @@ export const authService = {
         const isValid: boolean = await bcrypt.compare(password, user.password)
         if (!isValid) return false
 
-        const tokenId = uuidv4();
+        const tokenId = randomUUID();
         const accessToken: string = await jwtService.generateToken(user._id.toString(), user.login)
         const newRefreshToken = await jwtService.generateRefreshToken((user._id.toString()), user.login, tokenId)
-        return { accessToken, newRefreshToken };
+        return {accessToken, newRefreshToken};
     },
 
 
@@ -78,6 +78,7 @@ export const authService = {
     },
 
     async resendConfirmCodeService(email: string) {
+        //TODO Создать middleware и перенести туда логику проверки.
         const user = await usersRepository.findUserByEmail(email)
         if (!user) return {status: ResultStatus.BadRequest}
 
@@ -109,25 +110,23 @@ export const authService = {
         if (!refreshToken) return null;
 
         try {
-            const payload = await jwtService.verifyToken(refreshToken) as { userId: string; userLogin: string; tokenId: string}
+            const payload = await jwtService.verifyToken(refreshToken) as {
+                userId: string;
+                userLogin: string;
+                tokenId: string
+            }
 
 
-                const isTokenBlack = await authRepository.findTokenInBlacklist(payload.tokenId)
-            if(isTokenBlack) return null
+            const isTokenBlack = await authRepository.findTokenInBlacklist(payload.tokenId)
+            if (isTokenBlack) return null
 
-            await authRepository.blackList(payload.tokenId)
+            await authRepository.addTokenInBlacklist(payload.tokenId)
 
-            // if (tokenBlacklist.has(payload.userId)) return null;
-            //
-            // tokenBlacklist.add(payload.tokenId);
-
-
-            const newTokenId = uuidv4();
+            const newTokenId = randomUUID();
             const accessToken = await jwtService.generateToken(payload.userId, payload.userLogin);
             const newRefreshToken = await jwtService.generateRefreshToken(payload.userId, payload.userLogin, newTokenId);
-            console.log(accessToken)
 
-            return { accessToken, refreshToken: newRefreshToken };
+            return {accessToken, refreshToken: newRefreshToken};
 
         } catch (err) {
 
@@ -137,13 +136,15 @@ export const authService = {
     },
 
     async logOutService(refreshToken: string) {
-        if(!refreshToken) return null
+
+        //TODO Создать middleware и перенести туда логику проверки. Добавить токен в блеклист
+        if (!refreshToken) return null
 
         try {
-            const payload = await jwtService.verifyToken(refreshToken) as any
+            const payload = await jwtService.verifyToken(refreshToken)
             if (!payload.tokenId) return null
             const isTokenBlack = await authRepository.findTokenInBlacklist(payload.tokenId)
-            if(isTokenBlack) return null
+            if (isTokenBlack) return null
             return payload
         } catch (e) {
             return null

@@ -7,7 +7,7 @@ export const authRepository = {
             .findOne({$or: [{login: body}, {email: body}]})
     },
 
-    async blackList(tokenId: string) {
+    async addTokenInBlacklist(tokenId: string) {
         const result =   await client.db('blogPlatform').collection('blacklist')
             .insertOne({tokenId})
         return result.insertedId
