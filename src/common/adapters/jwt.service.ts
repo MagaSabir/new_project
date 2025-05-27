@@ -2,10 +2,10 @@ import jwt from 'jsonwebtoken'
 
 export const jwtService = {
     async generateToken (userId: string, userLogin: string) {
-        return jwt.sign({userId, userLogin}, process.env.JWT_SECRET!, {expiresIn: '10m'})
+        return jwt.sign({userId, userLogin}, process.env.JWT_SECRET!, {expiresIn: '10s'})
 },
     async generateRefreshToken (userId: string,userLogin: string, tokenId: string) {
-        return jwt.sign({userId, userLogin, tokenId}, process.env.JWT_SECRET!, {expiresIn: '20m'})
+        return jwt.sign({userId, userLogin, tokenId}, process.env.JWT_SECRET!, {expiresIn: '20s'})
     },
 
     async verifyToken  (token: string) {

@@ -7,6 +7,7 @@ import {
 } from "../../common/middlewares/postValidation/users.validation";
 import {accessTokenMiddleware} from "../../common/middlewares/auth.middleware";
 import {inputValidationErrors} from "../../common/adapters/errorMessage";
+import {refreshMiddleware} from "../../common/middlewares/refresh.middleware";
 
 export const authRoutes = Router()
 
@@ -16,6 +17,6 @@ authRoutes
     .post('/registration', passwordValidation, inputValidationErrors, authController.userRegistration)
     .post('/registration-confirmation', authController.userConfirmation)
     .post('/registration-email-resending', emailValidation, inputValidationErrors, authController.resendConfirm)
-    .post('/refresh-token', authController.refreshToken)
-    .post('/logout', authController.logOut)
+    .post('/refresh-token', refreshMiddleware, authController.refreshToken)
+    .post('/logout', refreshMiddleware, authController.logOut)
 

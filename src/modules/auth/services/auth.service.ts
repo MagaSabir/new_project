@@ -10,6 +10,11 @@ import {CreatedUserType} from "../../../common/types/userType/userType";
 import {jwtService} from "../../../common/adapters/jwt.service";
 
 
+export type PayloadType ={
+    userId: string;
+    userLogin: string;
+    tokenId: string
+}
 export const tokenBlacklist = new Set()
 export const authService = {
     async auth(loginOrEmail: string, password: string) {
@@ -78,7 +83,6 @@ export const authService = {
     },
 
     async resendConfirmCodeService(email: string) {
-        //TODO Создать middleware и перенести туда логику проверки.
         const user = await usersRepository.findUserByEmail(email)
         if (!user) return {status: ResultStatus.BadRequest}
 
@@ -106,19 +110,7 @@ export const authService = {
         }
     },
 
-    async refreshTokenService(refreshToken: string) {
-        if (!refreshToken) return null;
-
-        try {
-            const payload = await jwtService.verifyToken(refreshToken) as {
-                userId: string;
-                userLogin: string;
-                tokenId: string
-            }
-
-
-            const isTokenBlack = await authRepository.findTokenInBlacklist(payload.tokenId)
-            if (isTokenBlack) return null
+    async refreshTokenService(payload : PayloadType) {
 
             await authRepository.addTokenInBlacklist(payload.tokenId)
 
@@ -127,28 +119,10 @@ export const authService = {
             const newRefreshToken = await jwtService.generateRefreshToken(payload.userId, payload.userLogin, newTokenId);
 
             return {accessToken, refreshToken: newRefreshToken};
-
-        } catch (err) {
-
-            return null;
-
-        }
     },
 
-    async logOutService(refreshToken: string) {
-
-        //TODO Создать middleware и перенести туда логику проверки. Добавить токен в блеклист
-        if (!refreshToken) return null
-
-        try {
-            const payload = await jwtService.verifyToken(refreshToken)
-            if (!payload.tokenId) return null
-            const isTokenBlack = await authRepository.findTokenInBlacklist(payload.tokenId)
-            if (isTokenBlack) return null
-            return payload
-        } catch (e) {
-            return null
-        }
+    async logOutService(payload: PayloadType) {
+            await authRepository.addTokenInBlacklist(payload.tokenId)
     }
 }
 

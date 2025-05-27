@@ -1,10 +1,8 @@
-import {authService, tokenBlacklist} from "../services/auth.service";
+import {authService} from "../services/auth.service";
 import {Request, Response} from "express";
 import {queryUsersRepository} from "../../users/queryRepository/query.users.repository";
 import {ResultStatus} from "../../../common/types/resultStatuse";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
-import {authRepository} from "../repositories/auth.repository";
-import {jwtService} from "../../../common/adapters/jwt.service";
 
 
 export const authController = {
@@ -23,11 +21,8 @@ export const authController = {
     },
 
     async refreshToken(req: Request, res: Response) {
-        const tokens = await authService.refreshTokenService(req.cookies.refreshToken);
-        if (!tokens) {
-            res.sendStatus(401);
-            return
-        }
+        const tokens = await authService.refreshTokenService(req.payload);
+
         res
             .cookie('refreshToken', tokens.refreshToken, {httpOnly: true, secure: true})
             .header('Authorization', tokens.accessToken)
@@ -36,11 +31,7 @@ export const authController = {
     },
 
     async logOut(req: Request, res: Response) {
-        const token = await authService.logOutService(req.cookies.refreshToken)
-        if (!token) {
-            res.sendStatus(401)
-            return
-        }
+        const token = await authService.logOutService(req.payload)
         res.clearCookie('refreshToken').sendStatus(204)
     },
 
