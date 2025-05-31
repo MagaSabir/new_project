@@ -12,7 +12,6 @@ export const accessTokenMiddleware = async (req: Request, res: Response, next: N
         res.sendStatus(401);
         return
     }
-    // const token = req.cookies.refreshToken
     try {
         const payload = await jwtService.verifyToken(token)
         if (payload) {
