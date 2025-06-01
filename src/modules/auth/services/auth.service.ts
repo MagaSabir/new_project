@@ -8,14 +8,11 @@ import {ResultStatus} from "../../../common/types/resultStatuse";
 import {WithId} from "mongodb";
 import {CreatedUserType} from "../../../common/types/userType/userType";
 import {jwtService} from "../../../common/adapters/jwt.service";
+import {PayloadType} from "../../../common/types/types";
 
 
-export type PayloadType ={
-    userId: string;
-    userLogin: string;
-    tokenId: string
-}
-export const tokenBlacklist = new Set()
+
+
 export const authService = {
     async auth(loginOrEmail: string, password: string) {
         const user = await authRepository.findUser(loginOrEmail)
@@ -26,7 +23,7 @@ export const authService = {
 
         const tokenId = randomUUID();
         const accessToken: string = await jwtService.generateToken(user._id.toString(), user.login)
-        const newRefreshToken = await jwtService.generateRefreshToken((user._id.toString()), user.login, tokenId)
+        const newRefreshToken: string = await jwtService.generateRefreshToken((user._id.toString()), user.login, tokenId)
         return {accessToken, newRefreshToken};
     },
 
@@ -34,8 +31,8 @@ export const authService = {
     async createUserService(login: string, password: string, email: string) {
         const user = await usersRepository.findLoginOrEmail(email, login)
         if (user) {
-            const isEmail = user.email === email
-            const isLogin = user.login === login
+            const isEmail: boolean = user.email === email
+            const isLogin : boolean= user.login === login
 
             const errors = []
 
@@ -48,7 +45,7 @@ export const authService = {
             }
         }
 
-        const passwordHash = await bcrypt.hash(password, 10)
+        const passwordHash: string = await bcrypt.hash(password, 10)
         const newUser = {
             login,
             password: passwordHash,
@@ -83,7 +80,7 @@ export const authService = {
     },
 
     async resendConfirmCodeService(email: string) {
-        const user = await usersRepository.findUserByEmail(email)
+        const user: WithId<CreatedUserType > | null = await usersRepository.findUserByEmail(email)
         if (!user) return {status: ResultStatus.BadRequest}
 
         if (user.isConfirmed) {
@@ -93,12 +90,12 @@ export const authService = {
         }
 
         const newCode = randomUUID()
-        const newExpiration = add(new Date(), {
+        const newExpiration: string = add(new Date(), {
             hours: 1,
             minutes: 30,
         }).toISOString()
 
-        const result = await usersRepository.updateResendConfirmation(email, newCode, newExpiration)
+        const result: boolean = await usersRepository.updateResendConfirmation(email, newCode, newExpiration)
         if (result) {
             await nodemailerService.sendEmail(email, newCode)
             return {
@@ -115,8 +112,8 @@ export const authService = {
             await authRepository.addTokenInBlacklist(payload.tokenId)
 
             const newTokenId = randomUUID();
-            const accessToken = await jwtService.generateToken(payload.userId, payload.userLogin);
-            const newRefreshToken = await jwtService.generateRefreshToken(payload.userId, payload.userLogin, newTokenId);
+            const accessToken: string = await jwtService.generateToken(payload.userId, payload.userLogin);
+            const newRefreshToken: string = await jwtService.generateRefreshToken(payload.userId, payload.userLogin, newTokenId);
 
             return {accessToken, refreshToken: newRefreshToken};
     },

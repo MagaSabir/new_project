@@ -32,3 +32,9 @@ export type ParsedQueryParamsType = {
     searchNameTerm?: string;
     id?: string;
 };
+
+export type PayloadType ={
+    userId: string;
+    userLogin: string;
+    tokenId: string
+}
