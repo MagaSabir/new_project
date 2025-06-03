@@ -11,20 +11,42 @@ import {jwtService} from "../../../common/adapters/jwt.service";
 import {PayloadType} from "../../../common/types/types";
 
 
-
-
 export const authService = {
-    async auth(loginOrEmail: string, password: string) {
+    async auth(loginOrEmail: string, password: string, ip: string, userAgent: string) {
         const user = await authRepository.findUser(loginOrEmail)
         if (!user) return false;
 
         const isValid: boolean = await bcrypt.compare(password, user.password)
         if (!isValid) return false
 
-        const tokenId = randomUUID();
+        const deviceId = randomUUID();
         const accessToken: string = await jwtService.generateToken(user._id.toString(), user.login)
-        const newRefreshToken: string = await jwtService.generateRefreshToken((user._id.toString()), user.login, tokenId)
+        const newRefreshToken: string = await jwtService.generateRefreshToken((user._id.toString()), user.login, deviceId)
+        const payload = await  jwtService.verifyToken(newRefreshToken)
+
+        await authRepository.addSession({
+            userId: user._id.toString(),
+            deviceId,
+            userAgent,
+            ip,
+            lastActiveDate: payload.iat,
+            expiration: payload.exp
+        })
         return {accessToken, newRefreshToken};
+    },
+
+    async refreshTokenService(payload: any) {
+
+        const accessToken: string = await jwtService.generateToken(payload.userId, payload.userLogin);
+        const newRefreshToken: string = await jwtService.generateRefreshToken(payload.userId, payload.userLogin, payload.deviceId);
+        const payload2 = await  jwtService.verifyToken(newRefreshToken)
+
+        await authRepository.updateSession(payload2.userId, payload2.deviceId, payload2.iat, payload2.exp)
+        return {accessToken, refreshToken: newRefreshToken};
+    },
+
+    async logOutService(payload: PayloadType) {
+        await authRepository.deleteSessions(payload.userId, payload.deviceId)
     },
 
 
@@ -106,21 +128,6 @@ export const authService = {
             return {status: ResultStatus.NotFound}
         }
     },
-
-    async refreshTokenService(payload : PayloadType) {
-
-            await authRepository.addTokenInBlacklist(payload.tokenId)
-
-            const newTokenId = randomUUID();
-            const accessToken: string = await jwtService.generateToken(payload.userId, payload.userLogin);
-            const newRefreshToken: string = await jwtService.generateRefreshToken(payload.userId, payload.userLogin, newTokenId);
-
-            return {accessToken, refreshToken: newRefreshToken};
-    },
-
-    async logOutService(payload: PayloadType) {
-            await authRepository.addTokenInBlacklist(payload.tokenId)
-    }
 }
 
 

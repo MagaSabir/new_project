@@ -7,14 +7,16 @@ import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 
 export const authController = {
     async login(req: Request, res: Response) {
-        const tokens = await authService.auth(req.body.loginOrEmail, req.body.password)
+
+        const ip = req.ip ? req.ip : ''
+        const userAgent = req.headers['user-agent'] ? req.headers['user-agent']: ''
+        const tokens = await authService.auth(req.body.loginOrEmail, req.body.password, ip, userAgent)
         if (!tokens) {
             res.sendStatus(401);
             return
         }
         res
             .cookie('refreshToken', tokens.newRefreshToken, {httpOnly: true, secure: true})
-            .header('Authorization', tokens.accessToken)
             .status(200)
             .send({accessToken: tokens.accessToken});
 
@@ -22,16 +24,16 @@ export const authController = {
 
     async refreshToken(req: Request, res: Response) {
         const tokens = await authService.refreshTokenService(req.payload);
+        if(tokens)
 
         res
             .cookie('refreshToken', tokens.refreshToken, {httpOnly: true, secure: true})
-            .header('Authorization', tokens.accessToken)
             .status(200)
             .send({accessToken: tokens.accessToken});
     },
 
     async logOut(req: Request, res: Response) {
-        const token = await authService.logOutService(req.payload)
+        await authService.logOutService(req.payload)
         res.clearCookie('refreshToken').sendStatus(204)
     },
 
@@ -75,5 +77,5 @@ export const authController = {
                 errorsMessages: [{message: 'User not found', field: 'email'}],
             });
         }
-    }
+    },
 }

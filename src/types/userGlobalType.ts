@@ -6,5 +6,5 @@ export type UserGlobalType = {
 export type PayloadType = {
     userId: string,
     userLogin: string,
-    tokenId: string
+    deviceId: string
 }

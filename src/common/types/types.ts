@@ -36,5 +36,6 @@ export type ParsedQueryParamsType = {
 export type PayloadType ={
     userId: string;
     userLogin: string;
-    tokenId: string
+    deviceId: string
+    iat?: string | undefined
 }
