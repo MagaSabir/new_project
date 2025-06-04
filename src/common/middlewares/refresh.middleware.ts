@@ -1,6 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {jwtService} from "../adapters/jwt.service";
 import {authRepository} from "../../modules/auth/repositories/auth.repository";
+import {a} from "@faker-js/faker/dist/airline-BUL6NtOJ";
 
 
 export const refreshMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -11,7 +12,7 @@ export const refreshMiddleware = async (req: Request, res: Response, next: NextF
     }
 
     try {
-        const payload = await jwtService.verifyToken(token)
+        const payload: any = await jwtService.verifyToken(token)
 
         const session = await authRepository.findSession(payload.userId, payload.deviceId)
 

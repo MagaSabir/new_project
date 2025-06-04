@@ -6,9 +6,9 @@ export const devicesQueryRepository = {
             .find({expiration: {$gt: Math.floor(Date.now() / 1000)}}).toArray()
         return result.map(el => {
             return {
-                ip: el.ip,
+                ip: el.ip === "::1" ? '127.0.0.1' : el.ip,
                 title: el.userAgent,
-                lastActiveDate: el.lastActiveDate,
+                lastActiveDate: new Date(el.lastActiveDate * 1000).toISOString(),
                 deviceId: el.deviceId
             }
         })

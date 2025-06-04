@@ -16,7 +16,7 @@ export const authRepository = {
         return   await client.db('blogPlatform').collection('sessions').findOne({userId, deviceId})
     },
 
-    async updateSession(userId:string, deviceId: string, iat: string, exp: string) {
+    async updateSession(userId:string, deviceId: string, iat: number | undefined, exp: number | undefined) {
         await client.db('blogPlatform').collection('sessions').updateOne(
             { userId, deviceId},
             {$set:{ lastActiveDate: iat, expiration: exp}})
@@ -24,6 +24,10 @@ export const authRepository = {
 
     async deleteSessions(userId: string, deviceId: string) {
         await client.db('blogPlatform').collection('sessions').deleteOne({ userId, deviceId})
+    },
+
+    async addRateLimit (rateLimitData: any) {
+        await client.db('blogPlatform').collection('ratelimit').insertOne(rateLimitData)
     }
 }
 

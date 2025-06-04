@@ -8,15 +8,16 @@ import {
 import {accessTokenMiddleware} from "../../common/middlewares/auth.middleware";
 import {inputValidationErrors} from "../../common/adapters/errorMessage";
 import {refreshMiddleware} from "../../common/middlewares/refresh.middleware";
+import {rateLimitMiddleware} from "../../common/middlewares/rateLimit.middleware";
 
 export const authRoutes = Router()
 
 authRoutes
-    .post('/login', loginOrEmail, passwordValidation, inputValidationErrors, authController.login)
+    .post('/login', rateLimitMiddleware,loginOrEmail, passwordValidation, inputValidationErrors, authController.login)
     .get('/me', accessTokenMiddleware, inputValidationErrors, authController.getUser)
-    .post('/registration', passwordValidation, inputValidationErrors, authController.userRegistration)
-    .post('/registration-confirmation', authController.userConfirmation)
-    .post('/registration-email-resending', emailValidation, inputValidationErrors, authController.resendConfirm)
+    .post('/registration', rateLimitMiddleware, passwordValidation, inputValidationErrors, authController.userRegistration)
+    .post('/registration-confirmation', rateLimitMiddleware, authController.userConfirmation)
+    .post('/registration-email-resending', rateLimitMiddleware, emailValidation, inputValidationErrors, authController.resendConfirm)
     .post('/refresh-token', refreshMiddleware, authController.refreshToken)
     .post('/logout', refreshMiddleware, authController.logOut)
 

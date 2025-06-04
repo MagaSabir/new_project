@@ -11,6 +11,7 @@ import cookieParser from 'cookie-parser'
 import {devicesRoutes} from "./modules/security/devices.routes";
 
 export const app = express();
+app.set('trust proxy', true)
 setupSwagger(app)
 app.use(express.json());
 app.use(cookieParser())
@@ -27,6 +28,8 @@ app.delete("/testing/all-data", async (req: Request, res: Response) => {
   await db.collection('posts').deleteMany()
   await db.collection('users').deleteMany()
   await db.collection('comments').deleteMany()
+  await db.collection('users').deleteMany()
+  await db.collection('sessions').deleteMany()
   res.sendStatus(204);
 });
 
