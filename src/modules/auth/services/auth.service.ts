@@ -82,7 +82,7 @@ export const authService = {
         await usersRepository.createUser(newUser)
 
         try {
-            await nodemailerService.sendEmail(
+             nodemailerService.sendEmail(
                 newUser.email,
                 newUser.confirmationCode
             )
@@ -119,7 +119,7 @@ export const authService = {
 
         const result: boolean = await usersRepository.updateResendConfirmation(email, newCode, newExpiration)
         if (result) {
-            await nodemailerService.sendEmail(email, newCode)
+             nodemailerService.sendEmail(email, newCode)
             return {
                 status: ResultStatus.NotContent
             }

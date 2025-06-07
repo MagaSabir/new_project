@@ -4,17 +4,19 @@ import {devicesRepository} from "./devices.repository";
 
 export const devicesController = {
     async getDevicesWithActiveSessions (req: Request, res: Response) {
-            const result  = await devicesQueryRepository.findDevices()
+        const payload = req.payload
+            const result  = await devicesQueryRepository.findDevices(payload.userId, payload.deviceId)
             res.status(200).send(result)
     },
 
     async deleteOtherSessions (req: Request, res: Response) {
+
         const payload = req.payload
-        await devicesRepository.deleteOtherSessions(payload.deviceId)
+        await devicesRepository.deleteOtherSessions(payload.deviceId, payload.userId)
         res.sendStatus(204)
     },
 
-    async deleteSessionsWithId (req: Request, res: Response) {
+    async deleteSessionWithId (req: Request, res: Response) {
         const payload = req.payload
         const deviceIdToDelete = req.params.id
         const session = await devicesRepository.findSessionById(deviceIdToDelete)
@@ -23,12 +25,12 @@ export const devicesController = {
             res.sendStatus(404)
             return
         }
-        console.log(session.userId)
-        console.log(payload.userId)
+
         if(payload.userId !== session.userId) {
             res.sendStatus(403)
             return
         }
+
         const result = await devicesRepository.deleteSessionWithDeviceId( deviceIdToDelete)
         res.sendStatus(204)
     }

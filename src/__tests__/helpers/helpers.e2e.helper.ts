@@ -17,7 +17,7 @@ export const creator = {
 
     createUser: async (overrides = {}) => {
           const user = {
-            login: "user123",
+            login: "user1",
             password: "string",
             email: "test@test.com",
             ...overrides

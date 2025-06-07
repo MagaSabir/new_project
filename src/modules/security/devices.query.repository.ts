@@ -1,9 +1,12 @@
 import {client} from "../../db/mongoDb";
 
 export const devicesQueryRepository = {
-    async findDevices () {
+    async findDevices (userId: string, deviceId: string) {
         const result =  await client.db('blogPlatform').collection('sessions')
-            .find({expiration: {$gt: Math.floor(Date.now() / 1000)}}).toArray()
+            .find({
+                userId,
+
+                expiration: {$gt: Math.floor(Date.now() / 1000)}}).toArray()
         return result.map(el => {
             return {
                 ip: el.ip === "::1" ? '127.0.0.1' : el.ip,

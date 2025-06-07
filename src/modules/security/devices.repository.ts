@@ -1,9 +1,11 @@
 import {client} from "../../db/mongoDb";
 
 export const devicesRepository = {
-    async deleteOtherSessions (deviceId: string)  {
+    async deleteOtherSessions (deviceId: string, userId: string)  {
         const result = await client.db('blogPlatform').collection('sessions').deleteMany({
+            userId: userId,
             deviceId: {$ne: deviceId}
+            //$ne (не равно)
         })
         return result.deletedCount === 1
     },
@@ -19,11 +21,13 @@ export const devicesRepository = {
         return result.deletedCount === 1
     },
 
-    async addRequest(data) {
+    async addRequest(data: object) {
         await client.db('blogPlatform').collection('rateLimit').insertOne(data)
     },
+    //$gte (больше или равно)
+    //$gt (больше чем)
 
-    async getRequest (ip,url, date) {
+    async getRequest (ip: string,url: string, date: number) {
         const result = await client.db('blogPlatform').collection('rateLimit').find({
             ip,
             url,

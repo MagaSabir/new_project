@@ -7,4 +7,4 @@ export const devicesRoutes = Router()
 devicesRoutes
     .get('/devices', refreshMiddleware,devicesController.getDevicesWithActiveSessions)
     .delete('/devices', refreshMiddleware, devicesController.deleteOtherSessions)
-    .delete('/devices/:id', refreshMiddleware, devicesController.deleteSessionsWithId)
+    .delete('/devices/:id', refreshMiddleware, devicesController.deleteSessionWithId)
