@@ -149,7 +149,7 @@ describe('/blogs tests', () => {
     })
 
     
-    //Тесты  с некорректными  значениями
+    //Тесты с некорректными значениями
     describe('POST /blogs - with invalid input', () => {
         it('should return 400 with errors messages if input has incorrect values', async () => {
             const res = await request(app)

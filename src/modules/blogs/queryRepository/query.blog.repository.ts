@@ -6,7 +6,7 @@ import {BlogViewModel} from "../../../models/BlogViewModel";
 import {PostType} from "../../../common/types/postTypse/postType";
 import {PostViewModel} from "../../../models/post.view.model";
 
-export const queryBlogRepository = {
+ class QueryBlogsRepository {
     async getBlogs(params: BlogQuery) {
         const { pageNumber, pageSize, sortDirection, sortBy, searchNameTerm} = params
         const filter = searchNameTerm ? {name: {$regex: searchNameTerm, $options:'i'}} : {}
@@ -31,7 +31,7 @@ export const queryBlogRepository = {
             totalCount:totalCountBlogs,
             items: blogs
         }
-    },
+    }
 
     async getPosts(pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: string, id: string) {
         const totalCountPosts: number = await postCollection.countDocuments({blogId: id})
@@ -61,7 +61,7 @@ export const queryBlogRepository = {
             totalCount:totalCountPosts,
             items: newPosts
         }
-    },
+    }
 
     async getBlog(id: string): Promise<BlogViewModel | null>{
         if(!ObjectId.isValid(id)) return null
@@ -76,5 +76,7 @@ export const queryBlogRepository = {
                 isMembership: dbBlog.isMembership
             }
         } return null
-    },
+    }
 }
+
+export const queryBlogRepository = new QueryBlogsRepository()
