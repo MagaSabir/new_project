@@ -101,6 +101,38 @@ export const authService = {
         return await usersRepository.updateConfirmation(user._id)
     },
 
+    async recovery (email: string) {
+        const user = await usersRepository.findUserByEmail(email)
+        console.log(user)
+        if(!user) return null
+
+        const newCode = randomUUID()
+        const newExperation = add(new Date(), {
+            hours: 1,
+            minutes: 30,
+        }).toISOString()
+
+        const result = await usersRepository.updateResendConfirmation(email, newCode, newExperation)
+        if (result) {
+            nodemailerService.sendEmail(email, newCode)
+        }
+    },
+
+
+    async newLogin(code: string, password: string) {
+        try {
+            const user: WithId<CreatedUserType> | null = await usersRepository.findUserByConfirmationCode(code)
+            if (!user) return false
+            if (user.isConfirmed) return false
+            if (user.confirmationCodeExpiration! < new Date()) return false
+            const passwordHash: string = await bcrypt.hash(password, 10)
+
+            return await usersRepository.updateConfirmation(user._id)
+        } catch (e) {
+            console.error(e)
+        }
+    },
+
     async resendConfirmCodeService(email: string) {
         const user: WithId<CreatedUserType > | null = await usersRepository.findUserByEmail(email)
         if (!user) return {status: ResultStatus.BadRequest}

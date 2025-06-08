@@ -4,7 +4,7 @@ import {BlogViewModel} from "../../models/BlogViewModel";
 import {PostType} from "../types/postTypse/postType";
 import {PostViewModel} from "../../models/post.view.model";
 
-export const mapper = (el: WithId<BlogType>): BlogViewModel => {
+export const mapBlogToViewModel = (el: WithId<BlogType>): BlogViewModel => {
     return {
         id: el._id.toString(),
         name: el.name,
@@ -12,11 +12,10 @@ export const mapper = (el: WithId<BlogType>): BlogViewModel => {
         websiteUrl: el.websiteUrl,
         createdAt: el.createdAt,
         isMembership: el.isMembership
-
     }
 }
 
-export const postMapper = (el: WithId<PostType>): PostViewModel => {
+export const mapPostToViewModel = (el: WithId<PostType>): PostViewModel => {
     return {
         id: el._id.toString(),
         title: el.title,

@@ -20,7 +20,7 @@ class BlogService {
 
     }
 
-    async updateBlog(reqBody: BlogType, id: string): Promise<boolean> {
+    async updateBlog(reqBody: BlogType, id: string) {
         return await blogsRepository.updateBlog(reqBody, id)
     }
 

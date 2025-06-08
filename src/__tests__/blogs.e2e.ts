@@ -237,7 +237,7 @@ describe('/blogs tests', () => {
     describe('GET /blogs - with not exists id', () => {
         it('should return 404 if specified blog is not exists', async () => {
             await request(app)
-                .get(`/blogs/${100}`)
+                .get(`/blogs/${expect.any(String)}`)
                 .expect(STATUS_CODE.NOT_FOUND_404)
         });
     })

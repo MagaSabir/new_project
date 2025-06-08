@@ -1,81 +1,61 @@
 import {ObjectId, WithId} from "mongodb";
 import {BlogQuery, BlogType} from "../../../common/types/blogTypes/blogType";
-import {blogCollection, client, postCollection} from "../../../db/mongoDb";
-import {mapper} from "../../../common/adapters/mapper";
+import {blogCollection, postCollection} from "../../../db/mongoDb";
+import {mapBlogToViewModel, mapPostToViewModel} from "../../../common/adapters/mapper";
 import {BlogViewModel} from "../../../models/BlogViewModel";
 import {PostType} from "../../../common/types/postTypse/postType";
 import {PostViewModel} from "../../../models/post.view.model";
+import {PaginationType} from "../../../common/types/types";
 
- class QueryBlogsRepository {
-    async getBlogs(params: BlogQuery) {
-        const { pageNumber, pageSize, sortDirection, sortBy, searchNameTerm} = params
-        const filter = searchNameTerm ? {name: {$regex: searchNameTerm, $options:'i'}} : {}
+class QueryBlogsRepository {
+    async getBlogs(params: BlogQuery): Promise<PaginationType<BlogViewModel>> {
+        const {pageNumber, pageSize, sortDirection, sortBy, searchNameTerm} = params
+        const filter = searchNameTerm ? {name: {$regex: searchNameTerm, $options: 'i'}} : {}
 
-        const totalCountBlogs: number = await blogCollection.countDocuments(filter)
+        const totalCount: number = await blogCollection.countDocuments(filter)
 
-        const blog: WithId<BlogType>[] =  await client.db('blogPlatform').collection<BlogType>('blogs')
-            .find(filter)
+        const blogs: WithId<BlogType>[] = await blogCollection.find(filter)
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
             .sort({[sortBy]: sortDirection})
             .toArray()
 
-        const blogs: BlogViewModel[] = blog.map((el: WithId<BlogType>): BlogViewModel => {
-            return mapper(el)
-        })
+        const mappedBlog: BlogViewModel[] = blogs.map(mapBlogToViewModel)
 
         return {
-            pagesCount: Math.ceil(totalCountBlogs / pageSize),
+            pagesCount: Math.ceil(totalCount / pageSize),
             page: pageNumber,
-            pageSize: pageSize,
-            totalCount:totalCountBlogs,
-            items: blogs
+            pageSize,
+            totalCount,
+            items: mappedBlog
         }
     }
 
-    async getPosts(pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: string, id: string) {
-        const totalCountPosts: number = await postCollection.countDocuments({blogId: id})
-        if(!totalCountPosts) return false
+    async getPosts(pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: string, id: string): Promise<PaginationType<PostViewModel> | null> {
+        const totalCount: number = await postCollection.countDocuments({blogId: id})
+        if (!totalCount) return null
         const posts: WithId<PostType>[] = await postCollection.find({blogId: id})
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
             .sort({[sortBy]: sortDirection})
             .toArray()
 
+        const mappedPost: PostViewModel[] = posts.map(mapPostToViewModel)
 
-        const newPosts: PostViewModel[] = posts.map((el:WithId<PostType>): PostViewModel => {
-            return {
-                id: el._id.toString(),
-                title: el.title,
-                shortDescription: el.shortDescription,
-                content: el.content,
-                blogId: el.blogId,
-                blogName: el.blogName,
-                createdAt: el.createdAt
-            }
-        })
         return {
-            pagesCount: Math.ceil(totalCountPosts / pageSize),
+            pagesCount: Math.ceil(totalCount / pageSize),
             page: pageNumber,
-            pageSize: pageSize,
-            totalCount:totalCountPosts,
-            items: newPosts
+            pageSize,
+            totalCount,
+            items: mappedPost
         }
     }
 
-    async getBlog(id: string): Promise<BlogViewModel | null>{
+    async getBlog(id: string): Promise<BlogViewModel | null> {
         if(!ObjectId.isValid(id)) return null
-        const dbBlog: WithId<BlogType> | null = await blogCollection.findOne({_id: new ObjectId(id)});
-        if(dbBlog) {
-            return {
-                id: dbBlog._id.toString(),
-                name: dbBlog.name,
-                description: dbBlog.description,
-                websiteUrl: dbBlog.websiteUrl,
-                createdAt: dbBlog.createdAt,
-                isMembership: dbBlog.isMembership
-            }
-        } return null
+        const blog: WithId<BlogType> | null = await blogCollection.findOne({_id: new ObjectId(id)});
+        if (blog) return mapBlogToViewModel(blog)
+        return null
     }
 }
 

@@ -54,6 +54,24 @@ export const authController = {
         }
     },
 
+    async recovery (req: Request, res: Response) {
+      const email = req.body.email
+        const result = await authService.recovery(email)
+        if(result === null) {
+            res.sendStatus(404)
+            return
+        }
+        res.sendStatus(204)
+        return
+    },
+
+    async newLogin(req: Request, res: Response) {
+        const recoveryCode = req.body.recoveryCode
+        const newPassword = req.body.newPassword
+        const isConfirmed =  await authService.newLogin(recoveryCode, newPassword)
+        res.sendStatus(204)
+    },
+
     async userConfirmation(req: Request, res: Response) {
         const {code} = req.body
         const user = await authService.confirmationUserService(code)

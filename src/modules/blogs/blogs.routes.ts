@@ -17,7 +17,7 @@ import {inputValidationErrors} from "../../common/adapters/errorMessage";
 export const blogRouter = Router();
 
 blogRouter
-    .get("/:id", IDisValid, blogsController.getBlog)
+    .get("/:id", blogsController.getBlog)
     .get("/", blogsController.getBlogs)
     .post("/", basicAuthMiddleware, nameValidator, descriptionValidator, websiteUrlValidator, inputValidationErrors,
         blogsController.createBlog
