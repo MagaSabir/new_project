@@ -5,7 +5,7 @@ import {ResultStatus} from "../../../common/types/resultStatuse";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 
 
-export const authController = {
+ class AuthController  {
     async login(req: Request, res: Response) {
 
         const ip = req.ip ? req.ip : ''
@@ -20,7 +20,7 @@ export const authController = {
             .status(200)
             .send({accessToken: tokens.accessToken});
 
-    },
+    }
 
     async refreshToken(req: Request, res: Response) {
         const tokens = await authService.refreshTokenService(req.payload);
@@ -30,18 +30,18 @@ export const authController = {
             .cookie('refreshToken', tokens.refreshToken, {httpOnly: true, secure: true})
             .status(200)
             .send({accessToken: tokens.accessToken});
-    },
+    }
 
     async logOut(req: Request, res: Response) {
         await authService.logOutService(req.payload)
         res.clearCookie('refreshToken').sendStatus(204)
-    },
+    }
 
 
-    getUser: async (req: Request, res: Response): Promise<void> => {
+    async getUser  (req: Request, res: Response): Promise<void>  {
         const user = await queryUsersRepository.getUseById(req.user.id)
         res.status(200).send(user)
-    },
+    }
 
     async userRegistration(req: Request, res: Response) {
         const {login, email, password} = req.body
@@ -52,25 +52,8 @@ export const authController = {
         if (result.status === ResultStatus.Success) {
             res.sendStatus(STATUS_CODE.NO_CONTENT_204)
         }
-    },
+    }
 
-    async recovery (req: Request, res: Response) {
-      const email = req.body.email
-        const result = await authService.recovery(email)
-        if(result === null) {
-            res.sendStatus(404)
-            return
-        }
-        res.sendStatus(204)
-        return
-    },
-
-    async newLogin(req: Request, res: Response) {
-        const recoveryCode = req.body.recoveryCode
-        const newPassword = req.body.newPassword
-        const isConfirmed =  await authService.newLogin(recoveryCode, newPassword)
-        res.sendStatus(204)
-    },
 
     async userConfirmation(req: Request, res: Response) {
         const {code} = req.body
@@ -82,7 +65,7 @@ export const authController = {
         res.status(400).json({
             errorsMessages: [{message: 'User not found', field: 'code'}],
         });
-    },
+    }
 
     async resendConfirm(req: Request, res: Response) {
         const result = await authService.resendConfirmCodeService(req.body.email)
@@ -95,5 +78,7 @@ export const authController = {
                 errorsMessages: [{message: 'User not found', field: 'email'}],
             });
         }
-    },
+    }
 }
+
+export const authController = new AuthController()

@@ -11,7 +11,7 @@ import {jwtService} from "../../../common/adapters/jwt.service";
 import {PayloadType} from "../../../common/types/types";
 
 
-export const authService = {
+ class AuthService  {
     async auth(loginOrEmail: string, password: string, ip: string, userAgent: string) {
         const user = await authRepository.findUser(loginOrEmail)
         if (!user) return false;
@@ -33,7 +33,7 @@ export const authService = {
             expiration: payload.exp
         })
         return {accessToken, newRefreshToken};
-    },
+    }
 
     async refreshTokenService(payload: any) {
 
@@ -43,11 +43,11 @@ export const authService = {
 
         await authRepository.updateSession(payload2.userId, payload2.deviceId, payload2.iat, payload2.exp)
         return {accessToken, refreshToken: newRefreshToken};
-    },
+    }
 
     async logOutService(payload: PayloadType) {
         await authRepository.deleteSessions(payload.userId, payload.deviceId)
-    },
+    }
 
 
     async createUserService(login: string, password: string, email: string) {
@@ -90,7 +90,7 @@ export const authService = {
             console.error('error', e)
         }
         return {status: ResultStatus.Success}
-    },
+    }
 
     async confirmationUserService(code: string) {
         const user: WithId<CreatedUserType> | null = await usersRepository.findUserByConfirmationCode(code)
@@ -99,7 +99,7 @@ export const authService = {
         if (user.confirmationCodeExpiration! < new Date()) return false
 
         return await usersRepository.updateConfirmation(user._id)
-    },
+    }
 
     async recovery (email: string) {
         const user = await usersRepository.findUserByEmail(email)
@@ -116,7 +116,7 @@ export const authService = {
         if (result) {
             nodemailerService.sendEmail(email, newCode)
         }
-    },
+    }
 
 
     async newLogin(code: string, password: string) {
@@ -131,7 +131,7 @@ export const authService = {
         } catch (e) {
             console.error(e)
         }
-    },
+    }
 
     async resendConfirmCodeService(email: string) {
         const user: WithId<CreatedUserType > | null = await usersRepository.findUserByEmail(email)
@@ -159,7 +159,9 @@ export const authService = {
         } else {
             return {status: ResultStatus.NotFound}
         }
-    },
+    }
 }
+
+export const authService = new AuthService()
 
 

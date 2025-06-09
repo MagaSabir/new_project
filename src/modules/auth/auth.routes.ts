@@ -20,5 +20,5 @@ authRoutes
     .post('/registration-email-resending', rateLimitMiddleware, emailValidation, inputValidationErrors, authController.resendConfirm)
     .post('/refresh-token', refreshMiddleware, authController.refreshToken)
     .post('/logout', refreshMiddleware, authController.logOut)
-    .post('/password-recovery', authController.recovery)
-    .post('/new-password', authController.newLogin)
+    // .post('/password-recovery', authController.recovery)
+    // .post('/new-password', authController.newLogin)
