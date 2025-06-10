@@ -1,13 +1,14 @@
 import {BlogType, DataReqBodyType} from "../../../common/types/blogTypes/blogType";
 import {BlogViewModel} from "../../../models/BlogViewModel";
-import {blogsRepository} from "../repositories/blog.repository";
+import {BlogsRepository} from "../repositories/blog.repository";
 import {InsertOneResult} from "mongodb";
 import {DataReqBodyPostType, PostType} from "../../../common/types/postTypse/postType";
 import {queryBlogRepository} from "../queryRepository/query.blog.repository";
 import {postRepository} from "../../posts/repositories/post.repository";
 
 
-class BlogService {
+export class BlogsService {
+    constructor(protected blogsRepository: BlogsRepository) {}
 
     async createBlog(reqBody: DataReqBodyType): Promise<string> {
         const newBlog = {
@@ -15,17 +16,17 @@ class BlogService {
             createdAt: new Date().toISOString(),
             isMembership: false
         }
-        const result: InsertOneResult<BlogType> = await blogsRepository.createBlog(newBlog)
+        const result: InsertOneResult<BlogType> = await this.blogsRepository.createBlog(newBlog)
         return result.insertedId.toString()
 
     }
 
     async updateBlog(reqBody: BlogType, id: string) {
-        return await blogsRepository.updateBlog(reqBody, id)
+        return await this.blogsRepository.updateBlog(reqBody, id)
     }
 
     async deleteBlog(id: string): Promise<boolean> {
-        return await blogsRepository.deleteBlog(id)
+        return await this.blogsRepository.deleteBlog(id)
     }
 
     async createPostByBlogId(reqBody: DataReqBodyPostType, blogId: string): Promise<string | null> {
@@ -41,5 +42,3 @@ class BlogService {
         return result.insertedId.toString()
     }
 }
-
-export const blogService = new BlogService()

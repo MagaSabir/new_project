@@ -2,14 +2,16 @@ import {Request, Response} from "express";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 import {PaginationType, ParsedQueryParamsType} from "../../../common/types/types";
 import {BlogViewModel} from "../../../models/BlogViewModel";
-import {blogService} from "../services/blog.service";
+import {BlogsService} from "../services/blog.service";
 import {queryBlogRepository} from "../queryRepository/query.blog.repository";
 import {queryPostRepository} from "../../posts/queryRepository/query.post.repository";
 import {PostViewModel} from "../../../models/post.view.model";
 import {sortQueryFields} from "../../../common/types/sortQueryFields";
 
 
-class BlogsController {
+export class BlogsController {
+    constructor(protected blogsService: BlogsService) {}
+
     async getBlogs(req: Request, res: Response) {
         try {
             const query: ParsedQueryParamsType = sortQueryFields(req.query)
@@ -55,7 +57,7 @@ class BlogsController {
 
     async createBlog(req: Request, res: Response) {
         try {
-            const createdBlogId: string = await blogService.createBlog(req.body)
+            const createdBlogId: string = await this.blogsService.createBlog(req.body)
             const blog: BlogViewModel | null = await queryBlogRepository.getBlog(createdBlogId)
             res.status(STATUS_CODE.CREATED_201).send(blog)
         } catch (error) {
@@ -66,7 +68,7 @@ class BlogsController {
 
     async updateBlog(req: Request, res: Response) {
         try {
-            const isUpdated: boolean = await blogService.updateBlog(req.body, req.params.id)
+            const isUpdated: boolean = await this.blogsService.updateBlog(req.body, req.params.id)
             if (isUpdated) {
                 res.sendStatus(STATUS_CODE.NO_CONTENT_204)
                 return
@@ -80,7 +82,7 @@ class BlogsController {
 
     async deleteBlog(req: Request, res: Response) {
         try {
-            const isDeletedBlog: boolean = await blogService.deleteBlog(req.params.id)
+            const isDeletedBlog: boolean = await this.blogsService.deleteBlog(req.params.id)
             if (isDeletedBlog) {
                 res.sendStatus(STATUS_CODE.NO_CONTENT_204)
                 return
@@ -95,7 +97,7 @@ class BlogsController {
 
     async createPostByBlogId(req: Request, res: Response) {
         try {
-            const createdPostId: string | null = await blogService.createPostByBlogId(req.body, req.params.id)
+            const createdPostId: string | null = await this.blogsService.createPostByBlogId(req.body, req.params.id)
             if (!createdPostId) {
                 res.sendStatus(STATUS_CODE.NOT_FOUND_404)
                 return
@@ -110,5 +112,4 @@ class BlogsController {
     }
 }
 
-export const blogsController = new BlogsController()
 

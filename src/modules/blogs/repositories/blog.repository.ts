@@ -2,7 +2,7 @@ import {BlogType} from "../../../common/types/blogTypes/blogType";
 import {blogCollection} from "../../../db/mongoDb";
 import {DeleteResult, InsertOneResult, ObjectId, UpdateResult} from "mongodb";
 
- class BlogsRepository {
+ export class BlogsRepository {
     async createBlog(blog: BlogType): Promise<InsertOneResult> {
         return await blogCollection.insertOne(blog);
     }
@@ -19,6 +19,3 @@ import {DeleteResult, InsertOneResult, ObjectId, UpdateResult} from "mongodb";
         return result.deletedCount === 1
     }
 }
-
-
-export const blogsRepository = new BlogsRepository()
