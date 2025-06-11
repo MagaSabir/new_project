@@ -1,4 +1,4 @@
-import {authRepository} from "../repositories/auth.repository";
+import {AuthRepository} from "../repositories/auth.repository";
 import bcrypt from "bcrypt";
 import {nodemailerService} from "../../../common/adapters/nodemailer.service";
 import {randomUUID} from "node:crypto";
@@ -7,24 +7,35 @@ import {usersRepository} from "../../users/repositories/users.repository";
 import {ResultStatus} from "../../../common/types/resultStatuse";
 import {WithId} from "mongodb";
 import {CreatedUserType} from "../../../common/types/userType/userType";
-import {jwtService} from "../../../common/adapters/jwt.service";
-import {PayloadType} from "../../../common/types/types";
+import {PayloadType, TokensType, UserInputDTO} from "../../../common/types/types";
+import {ITokenService} from "../../../common/adapters/jwt.service";
+import {IBcrypt} from "../../../common/adapters/bcrypt.password";
+import {emailExamples} from "../../../common/adapters/html.message";
 
 
- class AuthService  {
-    async auth(loginOrEmail: string, password: string, ip: string, userAgent: string) {
-        const user = await authRepository.findUser(loginOrEmail)
-        if (!user) return false;
+export class AuthService {
 
-        const isValid: boolean = await bcrypt.compare(password, user.password)
-        if (!isValid) return false
+    constructor(protected authRepository: AuthRepository,
+                private jwtService: ITokenService,
+                private bcryptPasswordHash: IBcrypt) {
+    }
+
+    async login(loginOrEmail: string, password: string, ip: string, userAgent: string): Promise<TokensType | null> {
+        const user = await this.authRepository.findUser(loginOrEmail)
+        if (!user) return null;
+
+        const isValid: boolean = await this.bcryptPasswordHash.compare(password, user.password)
+        if (!isValid) return null
 
         const deviceId = randomUUID();
-        const accessToken: string = await jwtService.generateToken(user._id.toString(), user.login)
-        const newRefreshToken: string = await jwtService.generateRefreshToken((user._id.toString()), user.login, deviceId)
-        const payload = await  jwtService.verifyToken(newRefreshToken)
+        const [accessToken, refreshToken] = await Promise.all([
+            this.jwtService.generateAccessToken(user._id.toString(), user.login),
+            this.jwtService.generateRefreshToken(user._id.toString(), user.login, deviceId)
+        ])
 
-        await authRepository.addSession({
+        const payload = await this.jwtService.verifyToken(refreshToken)
+
+        await this.authRepository.addSession({
             userId: user._id.toString(),
             deviceId,
             userAgent,
@@ -32,21 +43,21 @@ import {PayloadType} from "../../../common/types/types";
             lastActiveDate: payload.iat,
             expiration: payload.exp
         })
-        return {accessToken, newRefreshToken};
+        return {accessToken, refreshToken};
     }
 
     async refreshTokenService(payload: any) {
 
-        const accessToken: string = await jwtService.generateToken(payload.userId, payload.userLogin);
-        const newRefreshToken: string = await jwtService.generateRefreshToken(payload.userId, payload.userLogin, payload.deviceId);
-        const payload2 = await  jwtService.verifyToken(newRefreshToken)
+        const accessToken: string = await this.jwtService.generateAccessToken(payload.userId, payload.userLogin);
+        const newRefreshToken: string = await this.jwtService.generateRefreshToken(payload.userId, payload.userLogin, payload.deviceId);
+        const payload2 = await this.jwtService.verifyToken(newRefreshToken)
 
-        await authRepository.updateSession(payload2.userId, payload2.deviceId, payload2.iat, payload2.exp)
+        await this.authRepository.updateSession(payload2.userId, payload2.deviceId, payload2.iat, payload2.exp)
         return {accessToken, refreshToken: newRefreshToken};
     }
 
     async logOutService(payload: PayloadType) {
-        await authRepository.deleteSessions(payload.userId, payload.deviceId)
+        await this.authRepository.deleteSessions(payload.userId, payload.deviceId)
     }
 
 
@@ -54,7 +65,7 @@ import {PayloadType} from "../../../common/types/types";
         const user = await usersRepository.findLoginOrEmail(email, login)
         if (user) {
             const isEmail: boolean = user.email === email
-            const isLogin : boolean= user.login === login
+            const isLogin: boolean = user.login === login
 
             const errors = []
 
@@ -82,9 +93,10 @@ import {PayloadType} from "../../../common/types/types";
         await usersRepository.createUser(newUser)
 
         try {
-             nodemailerService.sendEmail(
+            nodemailerService.sendEmail(
                 newUser.email,
-                newUser.confirmationCode
+                newUser.confirmationCode,
+                emailExamples.registrationEmail
             )
         } catch (e) {
             console.error('error', e)
@@ -101,40 +113,43 @@ import {PayloadType} from "../../../common/types/types";
         return await usersRepository.updateConfirmation(user._id)
     }
 
-    async recovery (email: string) {
+    async passwordRecovery(email: string) {
         const user = await usersRepository.findUserByEmail(email)
         console.log(user)
-        if(!user) return null
 
-        const newCode = randomUUID()
-        const newExperation = add(new Date(), {
+        const code = randomUUID()
+        const codeExpiration = add(new Date(), {
             hours: 1,
             minutes: 30,
         }).toISOString()
 
-        const result = await usersRepository.updateResendConfirmation(email, newCode, newExperation)
+        const result = await usersRepository.updateResendConfirmation(email, code, codeExpiration)
         if (result) {
-            nodemailerService.sendEmail(email, newCode)
+            nodemailerService.sendEmail(
+                email, code, emailExamples.passwordRecoveryEmail
+            )
         }
+        return result
     }
 
 
-    async newLogin(code: string, password: string) {
+    async newLogin(password: string, code: string) {
         try {
             const user: WithId<CreatedUserType> | null = await usersRepository.findUserByConfirmationCode(code)
-            if (!user) return false
-            if (user.isConfirmed) return false
-            if (user.confirmationCodeExpiration! < new Date()) return false
+            if (!user) return null
+            if (user.isConfirmed) return null
+            if (user.confirmationCodeExpiration! < new Date()) return null
             const passwordHash: string = await bcrypt.hash(password, 10)
 
-            return await usersRepository.updateConfirmation(user._id)
+             const result = await usersRepository.updatePassword(user._id, passwordHash)
+            if(!result) return null
         } catch (e) {
             console.error(e)
         }
     }
 
     async resendConfirmCodeService(email: string) {
-        const user: WithId<CreatedUserType > | null = await usersRepository.findUserByEmail(email)
+        const user: WithId<CreatedUserType> | null = await usersRepository.findUserByEmail(email)
         if (!user) return {status: ResultStatus.BadRequest}
 
         if (user.isConfirmed) {
@@ -151,7 +166,7 @@ import {PayloadType} from "../../../common/types/types";
 
         const result: boolean = await usersRepository.updateResendConfirmation(email, newCode, newExpiration)
         if (result) {
-             nodemailerService.sendEmail(email, newCode)
+            nodemailerService.sendEmail(email, newCode,emailExamples.registrationEmail)
             return {
                 status: ResultStatus.NotContent
             }
@@ -162,6 +177,5 @@ import {PayloadType} from "../../../common/types/types";
     }
 }
 
-export const authService = new AuthService()
 
 

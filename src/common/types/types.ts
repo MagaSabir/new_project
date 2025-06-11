@@ -39,3 +39,15 @@ export type PayloadType ={
     deviceId: string
     iat?: string | undefined
 }
+
+export type UserInputDTO = {
+    loginOrEmail: string,
+    password: string,
+    ip: string,
+    userAgent: string
+}
+
+export type TokensType = {
+    accessToken: string,
+    refreshToken: string
+}

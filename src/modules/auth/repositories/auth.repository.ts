@@ -1,10 +1,10 @@
 import {client} from "../../../db/mongoDb";
 import {ObjectId} from "mongodb";
 
- class AuthRepository  {
-    async findUser(body: any) {
+ export class AuthRepository  {
+    async findUser(loginOrEmail: string) {
         return  await client.db('blogPlatform').collection('users')
-            .findOne({$or: [{login: body}, {email: body}]})
+            .findOne({$or: [{login: loginOrEmail}, {email: loginOrEmail}]})
     }
 
     async addSession(session: PyloadTypeDb) {
@@ -27,7 +27,7 @@ import {ObjectId} from "mongodb";
     }
 }
 
-export const authRepository = new AuthRepository()
+
 
 export type PyloadTypeDb = {
     userId: ObjectId | string,

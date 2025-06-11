@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer'
 
 export const nodemailerService = {
 
-async sendEmail (email:string, code: string) {
+async sendEmail (email:string, code: string, template: (code: string) => string) {
     const transporter = nodemailer.createTransport({
             host: process.env.HOST,
             port: 465,
@@ -18,10 +18,9 @@ async sendEmail (email:string, code: string) {
             from: `"My App" ${process.env.EMAIL_USER}`,
             to: email,
             subject: 'Email Confirmation',
-            html: ` <h1>Thanks for your registration</h1>
-               <p>To finish registration please follow the link below:<br>
-                  <a href='https://some-site.com/confirm-email?code=${code}'>complete registration</a>
-              </p>`
+            html: template(code)
         });
-    }
+    },
+
+
 }

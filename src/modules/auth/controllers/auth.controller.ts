@@ -1,51 +1,54 @@
-import {authService} from "../services/auth.service";
+import {AuthService} from "../services/auth.service";
 import {Request, Response} from "express";
 import {queryUsersRepository} from "../../users/queryRepository/query.users.repository";
 import {ResultStatus} from "../../../common/types/resultStatuse";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
+import {TokensType} from "../../../common/types/types";
 
 
- class AuthController  {
+export class AuthController {
+
+    constructor(protected authService: AuthService) {}
+
     async login(req: Request, res: Response) {
+        const ip: string = req.ip ? req.ip : ''
+        const userAgent: string = req.headers['user-agent'] ? req.headers['user-agent'] : ''
 
-        const ip = req.ip ? req.ip : ''
-        const userAgent = req.headers['user-agent'] ? req.headers['user-agent']: ''
-        const tokens = await authService.auth(req.body.loginOrEmail, req.body.password, ip, userAgent)
+        const tokens: TokensType | null = await this.authService.login(req.body.loginOrEmail, req.body.password, ip, userAgent)
         if (!tokens) {
             res.sendStatus(401);
             return
         }
         res
-            .cookie('refreshToken', tokens.newRefreshToken, {httpOnly: true, secure: true})
+            .cookie('refreshToken', tokens.refreshToken, {httpOnly: true, secure: true})
             .status(200)
             .send({accessToken: tokens.accessToken});
 
     }
 
     async refreshToken(req: Request, res: Response) {
-        const tokens = await authService.refreshTokenService(req.payload);
-        if(tokens)
-
-        res
-            .cookie('refreshToken', tokens.refreshToken, {httpOnly: true, secure: true})
-            .status(200)
-            .send({accessToken: tokens.accessToken});
+        const tokens: TokensType = await this.authService.refreshTokenService(req.payload);
+        if (tokens)
+            res
+                .cookie('refreshToken', tokens.refreshToken, {httpOnly: true, secure: true})
+                .status(200)
+                .send({accessToken: tokens.accessToken});
     }
 
     async logOut(req: Request, res: Response) {
-        await authService.logOutService(req.payload)
+        await this.authService.logOutService(req.payload)
         res.clearCookie('refreshToken').sendStatus(204)
     }
 
 
-    async getUser  (req: Request, res: Response): Promise<void>  {
+    async getUser(req: Request, res: Response): Promise<void> {
         const user = await queryUsersRepository.getUseById(req.user.id)
         res.status(200).send(user)
     }
 
     async userRegistration(req: Request, res: Response) {
         const {login, email, password} = req.body
-        const result = await authService.createUserService(login, password, email)
+        const result = await this.authService.createUserService(login, password, email)
         if (result.status === ResultStatus.BadRequest) {
             res.status(STATUS_CODE.BAD_REQUEST_400).json({errorsMessages: result.errorsMessages})
         }
@@ -57,7 +60,7 @@ import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 
     async userConfirmation(req: Request, res: Response) {
         const {code} = req.body
-        const user = await authService.confirmationUserService(code)
+        const user = await this.authService.confirmationUserService(code)
         if (user) {
             res.sendStatus(204)
             return
@@ -68,7 +71,7 @@ import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
     }
 
     async resendConfirm(req: Request, res: Response) {
-        const result = await authService.resendConfirmCodeService(req.body.email)
+        const result = await this.authService.resendConfirmCodeService(req.body.email)
         if (result.status === ResultStatus.NotContent) {
             res.sendStatus(204)
             return
@@ -79,6 +82,26 @@ import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
             });
         }
     }
-}
 
-export const authController = new AuthController()
+    async passwordRecovery (req: Request, res: Response) {
+        await this.authService.passwordRecovery(req.body.email)
+            res.sendStatus(204)
+            return
+
+    }
+
+    async newPassword (req: Request, res: Response) {
+        const recoveryCode = req.body.recoveryCode
+        const password = req.body.newPassword
+        const result = await this.authService.newLogin(password, recoveryCode)
+
+        if (result === null) {
+            res.status(400).json({
+                errorsMessages: [{message: 'recoveryCode', field: 'recoveryCode'}],
+            });
+        }
+
+        res.sendStatus(204)
+
+    }
+}

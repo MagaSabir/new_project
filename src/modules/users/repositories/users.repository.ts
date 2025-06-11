@@ -27,7 +27,6 @@ export const usersRepository = {
     async updateConfirmation (_id: ObjectId) {
         const result = await usersCollections.updateOne({_id}, {
             $set: { isConfirmed: true , createdAt: new Date().toISOString()},
-            $unset: { confirmationCode: "", confirmationCodeExpiration: "" },
         })
         return result.modifiedCount === 1
     },
@@ -37,6 +36,14 @@ export const usersRepository = {
             $set: {confirmationCode: code, confirmationCodeExpiration: expiration}
         })
         return result.modifiedCount === 1
-    }
+    },
+
+    async updatePassword (_id: ObjectId, password: string) {
+        console.log(password)
+        const result = await usersCollections.updateOne({_id}, {
+            $set: { isConfirmed: true , createdAt: new Date().toISOString(), password: password},
+        })
+        return result.modifiedCount === 1
+    },
 
 }
