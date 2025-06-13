@@ -3,19 +3,21 @@ import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 import {PaginationType, ParsedQueryParamsType} from "../../../common/types/types";
 import {BlogViewModel} from "../../../models/BlogViewModel";
 import {BlogsService} from "../services/blog.service";
-import {queryBlogRepository} from "../queryRepository/query.blog.repository";
+import { QueryBlogsRepository} from "../queryRepository/query.blog.repository";
 import {queryPostRepository} from "../../posts/queryRepository/query.post.repository";
 import {PostViewModel} from "../../../models/post.view.model";
 import {sortQueryFields} from "../../../common/types/sortQueryFields";
+import {injectable} from "inversify";
 
-
+@injectable()
 export class BlogsController {
-    constructor(protected blogsService: BlogsService) {}
+    constructor(protected blogsService: BlogsService,
+                protected queryBlogRepository: QueryBlogsRepository) {}
 
     async getBlogs(req: Request, res: Response) {
         try {
             const query: ParsedQueryParamsType = sortQueryFields(req.query)
-            const items: PaginationType<BlogViewModel> = await queryBlogRepository.getBlogs(query)
+            const items: PaginationType<BlogViewModel> = await this.queryBlogRepository.getBlogs(query)
             res.status(STATUS_CODE.OK_200).send(items)
         } catch (error) {
             console.error('Get Blogs error:', error)
@@ -28,7 +30,7 @@ export class BlogsController {
         try {
             const blogId: string = req.params.id
             const {pageNumber, pageSize, sortDirection, sortBy} = sortQueryFields(req.query)
-            const items: PaginationType<PostViewModel> | null = await queryBlogRepository.getPosts(pageNumber, pageSize, sortDirection, sortBy, blogId)
+            const items: PaginationType<PostViewModel> | null = await this.queryBlogRepository.getPosts(pageNumber, pageSize, sortDirection, sortBy, blogId)
             if (items) {
                 res.status(STATUS_CODE.OK_200).send(items)
                 return
@@ -42,7 +44,7 @@ export class BlogsController {
 
     async getBlog(req: Request, res: Response) {
         try {
-            const blog: BlogViewModel | null = await queryBlogRepository.getBlog(req.params.id)
+            const blog: BlogViewModel | null = await this.queryBlogRepository.getBlog(req.params.id)
             if (!blog) {
                 res.sendStatus(STATUS_CODE.NOT_FOUND_404)
                 return
@@ -58,7 +60,7 @@ export class BlogsController {
     async createBlog(req: Request, res: Response) {
         try {
             const createdBlogId: string = await this.blogsService.createBlog(req.body)
-            const blog: BlogViewModel | null = await queryBlogRepository.getBlog(createdBlogId)
+            const blog: BlogViewModel | null = await this.queryBlogRepository.getBlog(createdBlogId)
             res.status(STATUS_CODE.CREATED_201).send(blog)
         } catch (error) {
             console.error('Create Blog error:', error)

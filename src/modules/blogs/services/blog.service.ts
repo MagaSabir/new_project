@@ -3,12 +3,14 @@ import {BlogViewModel} from "../../../models/BlogViewModel";
 import {BlogsRepository} from "../repositories/blog.repository";
 import {InsertOneResult} from "mongodb";
 import {DataReqBodyPostType, PostType} from "../../../common/types/postTypse/postType";
-import {queryBlogRepository} from "../queryRepository/query.blog.repository";
 import {postRepository} from "../../posts/repositories/post.repository";
+import {injectable} from "inversify";
+import {QueryBlogsRepository} from "../queryRepository/query.blog.repository";
 
-
+@injectable()
 export class BlogsService {
-    constructor(protected blogsRepository: BlogsRepository) {}
+    constructor(protected blogsRepository: BlogsRepository,
+                protected queryBlogRepository: QueryBlogsRepository) {}
 
     async createBlog(reqBody: DataReqBodyType): Promise<string> {
         const newBlog = {
@@ -30,7 +32,7 @@ export class BlogsService {
     }
 
     async createPostByBlogId(reqBody: DataReqBodyPostType, blogId: string): Promise<string | null> {
-        const blog: BlogViewModel | null = await queryBlogRepository.getBlog(blogId)
+        const blog: BlogViewModel | null = await this.queryBlogRepository.getBlog(blogId)
         if (!blog) return null
         const newPost = {
             ...reqBody,

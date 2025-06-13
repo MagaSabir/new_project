@@ -8,32 +8,31 @@ import {ResultStatus} from "../../../common/types/resultStatuse";
 import {WithId} from "mongodb";
 import {CreatedUserType} from "../../../common/types/userType/userType";
 import {PayloadType, TokensType, UserInputDTO} from "../../../common/types/types";
-import {ITokenService} from "../../../common/adapters/jwt.service";
-import {IBcrypt} from "../../../common/adapters/bcrypt.password";
+
 import {emailExamples} from "../../../common/adapters/html.message";
+import {BcryptPasswordHash} from "../../../common/adapters/bcrypt.password";
+import {jwtService} from "../../../common/adapters/jwt.service";
+import {injectable} from "inversify";
 
-
+@injectable()
 export class AuthService {
 
-    constructor(protected authRepository: AuthRepository,
-                private jwtService: ITokenService,
-                private bcryptPasswordHash: IBcrypt) {
-    }
+    constructor(protected authRepository: AuthRepository){}
 
     async login(loginOrEmail: string, password: string, ip: string, userAgent: string): Promise<TokensType | null> {
         const user = await this.authRepository.findUser(loginOrEmail)
         if (!user) return null;
 
-        const isValid: boolean = await this.bcryptPasswordHash.compare(password, user.password)
+        const isValid: boolean = await BcryptPasswordHash.compare(password, user.password)
         if (!isValid) return null
 
         const deviceId = randomUUID();
         const [accessToken, refreshToken] = await Promise.all([
-            this.jwtService.generateAccessToken(user._id.toString(), user.login),
-            this.jwtService.generateRefreshToken(user._id.toString(), user.login, deviceId)
+            jwtService.generateAccessToken(user._id.toString(), user.login),
+            jwtService.generateRefreshToken(user._id.toString(), user.login, deviceId)
         ])
 
-        const payload = await this.jwtService.verifyToken(refreshToken)
+        const payload = await jwtService.verifyToken(refreshToken)
 
         await this.authRepository.addSession({
             userId: user._id.toString(),
@@ -48,9 +47,9 @@ export class AuthService {
 
     async refreshTokenService(payload: any) {
 
-        const accessToken: string = await this.jwtService.generateAccessToken(payload.userId, payload.userLogin);
-        const newRefreshToken: string = await this.jwtService.generateRefreshToken(payload.userId, payload.userLogin, payload.deviceId);
-        const payload2 = await this.jwtService.verifyToken(newRefreshToken)
+        const accessToken: string = await jwtService.generateAccessToken(payload.userId, payload.userLogin);
+        const newRefreshToken: string = await jwtService.generateRefreshToken(payload.userId, payload.userLogin, payload.deviceId);
+        const payload2 = await jwtService.verifyToken(newRefreshToken)
 
         await this.authRepository.updateSession(payload2.userId, payload2.deviceId, payload2.iat, payload2.exp)
         return {accessToken, refreshToken: newRefreshToken};

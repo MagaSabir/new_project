@@ -1,6 +1,6 @@
 export type CreatedUserType = {
     login: string,
-    password: string
+    password?: string
     email: string,
     createdAt: string,
     isConfirmed?: boolean,

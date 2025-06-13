@@ -1,7 +1,8 @@
 import {BlogType} from "../../../common/types/blogTypes/blogType";
 import {blogCollection} from "../../../db/mongoDb";
 import {DeleteResult, InsertOneResult, ObjectId, UpdateResult} from "mongodb";
-
+import {injectable} from "inversify";
+@injectable()
  export class BlogsRepository {
     async createBlog(blog: BlogType): Promise<InsertOneResult> {
         return await blogCollection.insertOne(blog);

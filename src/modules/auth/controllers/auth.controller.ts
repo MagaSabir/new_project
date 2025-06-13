@@ -4,8 +4,9 @@ import {queryUsersRepository} from "../../users/queryRepository/query.users.repo
 import {ResultStatus} from "../../../common/types/resultStatuse";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 import {TokensType} from "../../../common/types/types";
+import {injectable} from "inversify";
 
-
+@injectable()
 export class AuthController {
 
     constructor(protected authService: AuthService) {}

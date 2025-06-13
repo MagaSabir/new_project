@@ -6,8 +6,9 @@ import {BlogViewModel} from "../../../models/BlogViewModel";
 import {PostType} from "../../../common/types/postTypse/postType";
 import {PostViewModel} from "../../../models/post.view.model";
 import {PaginationType} from "../../../common/types/types";
-
-class QueryBlogsRepository {
+import {injectable} from "inversify";
+@injectable()
+export class QueryBlogsRepository {
     async getBlogs(params: BlogQuery): Promise<PaginationType<BlogViewModel>> {
         const {pageNumber, pageSize, sortDirection, sortBy, searchNameTerm} = params
         const filter = searchNameTerm ? {name: {$regex: searchNameTerm, $options: 'i'}} : {}
@@ -59,4 +60,3 @@ class QueryBlogsRepository {
     }
 }
 
-export const queryBlogRepository = new QueryBlogsRepository()

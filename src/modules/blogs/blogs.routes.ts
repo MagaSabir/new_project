@@ -12,8 +12,9 @@ import {
 } from "../../common/middlewares/blogValidation/posts.validations";
 import {IDisValid} from "../../common/middlewares/IDisValidMiddleware";
 import {inputValidationErrors} from "../../common/adapters/errorMessage";
-import {blogsController} from "../../composition-root";
-
+import {container} from "../../composition-root";
+import {BlogsController} from "./controllers/blog.controller";
+const blogsController = container.get(BlogsController)
 export const blogRouter = Router();
 
 blogRouter

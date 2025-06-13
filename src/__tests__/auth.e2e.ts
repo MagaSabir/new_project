@@ -1,11 +1,7 @@
-import {auth, creator} from "./helpers/helpers.e2e.helper";
+import {creator} from "./helpers/helpers.e2e.helper";
 import request from "supertest";
 import {app} from "../app";
-import {SETTINGS} from "../settings";
-import {STATUS_CODE} from "../common/adapters/http-statuses-code";
 import {db, runDb} from "../db/mongoDb";
-import {jwtService} from "../common/adapters/jwt.service";
-import {rateLimitMiddleware} from "../common/middlewares/rateLimit.middleware";
 import {NextFunction} from "express";
 
 jest.mock('../common/middlewares/rateLimit.middleware', () => ({
@@ -90,7 +86,6 @@ let refreshToken;
             .set('Cookie', refreshToken)
             .expect(200)
         expect(response.body).toHaveLength(2)
-        console.log(response.body)
 
         await request(app)
             .delete('/security/devices')

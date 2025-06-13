@@ -1,13 +1,14 @@
 import {postRepository} from "../repositories/post.repository";
 import {InsertOneResult, ObjectId} from "mongodb";
 import {DataReqBodyPostType, PostType} from "../../../common/types/postTypse/postType";
-import {queryBlogRepository} from "../../blogs/queryRepository/query.blog.repository";
 import {BlogViewModel} from "../../../models/BlogViewModel";
 import {commentRepository} from "../../comments/repositories/comment.repository";
+import {QueryBlogsRepository} from "../../blogs/queryRepository/query.blog.repository";
 
 export const postService = {
+     queryBlogRepository: new QueryBlogsRepository(),
     async createPostService (reqBody: DataReqBodyPostType): Promise<string | null> {
-        const blog: BlogViewModel | null = await queryBlogRepository.getBlog(reqBody.blogId)
+        const blog: BlogViewModel | null = await this.queryBlogRepository.getBlog(reqBody.blogId)
         if(!blog) {
             return null
         }
