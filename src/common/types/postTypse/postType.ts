@@ -7,7 +7,7 @@ export type PostType = {
   createdAt: string
 };
 
-export type DataReqBodyPostType = {
+export type PostDto = {
   title: string;
   shortDescription: string;
   content: string;

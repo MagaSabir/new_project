@@ -1,7 +1,7 @@
 import {postCollection} from "../../../db/mongoDb";
 import {ObjectId, WithId} from "mongodb";
 import {PostType} from "../../../common/types/postTypse/postType";
-import {PostViewModel} from "../../../models/post.view.model";
+import {PostViewModel} from "../../../models/view_models/post.view.model";
 import {mapPostToViewModel} from "../../../common/adapters/mapper";
 
 export const queryPostRepository = {

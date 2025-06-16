@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
-import {PostViewModel} from "../../../models/post.view.model";
+import {PostViewModel} from "../../../models/view_models/post.view.model";
 import {postService} from "../services/post.servise";
 import {queryPostRepository} from "../queryRepository/query.post.repository";
 import {queryRepoComment} from "../../comments/queryRepositories/query.repo.comment";

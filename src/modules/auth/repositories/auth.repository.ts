@@ -1,4 +1,3 @@
-import {client} from "../../../db/mongoDb";
 import {ObjectId} from "mongodb";
 import {injectable} from "inversify";
 @injectable()

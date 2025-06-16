@@ -6,7 +6,7 @@ export type BlogType = {
   isMembership: boolean
 };
 
-export type DataReqBodyType = {
+export type CreateBlogDto = {
   name: string;
   description: string;
   websiteUrl: string;

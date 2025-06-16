@@ -1,7 +1,7 @@
 import { usersCollections} from "../../../db/mongoDb";
 import {CreatedUserType} from "../../../common/types/userType/userType";
 import {ObjectId, WithId} from "mongodb";
-import {UserViewModel} from "../../../models/UserViewModel";
+import {UserViewModel} from "../../../models/view_models/UserViewModel";
 import {PaginationType} from "../../../common/types/types";
 
 export const queryUsersRepository = {

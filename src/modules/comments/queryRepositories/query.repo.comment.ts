@@ -1,7 +1,7 @@
 import {commentCollection} from "../../../db/mongoDb";
 
 import {ObjectId, WithId} from "mongodb";
-import {CommentType} from "../../../models/CommentModel";
+import {CommentType} from "../../../models/view_models/CommentModel";
 
 export const queryRepoComment = {
     async getCommentById(id: string) {

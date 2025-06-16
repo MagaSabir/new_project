@@ -48,13 +48,7 @@ dotenv.config()
 import * as mongoose from "mongoose";
 import {Schema} from "mongoose";
 
-export const blogSchema = new Schema({
-    name: { type: String, required: true },
-    description: { type: String, required: true },
-    websiteUrl: { type: String, required: true },
-    createdAt: { type: String, required: true, default: new Date().toISOString() },
-    isMembership: { type: Boolean, required: true, default: false }
-});
+
 
 export const postSchema = new Schema({
         title: { type: String, required: true },
@@ -66,7 +60,6 @@ export const postSchema = new Schema({
 })
 
 export const PostModel = mongoose.model('posts', postSchema)
-export const BlogModel = mongoose.model('blogs', blogSchema)
 
 const db = 'blogPlatform'
 const mongoURI = `mongodb://0.0.0.0:27017/${db}`

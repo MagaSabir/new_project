@@ -1,19 +1,19 @@
 import {BlogType} from "../../../common/types/blogTypes/blogType";
-import {DeleteResult, ObjectId, UpdateResult} from "mongodb";
+import {DeleteResult, ObjectId} from "mongodb";
 import {injectable} from "inversify";
-import {BlogModel} from "../../../db/mongoDb";
+import {BlogDocument, BlogModel} from "../../../models/schemas/User.schema";
+import {UpdateWriteOpResult} from "mongoose";
 
 
 @injectable()
 export class BlogsRepository {
-    async createBlog(blog: BlogType) {
-        const savedBlog = await BlogModel.create(blog);
-        console.log(savedBlog)
-        return savedBlog._id.toString()
+    async save(blog: BlogDocument): Promise<string> {
+        const {_id} = await blog.save()
+        return _id.toString()
     }
 
     async updateBlog(blog: BlogType, id: string): Promise<boolean> {
-        const result: UpdateResult<BlogType> = await BlogModel.updateOne(
+        const result: UpdateWriteOpResult = await BlogModel.updateOne(
             {_id: new ObjectId(id)},
             {$set: blog})
         return result.matchedCount === 1

@@ -1,17 +1,16 @@
 import {ObjectId, WithId} from "mongodb";
 import {BlogQuery, BlogType} from "../../../common/types/blogTypes/blogType";
 import {mapBlogToViewModel, mapPostToViewModel} from "../../../common/adapters/mapper";
-import {BlogViewModel} from "../../../models/BlogViewModel";
 import {PostType} from "../../../common/types/postTypse/postType";
-import {PostViewModel} from "../../../models/post.view.model";
+import {PostViewModel} from "../../../models/view_models/post.view.model";
 import {PaginationType} from "../../../common/types/types";
 import {injectable} from "inversify";
-import {BlogModel, PostModel} from "../../../db/mongoDb";
+import {BlogModel} from "../../../models/schemas/User.schema";
 
 
 @injectable()
 export class QueryBlogsRepository {
-    async getBlogs(params: BlogQuery): Promise<PaginationType<BlogViewModel>> {
+    async getBlogs(params: BlogQuery) {
         const {pageNumber, pageSize, sortDirection, sortBy, searchNameTerm} = params
         const filter = searchNameTerm ? {name: {$regex: searchNameTerm, $options: 'i'}} : {}
 
@@ -23,7 +22,7 @@ export class QueryBlogsRepository {
             .sort({[sortBy]: sortDirection})
             .lean()
 
-        const mappedBlog: BlogViewModel[] = blogs.map(mapBlogToViewModel)
+        const mappedBlog = blogs.map(mapBlogToViewModel)
 
         return {
             pagesCount: Math.ceil(totalCount / pageSize),
@@ -54,9 +53,9 @@ export class QueryBlogsRepository {
         }
     }
 
-    async getBlog(id: string): Promise<BlogViewModel | null> {
+    async getBlog(id: string) {
         if (!ObjectId.isValid(id)) return null
-        const blog: WithId<BlogType> | null = await BlogModel.findById({_id: new ObjectId(id)});
+        const blog: WithId<BlogType> | null = await BlogModel.findById({_id: (id)});
         if (blog) return mapBlogToViewModel(blog)
         return null
     }

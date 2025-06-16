@@ -1,7 +1,7 @@
 import {postRepository} from "../repositories/post.repository";
 import {InsertOneResult, ObjectId} from "mongodb";
 import {DataReqBodyPostType, PostType} from "../../../common/types/postTypse/postType";
-import {BlogViewModel} from "../../../models/BlogViewModel";
+import {BlogViewModel} from "../../../models/view_models/BlogViewModel";
 import {commentRepository} from "../../comments/repositories/comment.repository";
 import {QueryBlogsRepository} from "../../blogs/queryRepository/query.blog.repository";
 
