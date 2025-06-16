@@ -1,43 +1,82 @@
-import {Collection, Db, MongoClient} from "mongodb";
-const localDBString = "mongodb://0.0.0.0:27017/test"
+// import {Collection, Db, MongoClient} from "mongodb";
+// const localDBString = "mongodb://0.0.0.0:27017/test"
 import dotenv from 'dotenv'
-import {SETTINGS} from "../settings";
-import {BlogType} from "../common/types/blogTypes/blogType";
-import {PostType} from "../common/types/postTypse/postType";
-import {CommentType} from "../models/CommentModel";
-import {CreatedUserType} from "../common/types/userType/userType";
+// import {SETTINGS} from "../settings";
+// import {BlogType} from "../common/types/blogTypes/blogType";
+// import {PostType} from "../common/types/postTypse/postType";
+// import {CommentType} from "../models/CommentModel";
+// import {CreatedUserType} from "../common/types/userType/userType";
 dotenv.config()
+//
+// const URI =/*  process.env.MONGO_URL ||*/ localDBString
+// const USER_COLLECTION = 'users'
+// const BLOG_COLLECTION = 'blogs'
+// const POST_COLLECTION = 'posts'
+// const COMMENT_COLLECTIONS = 'comments'
+//
+//
+//
+// export let client: MongoClient;
+// export let blogCollection: Collection<BlogType>
+// export let postCollection: Collection<PostType>
+// export let commentCollection: Collection<CommentType>
+// export let usersCollections: Collection<CreatedUserType>
+// export let db: Db
+//
+//
+// export async function runDb() {
+//      client = new MongoClient(URI)
+//      db = client.db(SETTINGS.DB_NAME)
+//     blogCollection = db.collection(BLOG_COLLECTION)
+//     postCollection = db.collection(POST_COLLECTION)
+//     commentCollection = db.collection(COMMENT_COLLECTIONS)
+//     usersCollections = db.collection(USER_COLLECTION)
+//
+//     try {
+//         await client.connect()
+//         await client.db('blogPlatform').command({ping: 1})
+//        } catch {
+//         await client.close()
+//     }
+// }
+//
+//
 
-const URI =/*  process.env.MONGO_URL ||*/ localDBString
-const USER_COLLECTION = 'users'
-const BLOG_COLLECTION = 'blogs'
-const POST_COLLECTION = 'posts'
-const COMMENT_COLLECTIONS = 'comments'
 
 
 
-export let client: MongoClient;
-export let blogCollection: Collection<BlogType>
-export let postCollection: Collection<PostType>
-export let commentCollection: Collection<CommentType>
-export let usersCollections: Collection<CreatedUserType>
-export let db: Db
+import * as mongoose from "mongoose";
+import {Schema} from "mongoose";
 
+export const blogSchema = new Schema({
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    websiteUrl: { type: String, required: true },
+    createdAt: { type: String, required: true, default: new Date().toISOString() },
+    isMembership: { type: Boolean, required: true, default: false }
+});
+
+export const postSchema = new Schema({
+        title: { type: String, required: true },
+        shortDescription: { type: String, required: true },
+        content: { type: String, required: true },
+        blogId: { type: String, required: true },
+        blogName: { type: String, required: true },
+        createdAt: { type: String, required: true, default: new Date().toISOString() }
+})
+
+export const PostModel = mongoose.model('posts', postSchema)
+export const BlogModel = mongoose.model('blogs', blogSchema)
+
+const db = 'blogPlatform'
+const mongoURI = `mongodb://0.0.0.0:27017/${db}`
 
 export async function runDb() {
-     client = new MongoClient(URI)
-     db = client.db(SETTINGS.DB_NAME)
-    blogCollection = db.collection(BLOG_COLLECTION)
-    postCollection = db.collection(POST_COLLECTION)
-    commentCollection = db.collection(COMMENT_COLLECTIONS)
-    usersCollections = db.collection(USER_COLLECTION)
-
     try {
-        await client.connect()
-        await client.db('blogPlatform').command({ping: 1})
-       } catch {
-        await client.close()
+        await mongoose.connect(mongoURI)
+        console.log('connected')
+    } catch (e) {
+        console.log(' no connected')
+        await mongoose.disconnect()
     }
 }
-
-

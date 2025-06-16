@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { blogRouter } from "./modules/blogs/blogs.routes";
 import { postRouter } from "./modules/posts/posts.routes";
 import { SETTINGS } from "./settings";
-import { db} from "./db/mongoDb";
+// import { db} from "./db/mongoDb";
 import {userRouter} from "./modules/users/users.routes";
 import {authRoutes} from "./modules/auth/auth.routes";
 import {setupSwagger} from "./swagger/setup-swagger";
@@ -23,15 +23,15 @@ app.use(SETTINGS.PATH.comments, commentsRoutes)
 app.use('/security', devicesRoutes)
 
 
-app.delete("/testing/all-data", async (req: Request, res: Response) => {
-  await db.collection('blogs').deleteMany()
-  await db.collection('posts').deleteMany()
-  await db.collection('users').deleteMany()
-  await db.collection('comments').deleteMany()
-  await db.collection('users').deleteMany()
-  await db.collection('sessions').deleteMany()
-  res.sendStatus(204);
-});
+// app.delete("/testing/all-data", async (req: Request, res: Response) => {
+//   await db.collection('blogs').deleteMany()
+//   await db.collection('posts').deleteMany()
+//   await db.collection('users').deleteMany()
+//   await db.collection('comments').deleteMany()
+//   await db.collection('users').deleteMany()
+//   await db.collection('sessions').deleteMany()
+//   res.sendStatus(204);
+// });
 
 
 

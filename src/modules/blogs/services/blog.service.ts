@@ -18,9 +18,7 @@ export class BlogsService {
             createdAt: new Date().toISOString(),
             isMembership: false
         }
-        const result: InsertOneResult<BlogType> = await this.blogsRepository.createBlog(newBlog)
-        return result.insertedId.toString()
-
+        return  await this.blogsRepository.createBlog(newBlog)
     }
 
     async updateBlog(reqBody: BlogType, id: string) {

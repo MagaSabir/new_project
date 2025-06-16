@@ -1,3 +1,5 @@
+import mongoose, {Schema} from "mongoose";
+
 export type BlogViewModel = {
     id: string,
     name: string,
@@ -6,3 +8,4 @@ export type BlogViewModel = {
     createdAt: string
     isMembership: boolean
 }
+

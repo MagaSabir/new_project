@@ -2,6 +2,7 @@ import {Request, Response} from "express";
 import {commentService} from "../services/comment.service";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 import {queryRepoComment} from "../queryRepositories/query.repo.comment";
+import request from "supertest";
 
 export const commentController = {
     async getComment(req: Request, res: Response) {
@@ -47,5 +48,9 @@ export const commentController = {
         }
         await commentService.updateComment(req.params.id, req.body)
         res.sendStatus(204)
+    },
+
+    async like (req: Request, res: Response) {
+        const status = await
     }
 }
