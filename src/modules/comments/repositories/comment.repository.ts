@@ -15,7 +15,7 @@ export const commentRepository = {
         const result = await client.db('blogPlatform').collection('comments')
             .updateOne({_id: new ObjectId(id)}, {$set: data})
         return result.matchedCount === 1
-    }
+    },
 
     async addLike (id: string, status: string) {
         const result = await client.db('blogPlatform').collection('')

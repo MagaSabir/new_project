@@ -1,20 +1,22 @@
-import {PostType} from "../../../common/types/postTypse/postType";
-import {postCollection} from "../../../db/mongoDb";
-import {DeleteResult, InsertOneResult, ObjectId, UpdateResult} from "mongodb";
+import {DeleteResult, ObjectId, UpdateResult} from "mongodb";
+import {PostDocument, PostModel, PostType} from "../../../models/schemas/Post.schema";
+import {injectable} from "inversify";
 
-export const postRepository = {
-  async createPost(newPost: PostType): Promise<InsertOneResult<PostType>> {
-    return await postCollection.insertOne(newPost)
-  },
+@injectable()
+export class PostRepository {
+    async save (post: PostDocument): Promise<string> {
+        const {_id} = await post.save()
+        return _id.toString()
+    }
 
-  async updatePost(id: string, newPost: PostType): Promise<boolean> {
-    const result: UpdateResult<PostType> = await postCollection.updateOne(
-        {_id: new ObjectId(id)}, {$set: newPost})
-    return result.matchedCount === 1
-  },
+    async updatePost (id: string, newPost: PostType): Promise<boolean> {
+        const result: UpdateResult<PostType> = await PostModel.updateOne(
+            {_id: new ObjectId(id)}, {$set: newPost})
+        return result.matchedCount === 1
+    }
 
-  async deletePost(id: string): Promise<boolean> {
-    const result: DeleteResult = await postCollection.deleteOne({_id: new ObjectId(id)})
-    return result.deletedCount === 1
-  },
-};
+    async deletePost (id: string): Promise<boolean> {
+        const result: DeleteResult = await PostModel.deleteOne({_id: new ObjectId(id)})
+        return result.deletedCount === 1
+    }
+}

@@ -1,19 +1,18 @@
-import {postCollection} from "../../../db/mongoDb";
 import {ObjectId, WithId} from "mongodb";
-import {PostType} from "../../../common/types/postTypse/postType";
 import {PostViewModel} from "../../../models/view_models/post.view.model";
 import {mapPostToViewModel} from "../../../common/adapters/mapper";
+import {PostDocument, PostModel, PostType} from "../../../models/schemas/Post.schema";
 
-export const queryPostRepository = {
+export class QueryPostRepository  {
     async findPosts(pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: any)  {
-        const totalCountPosts: number = await postCollection.countDocuments()
+        const totalCountPosts: number = await PostModel.countDocuments()
 
-        const posts: WithId<PostType>[] =  await postCollection
+        const posts: WithId<PostType>[] =  await PostModel
             .find()
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
             .sort({[sortBy]: sortDirection})
-            .toArray()
+            .lean()
 
         const mappedPost: PostViewModel[] = posts.map(mapPostToViewModel)
         return {
@@ -23,21 +22,13 @@ export const queryPostRepository = {
             totalCount:totalCountPosts,
             items: mappedPost
         }
-    },
+    }
 
-    async findPost(id: string): Promise<PostViewModel | null> {
-        const post: WithId<PostType> | null =  await postCollection.findOne({_id: new ObjectId(id)})
+    async getPost(id: string): Promise<PostViewModel | null> {
+        const post =  await PostModel.findById(id).lean()
         if(post) {
-            return {
-                id: post._id.toString(),
-                title: post.title,
-                shortDescription: post.shortDescription,
-                content: post.content,
-                blogId: post.blogId,
-                blogName: post.blogName,
-                createdAt: post.createdAt
-            }
+            return mapPostToViewModel(post)
         }
         return null
-    },
+    }
 }

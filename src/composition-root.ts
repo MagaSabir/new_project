@@ -8,6 +8,10 @@ import {AuthController} from "./modules/auth/controllers/auth.controller";
 import {jwtService} from "./common/adapters/jwt.service";
 import {Container} from "inversify";
 import {QueryBlogsRepository} from "./modules/blogs/queryRepository/query.blog.repository";
+import {PostsController} from "./modules/posts/controllers/posts.controller";
+import {PostsService} from "./modules/posts/services/post.servise";
+import {PostRepository} from "./modules/posts/repositories/post.repository";
+import {QueryPostRepository} from "./modules/posts/queryRepository/query.post.repository";
 
 
 
@@ -20,3 +24,8 @@ container.bind(QueryBlogsRepository).to(QueryBlogsRepository)
 container.bind(AuthRepository).to(AuthRepository)
 container.bind(AuthService).to(AuthService)
 container.bind(AuthController).to(AuthController)
+
+container.bind(PostsController).to(PostsController)
+container.bind(PostsService).to(PostsService)
+container.bind(PostRepository).to(PostRepository)
+container.bind(QueryPostRepository).to(QueryPostRepository)

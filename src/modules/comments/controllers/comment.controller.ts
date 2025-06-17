@@ -49,8 +49,4 @@ export const commentController = {
         await commentService.updateComment(req.params.id, req.body)
         res.sendStatus(204)
     },
-
-    async like (req: Request, res: Response) {
-        const status = await
-    }
 }

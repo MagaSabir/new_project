@@ -1,23 +1,24 @@
 import {Request, Response} from "express";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 import {PaginationType, ParsedQueryParamsType} from "../../../common/types/types";
-import {BlogViewModel} from "../../../models/view_models/BlogViewModel";
 import {BlogsService} from "../services/blog.service";
 import { QueryBlogsRepository} from "../queryRepository/query.blog.repository";
-import {queryPostRepository} from "../../posts/queryRepository/query.post.repository";
 import {PostViewModel} from "../../../models/view_models/post.view.model";
 import {sortQueryFields} from "../../../common/types/sortQueryFields";
 import {injectable} from "inversify";
+import {BlogType, BlogViewModel} from "../../../models/schemas/Blog.schema";
+import {QueryPostRepository} from "../../posts/queryRepository/query.post.repository";
 
 @injectable()
 export class BlogsController {
     constructor(protected blogsService: BlogsService,
-                protected queryBlogRepository: QueryBlogsRepository) {}
+                protected queryBlogRepository: QueryBlogsRepository,
+                protected queryPostRepository: QueryPostRepository) {}
 
     async getBlogs(req: Request, res: Response) {
         try {
             const query: ParsedQueryParamsType = sortQueryFields(req.query)
-            const items: PaginationType<BlogViewModel> = await this.queryBlogRepository.getBlogs(query)
+            const items: PaginationType<BlogType> = await this.queryBlogRepository.getBlogs(query)
             res.status(STATUS_CODE.OK_200).send(items)
         } catch (error) {
             console.error('Get Blogs error:', error)
@@ -104,7 +105,7 @@ export class BlogsController {
                 res.sendStatus(STATUS_CODE.NOT_FOUND_404)
                 return
             }
-            const createdPost: PostViewModel | null = await queryPostRepository.findPost(createdPostId)
+            const createdPost: PostViewModel | null = await this.queryPostRepository.getPost(createdPostId)
             res.status(STATUS_CODE.CREATED_201).send(createdPost)
         } catch (error) {
             console.error('Create Post:', error)

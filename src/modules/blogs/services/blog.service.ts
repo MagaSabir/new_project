@@ -1,16 +1,17 @@
 import {BlogsRepository} from "../repositories/blog.repository";
-import {InsertOneResult} from "mongodb";
-import {PostDto, PostType} from "../../../common/types/postTypse/postType";
-import {postRepository} from "../../posts/repositories/post.repository";
+import {PostDto} from "../../../common/types/postTypse/postType";
+import {PostRepository} from "../../posts/repositories/post.repository";
 import {injectable} from "inversify";
 import {QueryBlogsRepository} from "../queryRepository/query.blog.repository";
-import {BlogModel} from "../../../models/schemas/User.schema";
+import {BlogModel} from "../../../models/schemas/Blog.schema";
 import {BlogType} from "../../../common/types/blogTypes/blogType";
+import {PostModel} from "../../../models/schemas/Post.schema";
 
 @injectable()
 export class BlogsService {
     constructor(protected blogsRepository: BlogsRepository,
-                protected queryBlogRepository: QueryBlogsRepository) {
+                protected queryBlogRepository: QueryBlogsRepository,
+                protected postRepository: PostRepository) {
     }
 
     async createBlog(dto: BlogType): Promise<string> {
@@ -35,7 +36,7 @@ export class BlogsService {
             blogName: blog.name,
             createdAt: new Date().toISOString()
         }
-        const result: InsertOneResult<PostType> = await postRepository.createPost(newPost)
-        return result.insertedId.toString()
+        const post = new PostModel(newPost)
+        return  await this.postRepository.save(post)
     }
 }

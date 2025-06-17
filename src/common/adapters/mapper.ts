@@ -1,10 +1,10 @@
 import {BlogType} from "../types/blogTypes/blogType";
 import {WithId} from "mongodb";
-import {BlogViewModel} from "../../models/view_models/BlogViewModel";
-import {PostType} from "../types/postTypse/postType";
-import {PostViewModel} from "../../models/view_models/post.view.model";
 
-export const mapBlogToViewModel = (el: WithId<BlogType>): BlogViewModel => {
+import {PostViewModel} from "../../models/view_models/post.view.model";
+import {PostType} from "../../models/schemas/Post.schema";
+
+export const mapBlogToViewModel = (el: WithId<BlogType>): BlogType & {id: string} => {
     return {
         id: el._id.toString(),
         name: el.name,

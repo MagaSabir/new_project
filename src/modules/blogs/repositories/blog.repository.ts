@@ -1,8 +1,7 @@
 import {BlogType} from "../../../common/types/blogTypes/blogType";
 import {DeleteResult, ObjectId} from "mongodb";
 import {injectable} from "inversify";
-import {BlogDocument, BlogModel} from "../../../models/schemas/User.schema";
-import {UpdateWriteOpResult} from "mongoose";
+import {BlogDocument, BlogModel} from "../../../models/schemas/Blog.schema";
 
 
 @injectable()
@@ -13,7 +12,7 @@ export class BlogsRepository {
     }
 
     async updateBlog(blog: BlogType, id: string): Promise<boolean> {
-        const result: UpdateWriteOpResult = await BlogModel.updateOne(
+        const result = await BlogModel.updateOne(
             {_id: new ObjectId(id)},
             {$set: blog})
         return result.matchedCount === 1

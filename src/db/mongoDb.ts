@@ -47,20 +47,6 @@ dotenv.config()
 
 import * as mongoose from "mongoose";
 import {Schema} from "mongoose";
-
-
-
-export const postSchema = new Schema({
-        title: { type: String, required: true },
-        shortDescription: { type: String, required: true },
-        content: { type: String, required: true },
-        blogId: { type: String, required: true },
-        blogName: { type: String, required: true },
-        createdAt: { type: String, required: true, default: new Date().toISOString() }
-})
-
-export const PostModel = mongoose.model('posts', postSchema)
-
 const db = 'blogPlatform'
 const mongoURI = `mongodb://0.0.0.0:27017/${db}`
 

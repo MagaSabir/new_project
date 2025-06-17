@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { postsController } from "./controllers/posts.controller";
 import {
   blogIdValidator,
   contentValidator,
@@ -10,12 +9,15 @@ import { basicAuthMiddleware } from "../../common/middlewares/basic.auth.middlew
 import {accessTokenMiddleware} from "../../common/middlewares/auth.middleware";
 import {inputValidationErrors} from "../../common/adapters/errorMessage";
 import {contentValidation} from "../../common/middlewares/commentValidation/comment.validation";
+import {PostsController} from "./controllers/posts.controller";
+import {container} from "../../composition-root";
 
+const postsController = container.get(PostsController)
 export const postRouter = Router();
 
 postRouter
-  .get("/", postsController.getPosts)
-  .get("/:id", postsController.getPostById)
+  .get("/", postsController.getPosts.bind(postsController))
+  .get("/:id", postsController.getPostById.bind(postsController))
   .put(
     "/:id",
     basicAuthMiddleware,
@@ -23,9 +25,9 @@ postRouter
     shortDescriptionValidator,
     contentValidator,
       inputValidationErrors,
-    postsController.updatePost,
+    postsController.updatePost.bind(postsController),
   )
-  .delete("/:id", basicAuthMiddleware, postsController.deletePost)
+  .delete("/:id", basicAuthMiddleware, postsController.deletePost.bind(postsController))
   .post(
     "/",
     basicAuthMiddleware,
@@ -34,7 +36,7 @@ postRouter
     shortDescriptionValidator,
     contentValidator,
       inputValidationErrors,
-    postsController.createPost,
+    postsController.createPost.bind(postsController),
   )
-  .post('/:id/comments',contentValidation, accessTokenMiddleware,inputValidationErrors, postsController.createCommentByPostId)
-  .get('/:id/comments', postsController.getComments)
+  .post('/:id/comments',contentValidation, accessTokenMiddleware,inputValidationErrors, postsController.createCommentByPostId.bind(postsController))
+  .get('/:id/comments', postsController.getComments.bind(postsController))
