@@ -6,13 +6,13 @@ import {add} from "date-fns";
 import {usersRepository} from "../../users/repositories/users.repository";
 import {ResultStatus} from "../../../common/types/resultStatuse";
 import {WithId} from "mongodb";
-import {CreatedUserType} from "../../../common/types/userType/userType";
 import {PayloadType, TokensType, UserInputDTO} from "../../../common/types/types";
 
 import {emailExamples} from "../../../common/adapters/html.message";
 import {BcryptPasswordHash} from "../../../common/adapters/bcrypt.password";
 import {jwtService} from "../../../common/adapters/jwt.service";
 import {injectable} from "inversify";
+import {CreatedUserType} from "../../../models/schemas/Auth.schema";
 
 @injectable()
 export class AuthService {

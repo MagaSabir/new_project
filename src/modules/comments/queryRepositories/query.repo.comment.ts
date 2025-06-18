@@ -1,12 +1,11 @@
-import {commentCollection} from "../../../db/mongoDb";
-
-import {ObjectId, WithId} from "mongodb";
+import {WithId} from "mongodb";
 import {CommentType} from "../../../models/view_models/CommentModel";
+import {CommentModel} from "../../../models/schemas/Comment.schema";
 
 export const queryRepoComment = {
     async getCommentById(id: string) {
-        const comment: WithId<CommentType> | null = await commentCollection.findOne({_id: new ObjectId(id)})
-        if(!comment) return null
+        const comment: WithId<CommentType> | null = await CommentModel.findById(id)
+        if (!comment) return null
         return {
             id: comment._id.toString(),
             content: comment.content,
@@ -15,14 +14,14 @@ export const queryRepoComment = {
         }
     },
 
-    async getComments(id: string, pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: any)  {
-        const totalCountPosts: number = await commentCollection.countDocuments({postId: id})
-        const comments: WithId<CommentType>[] =  await commentCollection
+    async getComments(id: string, pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: any) {
+        const totalCountPosts: number = await CommentModel.countDocuments({postId: id})
+        const comments = await CommentModel
             .find({postId: id})
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
             .sort({[sortBy]: sortDirection})
-            .toArray()
+            .lean()
 
         const comment: CommentType[] = comments.map(el => {
             return {
@@ -36,7 +35,7 @@ export const queryRepoComment = {
             pagesCount: Math.ceil(totalCountPosts / pageSize),
             page: pageNumber,
             pageSize: pageSize,
-            totalCount:totalCountPosts,
+            totalCount: totalCountPosts,
             items: comment
         }
     },

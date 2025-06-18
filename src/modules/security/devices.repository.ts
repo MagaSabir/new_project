@@ -1,4 +1,3 @@
-import {client} from "../../db/mongoDb";
 
 export const devicesRepository = {
     async deleteOtherSessions (deviceId: string, userId: string)  {

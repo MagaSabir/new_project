@@ -3,19 +3,20 @@ import {app} from "../app";
 import {SETTINGS} from "../settings";
 import {STATUS_CODE} from "../common/adapters/http-statuses-code";
 import {faker} from "@faker-js/faker/locale/ar";
-import {runDb} from "../db/mongoDb";
+import {mongoURI, runDb} from "../db/mongoDb";
 import {auth, creator,} from "./helpers/helpers.e2e.helper";
+import mongoose from "mongoose";
 
 
 describe('/blogs tests', () => {
 
 
     beforeAll(async () => {
-        await runDb();
+        await mongoose.connect(mongoURI)
     });
 
     beforeEach(async () => {
-        await request(app).delete(SETTINGS.PATH.cleanDB)
+        await mongoose.disconnect()
     })
 
     describe('GET /blogs', () => {

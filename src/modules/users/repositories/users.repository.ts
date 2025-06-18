@@ -1,38 +1,39 @@
-import {usersCollections} from "../../../db/mongoDb";
 import {DeleteResult, ObjectId} from "mongodb";
+import {UserModel} from "../../../models/schemas/User.schema";
 
 export const usersRepository = {
     async createUser (body:any) {
-        return await usersCollections.insertOne(body)
+           const {_id} = await UserModel.insertOne(body)
+        return _id
     },
 
 
     async deleteUser (id: string): Promise<boolean> {
-        const result: DeleteResult = await usersCollections.deleteOne({_id: new ObjectId(id)})
+        const result: DeleteResult = await UserModel.deleteOne({_id: new ObjectId(id)})
         return result.deletedCount === 1
     },
 
     async findLoginOrEmail (email: string, login: string){
-        return await usersCollections.findOne({$or: [{email}, {login}]})
+        return UserModel.findById({$or: [{email}, {login}]}).lean()
     },
 
-    async findUserByEmail (email: string){
-        return await usersCollections.findOne({email})
+    async findUserByEmail(email: string) {
+        return UserModel.findOne({ email }).lean();
     },
 
-    async findUserByConfirmationCode (code: string) {
-        return await usersCollections.findOne({confirmationCode: code})
+    async findUserByConfirmationCode(code: string) {
+        return UserModel.findOne({ confirmationCode: code }).lean();
     },
 
     async updateConfirmation (_id: ObjectId) {
-        const result = await usersCollections.updateOne({_id}, {
+        const result = await UserModel.updateOne({_id}, {
             $set: { isConfirmed: true , createdAt: new Date().toISOString()},
         })
         return result.modifiedCount === 1
     },
 
     async updateResendConfirmation (email: string, code: string, expiration: string) {
-        const result = await usersCollections.updateOne({email}, {
+        const result = await UserModel.updateOne({email}, {
             $set: {confirmationCode: code, confirmationCodeExpiration: expiration}
         })
         return result.modifiedCount === 1
@@ -40,7 +41,7 @@ export const usersRepository = {
 
     async updatePassword (_id: ObjectId, password: string) {
         console.log(password)
-        const result = await usersCollections.updateOne({_id}, {
+        const result = await UserModel.updateOne({_id}, {
             $set: { isConfirmed: true , createdAt: new Date().toISOString(), password: password},
         })
         return result.modifiedCount === 1

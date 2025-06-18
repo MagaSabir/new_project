@@ -4,8 +4,8 @@ import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 import {queryUsersRepository} from "../queryRepository/query.users.repository";
 import {UserViewModel} from "../../../models/view_models/UserViewModel";
 import {PaginationType} from "../../../common/types/types";
-import {CreatedUserType} from "../../../common/types/userType/userType";
 import {sortQueryFields} from "../../../common/types/sortQueryFields";
+import {CreatedUserType} from "../../../models/schemas/Auth.schema";
 
 
 export const usersController = {

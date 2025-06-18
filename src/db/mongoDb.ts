@@ -48,7 +48,7 @@ dotenv.config()
 import * as mongoose from "mongoose";
 import {Schema} from "mongoose";
 const db = 'blogPlatform'
-const mongoURI = `mongodb://0.0.0.0:27017/${db}`
+export const mongoURI = `mongodb://0.0.0.0:27017/${db}`
 
 export async function runDb() {
     try {

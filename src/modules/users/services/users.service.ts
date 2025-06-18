@@ -1,13 +1,11 @@
 import {usersRepository} from "../repositories/users.repository";
 import bcrypt from 'bcrypt';
-import {InsertOneResult, WithId} from "mongodb";
-import {CreatedUserType} from "../../../common/types/userType/userType";
 
 export const userService = {
-    async createUserService  (body: any) {
+    async createUserService(body: any) {
         const {email, login} = body
-        const userEmail: WithId<CreatedUserType> | null = await usersRepository.findLoginOrEmail(email, login)
-        if(userEmail) {
+        const userEmail = await usersRepository.findLoginOrEmail(email, login)
+        if (userEmail) {
             return null
         }
         const hash = await bcrypt.hash(body.password, 10)
@@ -17,12 +15,11 @@ export const userService = {
             email: body.email,
             createdAt: new Date().toISOString()
         }
-        const newUser: InsertOneResult<CreatedUserType> = await usersRepository.createUser(user)
-        return newUser.insertedId.toString()
-
+        const id = await usersRepository.createUser(user)
+        return id.toString()
     },
 
-    async deleteUserByID (id: string): Promise<boolean> {
+    async deleteUserByID(id: string): Promise<boolean> {
         return await usersRepository.deleteUser(id)
     }
 }

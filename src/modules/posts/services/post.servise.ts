@@ -49,7 +49,7 @@ export class PostsService  {
         }
         const result = await commentRepository.createPost(comment)
 
-        return result.insertedId.toString()
+        return result.toString()
     }
 
 }
