@@ -2,7 +2,7 @@ import {Request, Response} from "express";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 import {PostViewModel} from "../../../models/view_models/post.view.model";
 import {QueryPostRepository} from "../queryRepository/query.post.repository";
-import {queryRepoComment} from "../../comments/queryRepositories/query.repo.comment";
+import {QueryRepoComment} from "../../comments/queryRepositories/query.repo.comment";
 import {PaginationType} from "../../../common/types/types";
 import {sortQueryFields} from "../../../common/types/sortQueryFields";
 import {PostsService} from "../services/post.servise";
@@ -12,7 +12,8 @@ import {injectable} from "inversify";
 export class PostsController {
     constructor(
         protected postService: PostsService,
-        protected queryPostRepository: QueryPostRepository) {
+        protected queryPostRepository: QueryPostRepository,
+        protected queryCommentRepository: QueryRepoComment) {
     }
 
     async getPosts(req: Request, res: Response): Promise<void> {
@@ -69,7 +70,7 @@ export class PostsController {
             }
 
             const commentId: string = await this.postService.createCommentById(req.body.content, req.user, req.params.id)
-            const comment = await queryRepoComment.getCommentById(commentId)
+            const comment = await this.queryCommentRepository.getCommentById(commentId)
             res.status(201).send(comment)
         } catch (e) {
             console.error('error : ->', e)
@@ -80,7 +81,7 @@ export class PostsController {
         const postId: string = req.params.id
         const {pageNumber, pageSize, sortDirection, sortBy} = sortQueryFields(req.params)
 
-        const comment = await queryRepoComment.getComments(postId, pageNumber, pageSize, sortDirection, sortBy)
+        const comment = await this.queryCommentRepository.getComments(postId, pageNumber, pageSize, sortDirection, sortBy)
         if (!comment.items.length) {
             res.sendStatus(STATUS_CODE.NOT_FOUND_404)
             return

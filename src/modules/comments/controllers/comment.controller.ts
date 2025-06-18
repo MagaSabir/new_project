@@ -1,13 +1,18 @@
 import {Request, Response} from "express";
-import {commentService} from "../services/comment.service";
+import {CommentService} from "../services/comment.service";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
-import {queryRepoComment} from "../queryRepositories/query.repo.comment";
-import request from "supertest";
+import {QueryRepoComment} from "../queryRepositories/query.repo.comment";
+import {injectable} from "inversify";
+import {CommentRepository} from "../repositories/comment.repository";
 
-export const commentController = {
+@injectable()
+export class CommentController  {
+    constructor(protected commentService: CommentService,
+                protected queryCommentRepository: QueryRepoComment) {
+    }
     async getComment(req: Request, res: Response) {
        try {
-           const comment = await queryRepoComment.getCommentById(req.params.id)
+           const comment = await this.queryCommentRepository.getCommentById(req.params.id)
            if(!comment) {
                res.sendStatus(STATUS_CODE.NOT_FOUND_404)
                return
@@ -17,11 +22,11 @@ export const commentController = {
        } catch (error) {
            res.sendStatus(STATUS_CODE.SERVER_ERROR)
        }
-    },
+    }
 
 
     async deleteCommentByID(req: Request, res: Response) {
-        const comment = await queryRepoComment.getCommentById(req.params.id)
+        const comment = await this.queryCommentRepository.getCommentById(req.params.id)
         if(!comment) {
             res.sendStatus(STATUS_CODE.NOT_FOUND_404)
             return
@@ -31,12 +36,12 @@ export const commentController = {
             res.sendStatus(403)
             return
         }
-        await commentService.deleteCommentService(req.params.id)
+        await this.commentService.deleteCommentService(req.params.id)
         res.sendStatus(204)
-    },
+    }
 
     async updateComment(req: Request, res: Response) {
-        const comment = await queryRepoComment.getCommentById(req.params.id)
+        const comment = await this.queryCommentRepository.getCommentById(req.params.id)
         if(!comment){
             console.log(comment)
             res.sendStatus(STATUS_CODE.NOT_FOUND_404)
@@ -46,7 +51,7 @@ export const commentController = {
             res.sendStatus(403)
             return
         }
-        await commentService.updateComment(req.params.id, req.body)
+        await this.commentService.updateComment(req.params.id, req.body)
         res.sendStatus(204)
-    },
+    }
 }
