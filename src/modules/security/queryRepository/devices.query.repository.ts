@@ -1,4 +1,4 @@
-import {client} from "../../db/mongoDb";
+import {client} from "../../../db/mongoDb";
 
 export const devicesQueryRepository = {
     async findDevices (userId: string, deviceId: string) {

@@ -1,15 +1,16 @@
 import {AuthService} from "../services/auth.service";
 import {Request, Response} from "express";
-import {queryUsersRepository} from "../../users/queryRepository/query.users.repository";
 import {ResultStatus} from "../../../common/types/resultStatuse";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 import {TokensType} from "../../../common/types/types";
 import {injectable} from "inversify";
+import {QueryUsersRepository} from "../../users/queryRepository/query.users.repository";
 
 @injectable()
 export class AuthController {
 
-    constructor(protected authService: AuthService) {}
+    constructor(protected authService: AuthService,
+                protected queryUsersRepository: QueryUsersRepository) {}
 
     async login(req: Request, res: Response) {
         const ip: string = req.ip ? req.ip : ''
@@ -43,7 +44,7 @@ export class AuthController {
 
 
     async getUser(req: Request, res: Response): Promise<void> {
-        const user = await queryUsersRepository.getUseById(req.user.id)
+        const user = await this.queryUsersRepository.getUseById(req.user.id)
         res.status(200).send(user)
     }
 

@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {devicesController} from "./devices.controller";
+import {devicesController} from "./controller/devices.controller";
 import {refreshMiddleware} from "../../common/middlewares/refresh.middleware";
 
 export const devicesRoutes = Router()

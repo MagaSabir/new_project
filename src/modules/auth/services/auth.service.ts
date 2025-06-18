@@ -3,27 +3,29 @@ import bcrypt from "bcrypt";
 import {nodemailerService} from "../../../common/adapters/nodemailer.service";
 import {randomUUID} from "node:crypto";
 import {add} from "date-fns";
-import {usersRepository} from "../../users/repositories/users.repository";
 import {ResultStatus} from "../../../common/types/resultStatuse";
 import {WithId} from "mongodb";
-import {PayloadType, TokensType, UserInputDTO} from "../../../common/types/types";
+import {PayloadType, TokensType} from "../../../common/types/types";
 
 import {emailExamples} from "../../../common/adapters/html.message";
 import {BcryptPasswordHash} from "../../../common/adapters/bcrypt.password";
 import {jwtService} from "../../../common/adapters/jwt.service";
 import {injectable} from "inversify";
 import {CreatedUserType} from "../../../models/schemas/Auth.schema";
+import {UsersRepository} from "../../users/repositories/users.repository";
 
 @injectable()
 export class AuthService {
 
-    constructor(protected authRepository: AuthRepository){}
+    constructor(protected authRepository: AuthRepository,
+                protected usersRepository: UsersRepository) {
+    }
 
     async login(loginOrEmail: string, password: string, ip: string, userAgent: string): Promise<TokensType | null> {
         const user = await this.authRepository.findUser(loginOrEmail)
         if (!user) return null;
 
-        const isValid: boolean = await BcryptPasswordHash.compare(password, user.password)
+        const isValid: boolean = await BcryptPasswordHash.compare(password, user.passwordHash)
         if (!isValid) return null
 
         const deviceId = randomUUID();
@@ -61,7 +63,7 @@ export class AuthService {
 
 
     async createUserService(login: string, password: string, email: string) {
-        const user = await usersRepository.findLoginOrEmail(email, login)
+        const user = await this.usersRepository.findLoginOrEmail(email, login)
         if (user) {
             const isEmail: boolean = user.email === email
             const isLogin: boolean = user.login === login
@@ -89,7 +91,7 @@ export class AuthService {
                 minutes: 30,
             }),
         };
-        await usersRepository.createUser(newUser)
+        await this.usersRepository.createUser(newUser)
 
         try {
             nodemailerService.sendEmail(
@@ -104,16 +106,16 @@ export class AuthService {
     }
 
     async confirmationUserService(code: string) {
-        const user: WithId<CreatedUserType> | null = await usersRepository.findUserByConfirmationCode(code)
+        const user: WithId<CreatedUserType> | null = await this.usersRepository.findUserByConfirmationCode(code)
         if (!user) return false
         if (user.isConfirmed) return false
         if (user.confirmationCodeExpiration! < new Date()) return false
 
-        return await usersRepository.updateConfirmation(user._id)
+        return await this.usersRepository.updateConfirmation(user._id)
     }
 
     async passwordRecovery(email: string) {
-        const user = await usersRepository.findUserByEmail(email)
+        const user = await this.usersRepository.findUserByEmail(email)
         console.log(user)
 
         const code = randomUUID()
@@ -122,7 +124,7 @@ export class AuthService {
             minutes: 30,
         }).toISOString()
 
-        const result = await usersRepository.updateResendConfirmation(email, code, codeExpiration)
+        const result = await this.usersRepository.updateResendConfirmation(email, code, codeExpiration)
         if (result) {
             nodemailerService.sendEmail(
                 email, code, emailExamples.passwordRecoveryEmail
@@ -134,21 +136,21 @@ export class AuthService {
 
     async newLogin(password: string, code: string) {
         try {
-            const user: WithId<CreatedUserType> | null = await usersRepository.findUserByConfirmationCode(code)
+            const user: WithId<CreatedUserType> | null = await this.usersRepository.findUserByConfirmationCode(code)
             if (!user) return null
             if (user.isConfirmed) return null
             if (user.confirmationCodeExpiration! < new Date()) return null
             const passwordHash: string = await bcrypt.hash(password, 10)
 
-             const result = await usersRepository.updatePassword(user._id, passwordHash)
-            if(!result) return null
+            const result = await this.usersRepository.updatePassword(user._id, passwordHash)
+            if (!result) return null
         } catch (e) {
             console.error(e)
         }
     }
 
     async resendConfirmCodeService(email: string) {
-        const user: WithId<CreatedUserType> | null = await usersRepository.findUserByEmail(email)
+        const user: WithId<CreatedUserType> | null = await this.usersRepository.findUserByEmail(email)
         if (!user) return {status: ResultStatus.BadRequest}
 
         if (user.isConfirmed) {
@@ -163,9 +165,9 @@ export class AuthService {
             minutes: 30,
         }).toISOString()
 
-        const result: boolean = await usersRepository.updateResendConfirmation(email, newCode, newExpiration)
+        const result: boolean = await this.usersRepository.updateResendConfirmation(email, newCode, newExpiration)
         if (result) {
-            nodemailerService.sendEmail(email, newCode,emailExamples.registrationEmail)
+            nodemailerService.sendEmail(email, newCode, emailExamples.registrationEmail)
             return {
                 status: ResultStatus.NotContent
             }

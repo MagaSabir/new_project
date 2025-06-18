@@ -3,23 +3,25 @@ import {UserViewModel} from "../../../models/view_models/UserViewModel";
 import {PaginationType} from "../../../common/types/types";
 import {UserModel} from "../../../models/schemas/User.schema";
 import {CreatedUserType} from "../../../models/schemas/Auth.schema";
+import {injectable} from "inversify";
 
-export const queryUsersRepository = {
+@injectable()
+export class QueryUsersRepository {
     async getUser(pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: string, searchLoginTerm: any, searchEmailTerm: any): Promise<PaginationType<CreatedUserType>> {
-
-        const filter2 = {
-            $or: [{login: {$regex: searchLoginTerm, $options: 'i'}}, {
-                email: {
-                    $regex: searchEmailTerm,
-                    $options: 'i'
-                }
-            }]
+        const loginOrEmail = []
+        if (searchLoginTerm || searchEmailTerm) {
+            if (searchLoginTerm) {
+                loginOrEmail.push({login: {$regex: searchLoginTerm, $options: 'i'}})
+            }
+            if (searchEmailTerm) {
+                loginOrEmail.push({email: {$regex: searchEmailTerm, $options: 'i'}})
+            }
         }
-        const newFilter = searchEmailTerm || searchLoginTerm ? filter2 : {}
-        const totalCountUsers: number = await UserModel.countDocuments(newFilter)
+        const filter = loginOrEmail.length > 0 ? {$or: loginOrEmail} : {}
+        const totalCountUsers: number = await UserModel.countDocuments(filter)
 
         const users = await UserModel
-            .find(newFilter)
+            .find(filter)
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
             .sort({[sortBy]: sortDirection})
@@ -40,7 +42,7 @@ export const queryUsersRepository = {
             totalCount: totalCountUsers,
             items: newUser
         }
-    },
+    }
 
     async getCreatedUser(userId: string): Promise<UserViewModel | null> {
         const user: WithId<CreatedUserType> | null = await UserModel.findById(userId)
@@ -52,7 +54,7 @@ export const queryUsersRepository = {
                 createdAt: user.createdAt
             }
         return null
-    },
+    }
 
     async getUseById(userId: string) {
         const user: WithId<CreatedUserType> | null = await UserModel.findById(userId)
@@ -63,5 +65,5 @@ export const queryUsersRepository = {
                 userId: userId
             }
         return null
-    },
+    }
 }
