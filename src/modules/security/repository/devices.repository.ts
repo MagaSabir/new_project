@@ -1,38 +1,40 @@
-
-export const devicesRepository = {
+import {DeviceModel} from "../../../models/schemas/Device.schema";
+import {injectable} from "inversify";
+@injectable()
+export class DevicesRepository  {
     async deleteOtherSessions (deviceId: string, userId: string)  {
-        const result = await client.db('blogPlatform').collection('sessions').deleteMany({
+        const result = await DeviceModel.deleteMany({
             userId: userId,
             deviceId: {$ne: deviceId}
             //$ne (не равно)
         })
         return result.deletedCount === 1
-    },
+    }
 
-    async findSessionById (deviceId: string) {
-        return await client.db('blogPlatform').collection('sessions').findOne({deviceId})
-    },
+    // async findSessionById (deviceId: string) {
+    //     return  DeviceModel.findOne({deviceId})
+    // }
 
     async deleteSessionWithDeviceId (deviceId: string) {
-        const result = await client.db('blogPlatform').collection('sessions').deleteOne({
+        const result = await DeviceModel.deleteOne({
             deviceId
         })
         return result.deletedCount === 1
-    },
+    }
 
     async addRequest(data: object) {
-        await client.db('blogPlatform').collection('rateLimit').insertOne(data)
-    },
+        await DeviceModel.insertOne(data)
+    }
     //$gte (больше или равно)
     //$gt (больше чем)
 
-    async getRequest (ip: string,url: string, date: number) {
-        const result = await client.db('blogPlatform').collection('rateLimit').find({
-            ip,
-            url,
-            date: {$gte: date }
-        }).toArray()
-
-        return result
-    }
+    // async getRequest (ip: string,url: string, date: number) {
+    //     const result = await DeviceModel.find({
+    //         ip,
+    //         url,
+    //         date: {$gte: date }
+    //     }).lean()
+    //
+    //     return result
+    // }
 }

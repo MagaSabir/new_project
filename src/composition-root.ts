@@ -19,6 +19,10 @@ import {QueryRepoComment} from "./modules/comments/queryRepositories/query.repo.
 import {CommentController} from "./modules/comments/controllers/comment.controller";
 import {CommentRepository} from "./modules/comments/repositories/comment.repository";
 import {CommentService} from "./modules/comments/services/comment.service";
+import {DevicesController} from "./modules/security/controller/devices.controller";
+import {DevicesRepository} from "./modules/security/repository/devices.repository";
+import {DevicesQueryRepository} from "./modules/security/queryRepository/devices.query.repository";
+import {DevicesServices} from "./modules/security/services/devices.services";
 
 
 export const container = new Container()
@@ -46,3 +50,9 @@ container.bind(QueryUsersRepository).to(QueryUsersRepository)
 container.bind(CommentController).to(CommentController)
 container.bind(CommentRepository).to(CommentRepository)
 container.bind(CommentService).to(CommentService)
+//devices
+
+container.bind(DevicesController).to(DevicesController)
+container.bind(DevicesRepository).to(DevicesRepository)
+container.bind(DevicesQueryRepository).to(DevicesQueryRepository)
+container.bind(DevicesServices).to(DevicesServices)

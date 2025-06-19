@@ -11,13 +11,13 @@ export type CreatedUserType = {
 
 
 export const authSchema = new Schema({
-    login: { type: String, required: true },
-    password: { type: String, required: true },
-    email: { type: String, required: true },
-    createdAt: { type: String, required: true },
-    isConfirmed: { type: Boolean, required: true },
-    confirmationCodeExpiration: { type: String, require: true},
-    lastActiveDate: { type: String, require: true}
+    login: { type: String, required: false },
+    password: { type: String, required: false },
+    email: { type: String, required: false },
+    createdAt: { type: String, required: false },
+    isConfirmed: { type: Boolean, required: false },
+    confirmationCodeExpiration: { type: String, require: false},
+    lastActiveDate: { type: String, require: false}
 })
 
 export const AuthModel = mongoose.model('sessions', authSchema)

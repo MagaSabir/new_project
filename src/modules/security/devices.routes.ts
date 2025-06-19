@@ -1,10 +1,12 @@
 import {Router} from "express";
-import {devicesController} from "./controller/devices.controller";
 import {refreshMiddleware} from "../../common/middlewares/refresh.middleware";
+import {container} from "../../composition-root";
+import {DevicesController} from "./controller/devices.controller";
 
+export const devicesController = container.get(DevicesController)
 export const devicesRoutes = Router()
 
 devicesRoutes
-    .get('/devices', refreshMiddleware,devicesController.getDevicesWithActiveSessions)
-    .delete('/devices', refreshMiddleware, devicesController.deleteOtherSessions)
-    .delete('/devices/:id', refreshMiddleware, devicesController.deleteSessionWithId)
+    .get('/devices', refreshMiddleware,devicesController.getDevicesWithActiveSessions.bind(devicesController))
+    .delete('/devices', refreshMiddleware, devicesController.deleteOtherSessions.bind(devicesController))
+    .delete('/devices/:id', refreshMiddleware, devicesController.deleteSessionWithId.bind(devicesController))

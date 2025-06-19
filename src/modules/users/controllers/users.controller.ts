@@ -4,11 +4,14 @@ import {UserViewModel} from "../../../models/view_models/UserViewModel";
 import {PaginationType} from "../../../common/types/types";
 import {sortQueryFields} from "../../../common/types/sortQueryFields";
 import {CreatedUserType} from "../../../models/schemas/Auth.schema";
-import {CreateUserDto} from "../../../models/schemas/User.schema";
 import {injectable} from "inversify";
 import {QueryUsersRepository} from "../queryRepository/query.users.repository";
 import {UserService} from "../services/users.service";
-
+export type CreateUserDto = {
+    login: string,
+    email: string,
+    password: string
+}
 @injectable()
 export class UsersController {
     constructor(protected userService: UserService,

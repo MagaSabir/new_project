@@ -1,12 +1,13 @@
-import {client} from "../../../db/mongoDb";
-
-export const devicesQueryRepository = {
-    async findDevices (userId: string, deviceId: string) {
-        const result =  await client.db('blogPlatform').collection('sessions')
-            .find({
+import {DeviceModel} from "../../../models/schemas/Device.schema";
+import {injectable} from "inversify";
+@injectable()
+export class DevicesQueryRepository {
+    async findDevices(userId: string) {
+        const result = await DeviceModel.
+            find({
                 userId,
-
-                expiration: {$gt: Math.floor(Date.now() / 1000)}}).toArray()
+                expiration: {$gt: Math.floor(Date.now() / 1000)}
+            }).lean()
         return result.map(el => {
             return {
                 ip: el.ip === "::1" ? '127.0.0.1' : el.ip,
@@ -15,5 +16,19 @@ export const devicesQueryRepository = {
                 deviceId: el.deviceId
             }
         })
+    }
+
+    async findSessionById (deviceId: string) {
+        return  DeviceModel.findOne({deviceId})
+    }
+
+    async getRequest (ip: string,url: string, date: number) {
+        const result = await DeviceModel.find({
+            ip,
+            url,
+            date: {$gte: date }
+        }).lean()
+
+        return result
     }
 }

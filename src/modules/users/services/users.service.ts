@@ -1,7 +1,7 @@
 import {UsersRepository} from "../repositories/users.repository";
 import bcrypt from 'bcrypt';
 import {injectable} from "inversify";
-import {CreateUserDto} from "../../../models/schemas/User.schema";
+import {CreateUserDto} from "../controllers/users.controller";
 
 @injectable()
 export class UserService {

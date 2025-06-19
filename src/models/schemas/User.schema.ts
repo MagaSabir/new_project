@@ -7,11 +7,7 @@ export type UserEntity = {
     createdAt: string
 }
 
-export type CreateUserDto = {
-    login: string
-    email: string
-    password: string
-}
+
 
 
 export const userSchema = new Schema({

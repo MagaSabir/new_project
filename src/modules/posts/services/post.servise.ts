@@ -1,16 +1,17 @@
 import {InsertOneResult, ObjectId} from "mongodb";
-import {commentRepository} from "../../comments/repositories/comment.repository";
 import {QueryBlogsRepository} from "../../blogs/queryRepository/query.blog.repository";
 import {BlogType} from "../../../models/schemas/Blog.schema";
 import {PostModel, PostType} from "../../../models/schemas/Post.schema";
 import {PostRepository} from "../repositories/post.repository";
 import {injectable} from "inversify";
+import {CommentRepository} from "../../comments/repositories/comment.repository";
 
 @injectable()
 export class PostsService  {
     constructor(
         protected postRepository: PostRepository,
-        protected queryBlogRepository:  QueryBlogsRepository) {}
+        protected queryBlogRepository:  QueryBlogsRepository,
+        protected commentRepository: CommentRepository) {}
 
     async createPostService (dto: PostType): Promise<string | null> {
         const blog: BlogType | null = await this.queryBlogRepository.getBlog(dto.blogId)
@@ -47,7 +48,7 @@ export class PostsService  {
             },
             createdAt: new Date().toISOString()
         }
-        const result = await commentRepository.createPost(comment)
+        const result = await this.commentRepository.createPost(comment)
 
         return result.toString()
     }
