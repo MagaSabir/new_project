@@ -1,8 +1,9 @@
 import {creator} from "./helpers/helpers.e2e.helper";
 import request from "supertest";
 import {app} from "../app";
-import {db, runDb} from "../db/mongoDb";
+import {mongoURI, runDb} from "../db/mongoDb";
 import {NextFunction} from "express";
+import mongoose from "mongoose";
 
 jest.mock('../common/middlewares/rateLimit.middleware', () => ({
     rateLimitMiddleware: (req: Request, res: Response, next: NextFunction) => next()
@@ -10,13 +11,11 @@ jest.mock('../common/middlewares/rateLimit.middleware', () => ({
 
 describe('tests', () => {
     beforeAll(async () => {
-        await runDb();
-        await db.collection('sessions').deleteMany()
+        await mongoose.connect(mongoURI)
     });
 
-    afterAll(async () => {
-        await db.collection('users').deleteMany()
-
+    beforeEach(async () => {
+        await mongoose.disconnect()
     })
 let refreshToken;
 

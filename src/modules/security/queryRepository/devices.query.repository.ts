@@ -1,9 +1,10 @@
 import {DeviceModel} from "../../../models/schemas/Device.schema";
 import {injectable} from "inversify";
+import {AuthModel} from "../../../models/schemas/Auth.schema";
 @injectable()
 export class DevicesQueryRepository {
     async findDevices(userId: string) {
-        const result = await DeviceModel.
+        const result = await AuthModel.
             find({
                 userId,
                 expiration: {$gt: Math.floor(Date.now() / 1000)}
