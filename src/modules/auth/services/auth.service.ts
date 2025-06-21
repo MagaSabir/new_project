@@ -1,7 +1,6 @@
 import {AuthRepository} from "../repositories/auth.repository";
 import bcrypt from "bcrypt";
 import {nodemailerService} from "../../../common/adapters/nodemailer.service";
-import {randomUUID} from "node:crypto";
 import {add} from "date-fns";
 import {ResultStatus} from "../../../common/types/resultStatuse";
 import {WithId} from "mongodb";
@@ -13,6 +12,7 @@ import {jwtService} from "../../../common/adapters/jwt.service";
 import {injectable} from "inversify";
 import {CreatedUserType} from "../../../models/schemas/Auth.schema";
 import {UsersRepository} from "../../users/repositories/users.repository";
+import { randomUUID } from "crypto";
 
 @injectable()
 export class AuthService {

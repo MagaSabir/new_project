@@ -13,14 +13,14 @@ export class DevicesQueryRepository {
             return {
                 ip: el.ip === "::1" ? '127.0.0.1' : el.ip,
                 title: el.userAgent,
-                lastActiveDate: new Date(el.lastActiveDate * 1000).toISOString(),
+                lastActiveDate: new Date(Number(el.lastActiveDate) * 1000).toString(),
                 deviceId: el.deviceId
             }
         })
     }
 
     async findSessionById (deviceId: string) {
-        return  DeviceModel.findOne({deviceId})
+        return  AuthModel.findOne({deviceId})
     }
 
     async getRequest (ip: string,url: string, date: number) {

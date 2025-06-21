@@ -14,6 +14,7 @@ export class DevicesController {
     async getDevicesWithActiveSessions(req: Request, res: Response) {
         const payload: PayloadType = req.payload
         const result = await this.deviceService.findDevices(payload.userId, payload.deviceId)
+        console.log(result)
         res.status(200).send(result)
     }
 
@@ -27,7 +28,7 @@ export class DevicesController {
         const payload = req.payload
         const deviceIdToDelete = req.params.id
         const session = await this.queryRepository.findSessionById(deviceIdToDelete)
-
+        console.log(session)
         if (!session) {
             res.sendStatus(404)
             return
