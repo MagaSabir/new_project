@@ -58,6 +58,10 @@ export class CommentController  {
     async addLike(req: Request, res: Response) {
         const { likeStatus } = req.body
         const commentId = req.params.id
-        const result = this.commentService.addLike(likeStatus, commentId)
+        const userId = req.user.id
+        const result = await this.commentService.addLike(userId, commentId, likeStatus)
+        if (result.created) {
+            res.sendStatus(200)
+        }
     }
 }

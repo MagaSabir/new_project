@@ -1,6 +1,7 @@
 import {ObjectId} from "mongodb";
 import {CommentModel} from "../../../models/schemas/Comment.schema";
 import {injectable} from "inversify";
+import {LikesModel} from "../../../models/schemas/Likes.schema";
 @injectable()
 export class CommentRepository  {
     async createPost (content: any) {
@@ -19,8 +20,9 @@ export class CommentRepository  {
         return result.matchedCount === 1
     }
 
-    async addLike (status, commentId: string) {
-        const result = await CommentModel.updateOne({_id: new ObjectId(id)}, {$set: status})
+
+    async findLike (userId: string, commentId: string) {
+        const result = await LikesModel.findOne({userId, commentId}).lean()
         return result
     }
 }

@@ -1,7 +1,8 @@
 import {WithId} from "mongodb";
 import {CommentType} from "../../../models/view_models/CommentModel";
 import {CommentModel} from "../../../models/schemas/Comment.schema";
-
+import {injectable} from "inversify";
+@injectable()
 export class QueryRepoComment  {
     async getCommentById(id: string) {
         const comment: WithId<CommentType> | null = await CommentModel.findById(id)
