@@ -18,6 +18,7 @@ const likeSchema = new Schema({
 
 export const commentSchema = new Schema({
     content: {type: String, required: true},
+    postId: { type: String, required: true },
     commentatorInfo: {
         userId: {type: String, required: true},
         userLogin: {type: String, required: true}

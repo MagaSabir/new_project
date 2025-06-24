@@ -18,6 +18,7 @@ export class CommentController  {
                return
            }
            res.status(200).send(comment)
+           return
 
        } catch (error) {
            res.sendStatus(STATUS_CODE.SERVER_ERROR)
@@ -60,8 +61,10 @@ export class CommentController  {
         const commentId = req.params.id
         const userId = req.user.id
         const result = await this.commentService.addLike(userId, commentId, likeStatus)
-        if (result.created) {
-            res.sendStatus(200)
+        if (!result) {
+            res.sendStatus(404)
+            return
         }
+        res.sendStatus(204)
     }
 }

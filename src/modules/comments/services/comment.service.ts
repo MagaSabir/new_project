@@ -16,11 +16,22 @@ export class CommentService {
         return await this.commentRepository.updateComment(id, data)
     }
 
-    async addLike(userId: string, commentId: string, likeStatus: string) {
-        const like = await this.commentRepository.findLike(userId, commentId)
-        console.log(like)
-        const newLike = new LikesModel({userId, commentId, likeStatus: likeStatus})
-        await newLike.save();
-        return {created: true}
+    async addLike(userId: string, commentId: string, likeStatus: any) {
+        const comment = await this.queryRepository.getCommentById(commentId)
+        console.log(comment+ ' a')
+        if (!comment) return null
+        const likeDoc = await LikesModel.findOne({userId, commentId});
+
+        if(likeDoc) {
+            if (likeDoc.likeStatus !== likeStatus) {
+                likeDoc.likeStatus = likeStatus
+                likeDoc.createdAt = new Date().toISOString()
+                await likeDoc.save()
+            }
+            return true
+        }
+        const like = new LikesModel({userId, commentId, likeStatus: likeStatus, createdAt: new Date().toISOString()})
+        await like.save()
+        return true
     }
 }

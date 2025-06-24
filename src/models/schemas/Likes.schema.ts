@@ -9,8 +9,8 @@ export type LikeType = {
 const likeSchema = new Schema({
     commentId: { type: String, required: true },
     userId: { type: String, required: true },
-    likeStatus: { type: String, enum: ['Like, Dislike, None'], required: true},
-    createdAt: { type: Date, default: Date.now }
+    likeStatus: { type: String, enum: ['Like', 'Dislike', 'None'], required: true},
+    createdAt: { type: String}
 })
 
 export const LikesModel = mongoose.model('likes', likeSchema)
