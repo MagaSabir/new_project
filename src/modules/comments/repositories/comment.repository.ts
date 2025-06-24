@@ -19,7 +19,8 @@ export class CommentRepository  {
         return result.matchedCount === 1
     }
 
-    async addLike (id: string, status: string) {
-        const result = ''
+    async addLike (status, commentId: string) {
+        const result = await CommentModel.updateOne({_id: new ObjectId(id)}, {$set: status})
+        return result
     }
 }

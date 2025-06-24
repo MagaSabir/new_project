@@ -13,4 +13,9 @@ export class CommentService {
     async updateComment(id: string, data: string) {
         return await this.commentRepository.updateComment(id, data)
     }
+
+    async addLike(status: string, id: string) {
+        const result = await this.commentRepository.addLike(status, id)
+        console.log(result)
+    }
 }

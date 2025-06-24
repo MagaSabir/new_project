@@ -8,7 +8,7 @@ export interface ITokenService  {
 
 export const jwtService = {
     async generateAccessToken(userId: string, userLogin: string) {
-        return jwt.sign({userId, userLogin}, process.env.JWT_SECRET!, {expiresIn: '10m'})
+        return jwt.sign({userId, userLogin}, process.env.JWT_SECRET!, {expiresIn: '20m'})
     },
 
     async generateRefreshToken(userId: string, userLogin: string, deviceId: string) {
