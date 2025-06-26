@@ -3,37 +3,41 @@ import {CommentService} from "../services/comment.service";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 import {QueryRepoComment} from "../queryRepositories/query.repo.comment";
 import {injectable} from "inversify";
-import {CommentRepository} from "../repositories/comment.repository";
+import {ResultStatus} from "../../../common/types/resultStatuse";
+import {jwtService} from "../../../common/adapters/jwt.service";
 
 @injectable()
-export class CommentController  {
+export class CommentController {
     constructor(protected commentService: CommentService,
                 protected queryCommentRepository: QueryRepoComment) {
     }
-    async getComment(req: Request, res: Response) {
-       try {
-           const comment = await this.queryCommentRepository.getCommentById(req.params.id)
-           if(!comment) {
-               res.sendStatus(STATUS_CODE.NOT_FOUND_404)
-               return
-           }
-           res.status(200).send(comment)
-           return
 
-       } catch (error) {
-           res.sendStatus(STATUS_CODE.SERVER_ERROR)
-       }
+    async getComment(req: Request, res: Response) {
+        try {
+
+            const comment = await this.queryCommentRepository.getCommentById(req.params.id)
+
+            if (!comment) {
+                res.sendStatus(STATUS_CODE.NOT_FOUND_404)
+                return
+            }
+            res.status(200).send(comment)
+            return
+
+        } catch (error) {
+            res.sendStatus(STATUS_CODE.SERVER_ERROR)
+        }
     }
 
 
     async deleteCommentByID(req: Request, res: Response) {
         const comment = await this.queryCommentRepository.getCommentById(req.params.id)
-        if(!comment) {
+        if (!comment) {
             res.sendStatus(STATUS_CODE.NOT_FOUND_404)
             return
         }
 
-        if(req.user!.id !== comment.commentatorInfo.userId) {
+        if (req.user.id !== comment.commentatorInfo.userId) {
             res.sendStatus(403)
             return
         }
@@ -43,12 +47,12 @@ export class CommentController  {
 
     async updateComment(req: Request, res: Response) {
         const comment = await this.queryCommentRepository.getCommentById(req.params.id)
-        if(!comment){
+        if (!comment) {
             console.log(comment)
             res.sendStatus(STATUS_CODE.NOT_FOUND_404)
             return
         }
-        if(req.user.id !== comment.commentatorInfo.userId) {
+        if (req.user.id !== comment.commentatorInfo.userId) {
             res.sendStatus(403)
             return
         }
@@ -56,12 +60,14 @@ export class CommentController  {
         res.sendStatus(204)
     }
 
-    async addLike(req: Request, res: Response) {
-        const { likeStatus } = req.body
+    async setLike(req: Request, res: Response) {
+        const {likeStatus} = req.body
         const commentId = req.params.id
         const userId = req.user.id
-        const result = await this.commentService.addLike(userId, commentId, likeStatus)
-        if (!result) {
+
+
+        const result = await this.commentService.setLikeStatus(userId, commentId, likeStatus)
+        if (result.status === ResultStatus.NotFound) {
             res.sendStatus(404)
             return
         }

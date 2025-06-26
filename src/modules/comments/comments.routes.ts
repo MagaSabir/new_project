@@ -12,4 +12,4 @@ commentsRoutes
     .get('/:id', commentController.getComment.bind(commentController))
     .delete('/:id', accessTokenMiddleware, commentController.deleteCommentByID.bind(commentController))
     .put('/:id',contentValidation, accessTokenMiddleware, inputValidationErrors, commentController.updateComment.bind(commentController))
-    .put('/:id/like-status', accessTokenMiddleware, commentController.addLike.bind(commentController))
+    .put('/:id/like-status', accessTokenMiddleware, commentController.setLike.bind(commentController))

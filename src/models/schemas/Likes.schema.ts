@@ -10,7 +10,7 @@ const likeSchema = new Schema({
     commentId: { type: String, required: true },
     userId: { type: String, required: true },
     likeStatus: { type: String, enum: ['Like', 'Dislike', 'None'], required: true},
-    createdAt: { type: String}
+    createdAt: { type: Date, default: Date.now() }
 })
 
 export const LikesModel = mongoose.model('likes', likeSchema)

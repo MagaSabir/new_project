@@ -21,8 +21,21 @@ export class CommentRepository  {
     }
 
 
-    async findLike (userId: string, commentId: string) {
-        const result = await LikesModel.findOne({userId, commentId}).lean()
-        return result
+    async saveLike (existingLike: any) {
+        await existingLike.save();
+    }
+
+    async createLike (userId: string, commentId: string, likeStatus: LikeStatus) {
+        await LikesModel.create({userId, commentId, likeStatus})
+    }
+
+    async updateLikesCount(commentId: string) {
+        const likes = await LikesModel.countDocuments({commentId, likeStatus: 'Like'})
+        const dislike = await LikesModel.countDocuments({commentId, likeStatus: 'Dislike'})
+
+        await CommentModel.updateOne({_id: commentId}, {$set: {likesCount: likes, dislikesCount: dislike }})
+
     }
 }
+
+export type LikeStatus = 'Like' | 'Dislike' | 'None'

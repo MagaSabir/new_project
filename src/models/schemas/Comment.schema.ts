@@ -10,21 +10,20 @@ export type CommentType = {
 }
 
 
-const likeSchema = new Schema({
-        likesCount: { type: Number, default: 0 },
-        dislikesCount:{ type: Number, default: 0 },
-        myStatus: {type: String, enum: ['Like', 'Dislike', 'None'], default: 'None'}
-})
+
+
 
 export const commentSchema = new Schema({
     content: {type: String, required: true},
-    postId: { type: String, required: true },
+    postId: {type: String, required: true},
     commentatorInfo: {
         userId: {type: String, required: true},
         userLogin: {type: String, required: true}
     },
     createdAt: {type: String, required: true},
-    likeInfo: { type: likeSchema }
+    likesCount: {type: Number, default: 0},
+    dislikesCount: {type: Number, default: 0},
+
 }, {
     timestamps: {createdAt: true, updatedAt: false}
 })

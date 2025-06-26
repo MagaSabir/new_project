@@ -10,28 +10,19 @@ export class QueryRepoComment {
         const comment: WithId<CommentType> | null = await CommentModel.findById(id)
 
         if (!comment) return null
-        const likes = await LikesModel.findOne({commentId: id, userId: comment.commentatorInfo.userId}).lean()
-        console.log(comment)
-        if (likes) {
-
-
-            const statusLikes = await LikesModel.countDocuments({commentId: id, likeStatus: 'Like'})
-            const statusDislikes = await LikesModel.countDocuments({commentId: id, likeStatus: 'Dislike'})
-
-
-            return {
-                id: comment._id.toString(),
-                content: comment.content,
-                commentatorInfo: comment.commentatorInfo,
-                createdAt: comment.createdAt,
-                likesInfo: {
-                    likesCount: statusLikes,
-                    dislikes: statusDislikes,
-                    myStatus: likes.likeStatus
-                }
+        const likes = await LikesModel.findOne({commentId: id}).lean()
+        console.log(likes)
+        return {
+            id: comment._id.toString(),
+            content: comment.content,
+            commentatorInfo: comment.commentatorInfo,
+            createdAt: comment.createdAt,
+            likesInfo: {
+                likesCount: comment.likesCount,
+                dislikesCount: comment.dislikesCount,
+                myStatus: likes ? likes.likeStatus : 'None'
             }
         }
-        return await new CommentModel({})
     }
 
     async getComments(id: string, pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: any) {
@@ -45,26 +36,16 @@ export class QueryRepoComment {
             .sort({[sortBy]: sortDirection})
             .lean()
 
-        const commentId = comments.map(l => l._id)
-        const likes = await LikesModel.find({
-            commentId: { $in: commentId }
-        }).lean();
 
-        const result = comments.map(comment => {
-            const commentLikes = likes.filter(l => l.commentId === comment._id.toString()).length
-
-
-        })
-        const likesCount = await LikesModel.countDocuments({commentId, likeStatus: 'Like'})
-        const dislikesCount = await LikesModel.countDocuments({commentId, likeStatus: 'Dislike'})
-
-        const comment: CommentType[] = comments.map(el => {
+        const comment: CommentType[] = comments.map((el: any) => {
 
             return {
                 id: el._id.toString(),
                 content: el.content,
                 commentatorInfo: el.commentatorInfo,
                 createdAt: el.createdAt,
+                likesCount: el.likesCount,
+                dislikesCount: el.dislikesCount
             }
         })
 
