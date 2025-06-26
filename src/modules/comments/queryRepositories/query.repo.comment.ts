@@ -11,7 +11,6 @@ export class QueryRepoComment {
 
         if (!comment) return null
         const likes = await LikesModel.findOne({commentId: id}).lean()
-        console.log(likes)
         return {
             id: comment._id.toString(),
             content: comment.content,
@@ -20,7 +19,7 @@ export class QueryRepoComment {
             likesInfo: {
                 likesCount: comment.likesCount,
                 dislikesCount: comment.dislikesCount,
-                myStatus: likes ? likes.likeStatus : 'None'
+                myStatus: 'None',
             }
         }
     }
@@ -37,20 +36,22 @@ export class QueryRepoComment {
             .lean()
 
 
-        const comment: CommentType[] = comments.map((el: any) => {
+        const comment = comments.map((el: any) => {
 
             return {
                 id: el._id.toString(),
                 content: el.content,
                 commentatorInfo: el.commentatorInfo,
                 createdAt: el.createdAt,
-                likesCount: el.likesCount,
-                dislikesCount: el.dislikesCount
+                likesInfo: {
+                    likesCount: el.likesCount,
+                    dislikesCount: el.dislikesCount,
+                    myStatus: 'None'
+                }
+
+
             }
         })
-
-        console.log(comment)
-
 
         return {
             pagesCount: Math.ceil(totalCountPosts / pageSize),

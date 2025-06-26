@@ -5,7 +5,7 @@ export type CommentType = {
         userId: string,
         userLogin: string
     },
-    createdAt: string
+    createdAt: string,
     likesCount: number,
     dislikesCount: number
 }

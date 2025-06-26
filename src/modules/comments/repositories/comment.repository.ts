@@ -2,30 +2,31 @@ import {ObjectId} from "mongodb";
 import {CommentModel} from "../../../models/schemas/Comment.schema";
 import {injectable} from "inversify";
 import {LikesModel} from "../../../models/schemas/Likes.schema";
+
 @injectable()
-export class CommentRepository  {
-    async createPost (content: any) {
-         const {_id} = await CommentModel.create(content)
+export class CommentRepository {
+    async createPost(content: any) {
+        const {_id} = await CommentModel.create(content)
         return _id
     }
 
-    async deleteComment (id: string) {
-        const result =  await CommentModel.deleteOne({_id: new ObjectId(id)})
-        return  result.deletedCount === 1
+    async deleteComment(id: string) {
+        const result = await CommentModel.deleteOne({_id: new ObjectId(id)})
+        return result.deletedCount === 1
     }
 
-    async updateComment (id: string, data: any) {
+    async updateComment(id: string, data: any) {
         const result = await CommentModel
             .updateOne({_id: new ObjectId(id)}, {$set: data})
         return result.matchedCount === 1
     }
 
 
-    async saveLike (existingLike: any) {
+    async saveLike(existingLike: any) {
         await existingLike.save();
     }
 
-    async createLike (userId: string, commentId: string, likeStatus: LikeStatus) {
+    async createLike(userId: string, commentId: string, likeStatus: LikeStatus) {
         await LikesModel.create({userId, commentId, likeStatus})
     }
 
@@ -33,7 +34,7 @@ export class CommentRepository  {
         const likes = await LikesModel.countDocuments({commentId, likeStatus: 'Like'})
         const dislike = await LikesModel.countDocuments({commentId, likeStatus: 'Dislike'})
 
-        await CommentModel.updateOne({_id: commentId}, {$set: {likesCount: likes, dislikesCount: dislike }})
+        await CommentModel.updateOne({_id: commentId}, {$set: {likesCount: likes, dislikesCount: dislike}})
 
     }
 }

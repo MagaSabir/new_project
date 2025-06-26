@@ -4,7 +4,6 @@ import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 import {QueryRepoComment} from "../queryRepositories/query.repo.comment";
 import {injectable} from "inversify";
 import {ResultStatus} from "../../../common/types/resultStatuse";
-import {jwtService} from "../../../common/adapters/jwt.service";
 
 @injectable()
 export class CommentController {
@@ -26,6 +25,7 @@ export class CommentController {
 
         } catch (error) {
             res.sendStatus(STATUS_CODE.SERVER_ERROR)
+
         }
     }
 

@@ -10,9 +10,6 @@ export type CommentType = {
 }
 
 
-
-
-
 export const commentSchema = new Schema({
     content: {type: String, required: true},
     postId: {type: String, required: true},
