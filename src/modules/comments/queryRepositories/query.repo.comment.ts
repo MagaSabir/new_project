@@ -36,10 +36,11 @@ export class QueryRepoComment {
             .lean()
 
         const commentId = comments.map(l => l._id)
+        console.log(commentId)
         const likes = await LikesModel.find({commentId: {$in: commentId}, userId}).lean()
         console.log(likes)
         const comment = comments.map((el: any) => {
-
+            const matchedLikes = likes.find(l => l.commentId === el._id.toString())
             return {
                 id: el._id.toString(),
                 content: el.content,
@@ -48,7 +49,7 @@ export class QueryRepoComment {
                 likesInfo: {
                     likesCount: el.likesCount,
                     dislikesCount: el.dislikesCount,
-                    myStatus: likes ? likes.likeStatus : 'None',
+                    myStatus: matchedLikes ? matchedLikes.likeStatus : 'None'
                 }
 
 

@@ -9,8 +9,7 @@ export const checkAccess  = async (req: Request, res: Response, next: NextFuncti
         return
     }
 
-    const [type, token] = auth.split(' ')
-
+    const token: string = auth.split(' ')[1];
     try {
         const payload = await jwtService.verifyToken(token)
 
