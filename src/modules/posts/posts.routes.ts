@@ -11,6 +11,7 @@ import {inputValidationErrors} from "../../common/adapters/errorMessage";
 import {contentValidation} from "../../common/middlewares/commentValidation/comment.validation";
 import {PostsController} from "./controllers/posts.controller";
 import {container} from "../../composition-root";
+import {checkAccess} from "../../common/middlewares/authAccess";
 
 const postsController = container.get(PostsController)
 export const postRouter = Router();
@@ -39,4 +40,4 @@ postRouter
     postsController.createPost.bind(postsController),
   )
   .post('/:id/comments',contentValidation, accessTokenMiddleware,inputValidationErrors, postsController.createCommentByPostId.bind(postsController))
-  .get('/:id/comments', postsController.getComments.bind(postsController))
+  .get('/:id/comments', checkAccess,postsController.getComments.bind(postsController))

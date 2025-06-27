@@ -13,8 +13,14 @@ export class CommentController {
 
     async getComment(req: Request, res: Response) {
         try {
+            let userId
+            if(req.user) {
+                userId = req.user.id
+            } else {
+                userId = 'None'
+            }
 
-            const comment = await this.queryCommentRepository.getCommentById(req.params.id)
+            const comment = await this.queryCommentRepository.getCommentById(req.params.id, userId)
 
             if (!comment) {
                 res.sendStatus(STATUS_CODE.NOT_FOUND_404)
@@ -24,6 +30,7 @@ export class CommentController {
             return
 
         } catch (error) {
+            console.log(error)
             res.sendStatus(STATUS_CODE.SERVER_ERROR)
 
         }

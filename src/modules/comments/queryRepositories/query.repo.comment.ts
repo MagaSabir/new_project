@@ -10,7 +10,7 @@ export class QueryRepoComment {
         const comment: WithId<CommentType> | null = await CommentModel.findById(id)
 
         if (!comment) return null
-        const likes = await LikesModel.findOne({commentId: id}).lean()
+        const likes = await LikesModel.findOne({commentId: id, userId}).lean()
         return {
             id: comment._id.toString(),
             content: comment.content,
@@ -19,12 +19,12 @@ export class QueryRepoComment {
             likesInfo: {
                 likesCount: comment.likesCount,
                 dislikesCount: comment.dislikesCount,
-                myStatus: 'None',
+                myStatus: likes ? likes.likeStatus : 'None',
             }
         }
     }
 
-    async getComments(id: string, pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: any) {
+    async getComments(id: string, userId: string, pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: any) {
         const totalCountPosts: number = await CommentModel.countDocuments({postId: id})
 
 
@@ -35,7 +35,9 @@ export class QueryRepoComment {
             .sort({[sortBy]: sortDirection})
             .lean()
 
-
+        const commentId = comments.map(l => l._id)
+        const likes = await LikesModel.find({commentId: {$in: commentId}, userId}).lean()
+        console.log(likes)
         const comment = comments.map((el: any) => {
 
             return {
@@ -46,7 +48,7 @@ export class QueryRepoComment {
                 likesInfo: {
                     likesCount: el.likesCount,
                     dislikesCount: el.dislikesCount,
-                    myStatus: 'None'
+                    myStatus: likes ? likes.likeStatus : 'None',
                 }
 
 

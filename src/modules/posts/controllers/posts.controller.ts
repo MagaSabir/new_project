@@ -81,7 +81,14 @@ export class PostsController {
         const postId: string = req.params.id
         const {pageNumber, pageSize, sortDirection, sortBy} = sortQueryFields(req.params)
 
-        const comment = await this.queryCommentRepository.getComments(postId, pageNumber, pageSize, sortDirection, sortBy)
+        let userId
+        if(req.user) {
+            userId = req.user.id
+        } else {
+            userId = 'None'
+        }
+
+        const comment = await this.queryCommentRepository.getComments(postId, userId, pageNumber, pageSize, sortDirection, sortBy)
         if (!comment.items.length) {
             res.sendStatus(STATUS_CODE.NOT_FOUND_404)
             return
