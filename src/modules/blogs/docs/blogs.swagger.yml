@@ -1,6 +1,19 @@
-paths:
-  /api/posts:
+openapi: 3.0.0
+info:
+  title: API Documentation
+  version: 1.0.0
 
+securitySchemes:
+  BasicAuth:
+    type: http
+    scheme: basic
+
+tags:
+  - name: Drivers
+    description: API for managing drivers
+
+paths:
+  /api/blogs/{blogId}/posts:
     get:
       parameters:
         - name: searchNameTerm
@@ -34,7 +47,7 @@ paths:
             description: 'pageSize is number of portions that should be returned'
             default: 10
       summary: Get a list of all blogs
-      tags: [ Posts ]
+      tags: [ Blogs ]
       responses:
         200:
           description: List of all blogs
@@ -43,4 +56,4 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Paginator<h03.BlogViewModel>'
+                  $ref: '../../../swagger/schemas/schemas.swagger.yml#/components/schemas/FieldError'

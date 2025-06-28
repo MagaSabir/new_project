@@ -15,3 +15,5 @@ export const SETTINGS = {
   DB_NAME: 'blogPlatform',
   ADMIN_AUTH: "admin:qwerty",
 };
+
+

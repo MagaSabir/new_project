@@ -2,10 +2,8 @@ import express, {Request, Response} from "express";
 import {blogRouter} from "./modules/blogs/blogs.routes";
 import {postRouter} from "./modules/posts/posts.routes";
 import {SETTINGS} from "./settings";
-// import { db} from "./db/mongoDb";
 import {userRouter} from "./modules/users/users.routes";
 import {authRoutes} from "./modules/auth/auth.routes";
-import {setupSwagger} from "./swagger/setup-swagger";
 import {commentsRoutes} from "./modules/comments/comments.routes";
 import cookieParser from 'cookie-parser'
 import {devicesRoutes} from "./modules/security/devices.routes";
@@ -15,6 +13,8 @@ import {UserModel} from "./models/schemas/User.schema";
 import {CommentModel} from "./models/schemas/Comment.schema";
 import {AuthModel} from "./models/schemas/Auth.schema";
 import {DeviceModel} from "./models/schemas/Device.schema";
+import {setupSwagger} from "./swagger/setup-swagger";
+
 
 export const app = express();
 app.set('trust proxy', true)

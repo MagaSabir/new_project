@@ -20,6 +20,7 @@ export type CreatedUserType = {
 //     lastActiveDate: { type: String, require: false}
 // })
 
+
 export const authSchema = new Schema({
     userId: { type: String, required: false },
     deviceId: { type: String, required: false },

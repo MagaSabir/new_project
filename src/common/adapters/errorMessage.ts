@@ -7,6 +7,7 @@ export const inputValidationErrors = (req: Request, res: Response, next: NextFun
         field: error.path,
     }));
 
+
     if (!errors.isEmpty()) {
         res.status(400).json({ errorsMessages: errors.array({ onlyFirstError: true }) });
         return
@@ -14,3 +15,7 @@ export const inputValidationErrors = (req: Request, res: Response, next: NextFun
     next();
     return;
 };
+
+
+
+
