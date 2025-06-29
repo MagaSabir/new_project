@@ -28,6 +28,7 @@
     "reflect-metadata": "^0.2.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
+    "swagger-ui-watcher": "^2.1.14",
     "yaml-js": "^0.3.1",
     "yamljs": "^0.3.0"
   },
@@ -55,7 +56,7 @@
   },
   "scripts": {
     "watch": "tsc --w",
-    "dev": "nodemon --inspect dist/index.js",
+    "dev": "nodemon --inspect dist dist/index.js",
     "jest": "jest -i",
     "lint": "eslint --fix .",
     "format": "prettier --write ."

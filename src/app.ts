@@ -16,6 +16,13 @@ import {DeviceModel} from "./models/schemas/Device.schema";
 import {setupSwagger} from "./swagger/setup-swagger";
 
 
+
+
+
+
+
+
+
 export const app = express();
 app.set('trust proxy', true)
 setupSwagger(app)
@@ -28,16 +35,20 @@ app.use(SETTINGS.PATH.auth, authRoutes)
 app.use(SETTINGS.PATH.comments, commentsRoutes)
 app.use('/security', devicesRoutes)
 
-
 app.delete("/testing/all-data", async (req: Request, res: Response) => {
     await BlogModel.deleteMany()
     await PostModel.deleteMany()
     await UserModel.deleteMany()
+
     await CommentModel.deleteMany()
     await DeviceModel.deleteMany()
+
     await AuthModel.deleteMany()
     res.sendStatus(204);
 });
+
+
+
 
 
 

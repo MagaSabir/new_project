@@ -3,57 +3,148 @@ info:
   title: API Documentation
   version: 1.0.0
 
-securitySchemes:
-  BasicAuth:
-    type: http
-    scheme: basic
-
 tags:
-  - name: Drivers
-    description: API for managing drivers
+  - name: Blogs
+    description: API for Blogs
 
 paths:
-  /api/blogs/{blogId}/posts:
-    get:
+  /blogs:
+    get: #Get Запрос
+      summary: Return Blogs with pagination
+      tags: [Blogs]
       parameters:
-        - name: searchNameTerm
-          in: query
-          description: 'Search term for blog Name: Name should contains this term in any position'
-          required: false
-          schema:
-            type: string
-            default: null
-        - name: sortBy
-          in: query
-          schema:
-            type: string
-            default: createdAt
-        - name: sortDirection
-          in: query
-          schema:
-            type: string
-            description: 'Default value: desc'
-            default: desc, asc
-        - name: pageNumber
-          in: query
-          description: 'pageNumber is number of portions that should be returned'
+        - in: query
+          name: pageNumber
           schema:
             type: integer
+            minimum: 1
             default: 1
-        - name: pageSize
-          in: query
+          description: Page number
+        - in: query
+          name: pageSize
           schema:
             type: integer
-            description: 'pageSize is number of portions that should be returned'
+            minimum: 1
             default: 10
-      summary: Get a list of all blogs
-      tags: [ Blogs ]
+          description: Number of items per page
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+            enum: [ createdAt, clientName, price, startedAt, finishedAt ]
+            default: createdAt
+          description: Field to sort by
+        - in: query
+          name: sortDirection
+          schema:
+            type: string
+            enum: [ asc, desc ]
+            default: desc
+          description: Sort direction
+
       responses:
-        200:
+        '200':
           description: List of all blogs
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '../../../swagger/schemas/schemas.swagger.yml#/components/schemas/FieldError'
+                  $ref: "#/components/schemas/PaginatorBlogViewModel"
+
+    post:
+      summary: Create a new blog
+
+      security:
+        - BasicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlogViewModel'
+      responses:
+        201:
+          description: Successfully
+
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    BlogViewModel:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '2'
+        name:
+          type: string
+          example: John Snow
+        description:
+          type: string
+          example: John Snow kill Dany
+        websiteUrl:
+          type: string
+          example: "https://example.com"
+        createdAt:
+          type: string
+          example: "2025-06-05T12:00:00Z"
+        isMembership:
+          type: boolean
+          example: false
+      required:
+        - id
+        - name
+        - description
+        - websiteUrl
+        - createdAt
+        - isMembership
+
+    PaginatorBlogViewModel:
+      type: object
+      properties:
+        pagesCount:
+          type: integer
+          example: 5
+        page:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 10
+        totalCount:
+          type: integer
+          example: 10
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlogViewModel'
+
+    CreatedBlogModel:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '2'
+        name:
+          type: string
+          example: John Snow
+        description:
+          type: string
+          example: John Snow kill Dany
+        websiteUrl:
+          type: string
+          example: "https://example.com"
+        createdAt:
+          type: string
+          example: "2025-06-05T12:00:00Z"
+        isMembership:
+          type: boolean
+          example: false
+      required:
+        - id
+        - name
+        - description
+        - websiteUrl
+        - createdAt
+        - isMembership
