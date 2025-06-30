@@ -23,11 +23,9 @@ export class AuthService {
 
     async login(loginOrEmail: string, password: string, ip: string, userAgent: string): Promise<TokensType | null> {
         const user = await this.authRepository.findUser(loginOrEmail)
-        console.log(user)
         if (!user) return null;
 
         const isValid: boolean = await BcryptPasswordHash.compare(password, user.passwordHash)
-        console.log(isValid)
         if (!isValid) return null
 
         const deviceId = randomUUID();

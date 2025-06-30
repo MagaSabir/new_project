@@ -1,22 +1,33 @@
 import request from 'supertest';
 import {app} from "../app";
-import {SETTINGS} from "../settings";
 import {STATUS_CODE} from "../common/adapters/http-statuses-code";
 import {faker} from "@faker-js/faker/locale/ar";
-import {mongoURI, runDb} from "../db/mongoDb";
 import {auth, creator,} from "./helpers/helpers.e2e.helper";
 import mongoose from "mongoose";
 
+import {MongoMemoryServer} from "mongodb-memory-server-core";
 
+let mongo: MongoMemoryServer
 describe('/blogs tests', () => {
 
 
     beforeAll(async () => {
-        await mongoose.connect(mongoURI)
+        mongo = await MongoMemoryServer.create()
+        const mongoUri = mongo.getUri()
+        await mongoose.connect(mongoUri)
     });
 
     beforeEach(async () => {
-        await mongoose.disconnect()
+        const collections = await mongoose.connection.db!.collections()
+        await Promise.all(
+            collections.map(collection => collection.deleteMany())
+        )
+
+    })
+
+    afterAll(async () => {
+        await mongo.stop()
+       await mongoose.connection.close()
     })
 
     describe('GET /blogs', () => {
@@ -110,7 +121,7 @@ describe('/blogs tests', () => {
     describe('PUT /blogs', () => {
         it('PUT:/id /should update blog', async () => {
             const createdBlog = await creator.createBlog({name: 'UpdatedBlog'})
-             await request(app)
+            await request(app)
                 .put(`/blogs/${createdBlog.id}`)
                 .set('Authorization', auth)
                 .send({
@@ -136,10 +147,10 @@ describe('/blogs tests', () => {
     describe('DELETE /blogs', () => {
         it('POST-> GET-> DELETE /should create a blog, check it exists, and delete it', async () => {
             const createdBlog = await creator.createBlog({name: 'deletedBlog'})
-             await request(app)
+            await request(app)
                 .get(`/blogs/${createdBlog.id}`)
                 .expect(STATUS_CODE.OK_200)
-             await request(app)
+            await request(app)
                 .delete(`/blogs/${createdBlog.id}`)
                 .set('Authorization', auth)
                 .expect(STATUS_CODE.NO_CONTENT_204)
@@ -149,7 +160,7 @@ describe('/blogs tests', () => {
         });
     })
 
-    
+
     //Тесты с некорректными значениями
     describe('POST /blogs - with invalid input', () => {
         it('should return 400 with errors messages if input has incorrect values', async () => {
@@ -163,10 +174,10 @@ describe('/blogs tests', () => {
                 })
                 .expect(STATUS_CODE.BAD_REQUEST_400)
             expect(res.body).toMatchObject({
-                    errorsMessages: expect.arrayContaining([{
-                        field: 'name',
-                        message: expect.any(String)
-                    },
+                errorsMessages: expect.arrayContaining([{
+                    field: 'name',
+                    message: expect.any(String)
+                },
                     {
                         field: 'description',
                         message: expect.any(String)
@@ -175,7 +186,8 @@ describe('/blogs tests', () => {
                         field: 'websiteUrl',
                         message: expect.any(String)
                     }
-                ])})
+                ])
+            })
         });
 
         it(`should return 400 with error messages if field "websiteUrl" contains incorrect value`, async () => {
@@ -227,7 +239,7 @@ describe('/blogs tests', () => {
             expect(res.body).toMatchObject(creator.err('description'))
         });
 
-        it('should return 401 if user is not authorized',  async () => {
+        it('should return 401 if user is not authorized', async () => {
             await request(app)
                 .post('/blogs')
                 .set('NotAuth', auth)

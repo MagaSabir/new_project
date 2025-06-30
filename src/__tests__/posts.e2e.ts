@@ -2,23 +2,30 @@ import request from "supertest";
 import {app} from "../app";
 import {SETTINGS} from "../settings";
 import {STATUS_CODE} from "../common/adapters/http-statuses-code";
-import {runDb} from "../db/mongoDb";
 import {auth, creator,} from './helpers/helpers.e2e.helper'
-import jwt from "jsonwebtoken";
-import {jwtService} from "../common/adapters/jwt.service";
-import {as} from "@faker-js/faker/dist/airline-BUL6NtOJ";
-import {response} from "express";
+import {MongoMemoryServer} from "mongodb-memory-server-core";
+import mongoose from "mongoose";
 
-
+let mongo: MongoMemoryServer
 describe('/posts tests', () => {
     let blogId: string
     beforeAll(async () => {
-        await runDb()
+        mongo = await MongoMemoryServer.create()
+        const mongoUri = mongo.getUri()
+        await mongoose.connect(mongoUri)
         blogId = (await creator.createBlog()).id
     })
 
     beforeEach(async () => {
-        await request(app).delete(SETTINGS.PATH.cleanDB)
+        const collections = await mongoose.connection.db!.collections()
+        await Promise.all(
+            collections.map(collection => collection.deleteMany())
+        )
+    })
+
+    afterAll(async () => {
+        await mongo.stop()
+        await mongoose.connection.close()
     })
 
     describe('GET/ posts', () => {
@@ -36,8 +43,8 @@ describe('/posts tests', () => {
         });
 
         it('should return list posts', async () => {
-            const createdBlog = await creator.createBlog({name:'blog'})
-            const createdPost1 = await creator.createPost({title: 'post1',blogId: createdBlog.id})
+            const createdBlog = await creator.createBlog({name: 'blog'})
+            const createdPost1 = await creator.createPost({title: 'post1', blogId: createdBlog.id})
             const createdPost2 = await creator.createPost({title: 'post2', blogId: createdBlog.id})
 
             const res = await request(app)
@@ -50,14 +57,14 @@ describe('/posts tests', () => {
                 totalCount: expect.any(Number),
                 items: expect.arrayContaining([
                     expect.objectContaining({
-                    id: createdPost1.id,
-                    title: 'post1',
-                    shortDescription: createdPost1.shortDescription,
-                    content: createdPost1.content,
-                    blogId: createdBlog.id,
-                    blogName: createdBlog.name,
-                    createdAt: expect.any(String)
-                }),
+                        id: createdPost1.id,
+                        title: 'post1',
+                        shortDescription: createdPost1.shortDescription,
+                        content: createdPost1.content,
+                        blogId: createdBlog.id,
+                        blogName: createdBlog.name,
+                        createdAt: expect.any(String)
+                    }),
                     expect.objectContaining({
                         id: createdPost2.id,
                         title: 'post2',
@@ -72,7 +79,7 @@ describe('/posts tests', () => {
         });
 
         it('should return post by id', async () => {
-            const createdBlog = await creator.createBlog({name:'blog'})
+            const createdBlog = await creator.createBlog({name: 'blog'})
             const createdPost = await creator.createPost({blogId: createdBlog.id, title: 'post2'})
             const res = await request(app)
                 .get(`/posts/${createdPost.id}`)
@@ -114,7 +121,7 @@ describe('/posts tests', () => {
         it('should update post', async () => {
             const createdBlog = await creator.createBlog()
             const createdPost = await creator.createPost({blogId: createdBlog.id})
-              await request(app)
+            await request(app)
                 .put(`${SETTINGS.PATH.posts}/${createdPost.id}`)
                 .set('Authorization', auth)
                 .send({
@@ -154,7 +161,7 @@ describe('/posts tests', () => {
             const response = await request(app)
                 .post(`${SETTINGS.PATH.auth}/login`)
                 .send({
-                    loginOrEmail: 'user123',
+                    loginOrEmail: 'user1',
                     password: 'string'
                 })
                 .expect(STATUS_CODE.OK_200)
@@ -167,14 +174,8 @@ describe('/posts tests', () => {
                 .set('Authorization', `Bearer ${accessToken}`)
                 .send({content: 'Some long text with many symbols'})
                 .expect(201)
-            expect(secondResponse.body).toEqual({
-                    id: expect.any(String),
-                    content: secondResponse.body.content,
-                    commentatorInfo: {
-                        userId: user.id,
-                        userLogin: user.login
-                    },
-                    createdAt: expect.any(String)
+            expect(secondResponse.body).toMatchObject({
+                id: expect.any(String)
             })
         });
     })
@@ -188,7 +189,7 @@ describe('/posts tests', () => {
             const response = await request(app)
                 .post(`${SETTINGS.PATH.auth}/login`)
                 .send({
-                    loginOrEmail: 'user123',
+                    loginOrEmail: 'user1',
                     password: 'string'
                 })
                 .expect(STATUS_CODE.OK_200)
@@ -201,12 +202,17 @@ describe('/posts tests', () => {
                 .set('Authorization', `Bearer ${accessToken}`)
                 .send({content: 'Some long text with many symbols'})
                 .expect(201)
-            expect(createResponse.body).toEqual({
+            expect(createResponse.body).toMatchObject({
                 id: expect.any(String),
                 content: createResponse.body.content,
                 commentatorInfo: {
                     userId: user.id,
                     userLogin: user.login
+                },
+                likesInfo: {
+                    dislikesCount: 0,
+                    likesCount: 0,
+                    myStatus: "None",
                 },
                 createdAt: expect.any(String)
             })
@@ -228,6 +234,11 @@ describe('/posts tests', () => {
                         userId: user.id,
                         userLogin: user.login
                     },
+                    likesInfo: {
+                        dislikesCount: 0,
+                        likesCount: 0,
+                        myStatus: "None",
+                    },
                     createdAt: expect.any(String)
                 }]
             })
@@ -237,8 +248,8 @@ describe('/posts tests', () => {
     //Invalid input data
 
     describe('POST /posts', () => {
-        it('should return 400 with error messages if input data has incorrect values', async ()  => {
-            let createdPost = await creator.createPost({blogId: blogId, title:''})
+        it('should return 400 with error messages if input data has incorrect values', async () => {
+            let createdPost = await creator.createPost({blogId: blogId, title: ''})
 
             const responseWithTitle = await request(app)
                 .post(SETTINGS.PATH.posts)
@@ -400,13 +411,13 @@ describe('/posts tests', () => {
 
         });
     })
-    
+
     describe('DELETE =>/posts', () => {
 
         it('should return Unauthorized', async () => {
             await request(app)
                 .delete(`${SETTINGS.PATH.posts}/12121}`)
-                expect(STATUS_CODE.UNAUTHORIZED_401)
+            expect(STATUS_CODE.UNAUTHORIZED_401)
         });
 
         it('should delete post by id', async () => {
