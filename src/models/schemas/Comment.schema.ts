@@ -1,4 +1,4 @@
-import mongoose, {HydratedDocument, Schema} from "mongoose";
+import mongoose, {Schema} from "mongoose";
 
 export type CommentType = {
     content: string,
@@ -25,7 +25,7 @@ export const commentSchema = new Schema({
     timestamps: {createdAt: true, updatedAt: false}
 })
 
-export type CommentDocument = HydratedDocument<CommentType>
 
-export const CommentModel = mongoose.model<CommentType>('comments', commentSchema)
+
+export const CommentModel = mongoose.model('comments', commentSchema)
 

@@ -7,6 +7,7 @@ import {PaginationType} from "../../../common/types/types";
 import {sortQueryFields} from "../../../common/types/sortQueryFields";
 import {PostsService} from "../services/post.servise";
 import {injectable} from "inversify";
+import request from "supertest";
 
 @injectable()
 export class PostsController {
@@ -40,6 +41,7 @@ export class PostsController {
             res.status(STATUS_CODE.CREATED_201).send(post);
             return
         }
+        res.sendStatus(404)
 
     }
 
@@ -95,6 +97,12 @@ export class PostsController {
         }
         res.status(STATUS_CODE.OK_200).send(comment)
         return
+    }
+
+    async addLike(req: Request, res: Response) {
+        const postId: string = req.params.id
+        const likeStatus = req.body.likeStatus
+        const like = await this.postService.addLike(postId, likeStatus)
     }
 
 }

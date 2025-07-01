@@ -16,8 +16,7 @@ export class CommentRepository {
     }
 
     async updateComment(id: string, data: any) {
-        const result = await CommentModel
-            .updateOne({_id: new ObjectId(id)}, {$set: data})
+        const result = await CommentModel.updateOne({_id: new ObjectId(id)}, {$set: data})
         return result.matchedCount === 1
     }
 

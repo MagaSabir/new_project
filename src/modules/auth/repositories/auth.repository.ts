@@ -19,7 +19,7 @@ export class AuthRepository {
     }
 
     async updateSession(userId: string, deviceId: string, iat: number | undefined, exp: number | undefined) {
-        AuthModel.updateOne(
+        await AuthModel.updateOne(
             {userId, deviceId},
             {$set: {lastActiveDate: iat, expiration: exp}})
     }

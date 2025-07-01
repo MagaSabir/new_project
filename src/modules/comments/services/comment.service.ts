@@ -30,10 +30,11 @@ export class CommentService {
         const existing = await LikesModel.findOne({userId, commentId})
 
         if (existing) {
-            existing.likeStatus = likeStatus
-            existing.createdAt = new Date()
-            await this.commentRepository.saveLike(existing)
-
+            if(existing.likeStatus !== likeStatus) {
+                existing.likeStatus = likeStatus
+                existing.createdAt = new Date()
+                await this.commentRepository.saveLike(existing)
+            }
         } else {
             await this.commentRepository.createLike(userId, commentId, likeStatus)
         }

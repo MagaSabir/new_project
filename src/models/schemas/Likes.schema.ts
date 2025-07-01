@@ -6,6 +6,8 @@ export type LikeType = {
     likeStatus: string
 }
 
+
+
 const likeSchema = new Schema({
     commentId: { type: String, required: true },
     userId: { type: String, required: true },
@@ -14,3 +16,4 @@ const likeSchema = new Schema({
 })
 
 export const LikesModel = mongoose.model('likes', likeSchema)
+
