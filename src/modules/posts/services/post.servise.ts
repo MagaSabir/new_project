@@ -1,7 +1,7 @@
-import {InsertOneResult, ObjectId} from "mongodb";
+import {ObjectId} from "mongodb";
 import {QueryBlogsRepository} from "../../blogs/queryRepository/query.blog.repository";
 import {BlogType} from "../../../models/schemas/Blog.schema";
-import {PostModel, PostType} from "../../../models/schemas/Post.schema";
+import {PostLikes, PostModel, PostType} from "../../../models/schemas/Post.schema";
 import {PostRepository} from "../repositories/post.repository";
 import {injectable} from "inversify";
 import {CommentRepository, LikeStatus} from "../../comments/repositories/comment.repository";
@@ -24,7 +24,8 @@ export class PostsService {
         const newPost = {
             ...dto,
             blogName: blog.name,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+
         }
         const post = new PostModel(newPost)
         return await this.postRepository.save(post)
@@ -57,11 +58,29 @@ export class PostsService {
     }
 
 
-    async addLike(id: string, status: LikeStatus) {
-        const post = await this.queryPostRepository.getPost(id)
-        if(!post) return null
+    async addLike(postId: string, userId: string, likeStatus: LikeStatus, login: string) {
+        const post = await this.queryPostRepository.getPost(postId)
 
+        const addedAt = new Date()
+        if (!post) return false
 
+        const existing = await PostLikes.findOne({userId, postId})
+
+        if (existing) {
+            existing.likeStatus = likeStatus
+            existing.addedAt = addedAt
+            await existing.save()
+        } else {
+            await PostLikes.create({postId, userId, likeStatus, login})
+        }
+        const [likes, dislikes] = await Promise.all([
+            PostLikes.countDocuments({postId, likeStatus: 'Like'}),
+            PostLikes.countDocuments({postId, likeStatus: 'Dislike'})
+        ])
+        console.log(likes)
+
+        await PostModel.updateOne({_id: postId}, {$set: {"extendedLikesInfo.likesCount": likes, "extendedLikesInfo.dislikesCount": dislikes}})
+    return true
     }
 }
 

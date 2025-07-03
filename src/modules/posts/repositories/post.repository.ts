@@ -4,19 +4,25 @@ import {injectable} from "inversify";
 
 @injectable()
 export class PostRepository {
-    async save (post: PostDocument): Promise<string> {
+    async save(post: PostDocument): Promise<string> {
         const {_id} = await post.save()
         return _id.toString()
     }
 
-    async updatePost (id: string, newPost: PostType): Promise<boolean> {
+    async updatePost(id: string, newPost: PostType): Promise<boolean> {
         const result: UpdateResult<PostType> = await PostModel.updateOne(
             {_id: new ObjectId(id)}, {$set: newPost})
         return result.matchedCount === 1
     }
 
-    async deletePost (id: string): Promise<boolean> {
+    async deletePost(id: string): Promise<boolean> {
         const result: DeleteResult = await PostModel.deleteOne({_id: new ObjectId(id)})
         return result.deletedCount === 1
     }
+
+    async updateLikeStatus(id: string, likeStatus: any, userId: string, userLogin: string) {
+        await PostModel.updateOne({});
+    }
+
+
 }

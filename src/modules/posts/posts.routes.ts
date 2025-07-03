@@ -17,8 +17,8 @@ const postsController = container.get(PostsController)
 export const postRouter = Router();
 
 postRouter
-    .get("/", postsController.getPosts.bind(postsController))
-    .get("/:id", postsController.getPostById.bind(postsController))
+    .get("/",checkAccess, postsController.getPosts.bind(postsController))
+    .get("/:id",checkAccess, postsController.getPostById.bind(postsController))
     .put(
         "/:id",
         basicAuthMiddleware,
@@ -41,4 +41,4 @@ postRouter
     )
     .post('/:id/comments', contentValidation, accessTokenMiddleware, inputValidationErrors, postsController.createCommentByPostId.bind(postsController))
     .get('/:id/comments', checkAccess, postsController.getComments.bind(postsController))
-    .put('/:id/like-status', postsController.addLike.bind(postsController))
+    .put('/:id/like-status', accessTokenMiddleware, postsController.addLike.bind(postsController))

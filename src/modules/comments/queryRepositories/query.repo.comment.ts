@@ -36,9 +36,7 @@ export class QueryRepoComment {
             .lean()
 
         const commentId = comments.map(l => l._id)
-        console.log(commentId)
         const likes = await LikesModel.find({commentId: {$in: commentId}, userId}).lean()
-        console.log(likes)
         const comment = comments.map((el: any) => {
             const matchedLikes = likes.find(l => l.commentId === el._id.toString())
             return {

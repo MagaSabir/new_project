@@ -1,16 +1,39 @@
-import mongoose, {HydratedDocument, model, Schema} from "mongoose";
+import mongoose, {HydratedDocument, Schema} from "mongoose";
+import {ObjectId} from "mongodb";
+
+interface PostLikes {
+    postId: string,
+    userId: string,
+    login: string,
+    likeStatus: 'Like' | 'Dislike' | 'None',
+    addedAt: Date
+}
+
+const postLikes = new Schema({
+    postId: {type: ObjectId, required: true},
+    userId: {type: ObjectId, required: true},
+    login: {type: String, required: true},
+    likeStatus: {type: String, enum: ['Like', 'Dislike', 'None']},
+    addedAt: {type: Date, default: Date.now() }
+})
+
+export const PostLikes = mongoose.model<PostLikes>('postLikes', postLikes)
 
 
-const newestLike = new Schema({
-    addedtAt: {type: Date, required: true},
-    userId: {type: String, required: true},
+//PostModel
+
+
+const newestLikeSchema = new Schema({
+    addedAt: {type: Date, required: true},
+    userId: {type: ObjectId, required: true},
     login: {type: String, required: true}
 }, {_id: false})
 
-const  likesSchema =  new Schema({
-    likesCount: {type: Number},
-    dislikesCount: {type: Number},
-    newestLikes: {type: [newestLike]},
+
+const likesSchema = new Schema({
+    likesCount: {type: Number, default: 0},
+    dislikesCount: {type: Number, default: 0},
+    newestLikes: {type: [newestLikeSchema], default: []},
 }, {_id: false})
 
 
@@ -29,8 +52,18 @@ export type PostType = {
     content: string,
     blogId: string,
     blogName: string,
-    createdAt: string
+    createdAt: string,
+    extendedLikesInfo: {
+        likesCount: number,
+        dislikeCount: number,
+        myStatus: 'Like' | 'Dislike' | 'None',
+        newestLikes: [{
+            addedAt: Date,
+            userId: string,
+            login: string
+        }]
+    }
 }
 
 export type PostDocument = HydratedDocument<PostType>
-export const PostModel = mongoose.model<PostType>('posts', postSchema)
+export const PostModel = mongoose.model('posts', postSchema)

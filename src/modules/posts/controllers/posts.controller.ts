@@ -8,6 +8,8 @@ import {sortQueryFields} from "../../../common/types/sortQueryFields";
 import {PostsService} from "../services/post.servise";
 import {injectable} from "inversify";
 import request from "supertest";
+import {LikesModel} from "../../../models/schemas/Likes.schema";
+import {CommentModel} from "../../../models/schemas/Comment.schema";
 
 @injectable()
 export class PostsController {
@@ -24,7 +26,9 @@ export class PostsController {
     }
 
     async getPostById(req: Request, res: Response): Promise<void> {
-        const post: PostViewModel | null = await this.queryPostRepository.getPost(req.params.id)
+        console.log(req.user.id ? req.user.id: 'None')
+        const post = await this.queryPostRepository.getPost(req.params.id)
+
         if (!post) {
             res.sendStatus(STATUS_CODE.NOT_FOUND_404)
             return
@@ -37,7 +41,7 @@ export class PostsController {
         const postId: string | null = await this.postService.createPostService(req.body);
         console.log(postId)
         if (postId) {
-            const post: PostViewModel | null = await this.queryPostRepository.getPost(postId)
+            const post: PostViewModel | null = await this.queryPostRepository.getPost(postId, req.user.id)
             res.status(STATUS_CODE.CREATED_201).send(post);
             return
         }
@@ -101,8 +105,21 @@ export class PostsController {
 
     async addLike(req: Request, res: Response) {
         const postId: string = req.params.id
-        const likeStatus = req.body.likeStatus
-        const like = await this.postService.addLike(postId, likeStatus)
-    }
+        const status = req.body.likeStatus
+        const userId = req.user.id
+        const login = req.user.login
+        try {
+            const like = await this.postService.addLike(postId, userId, status, login)
+            console.log(like)
+            if(!like) {
+                res.sendStatus(404)
+                return
+            }
+            res.sendStatus(204)
+        } catch (e) {
+            console.error(e.message)
+            res.sendStatus(400)
+        }
 
+    }
 }
