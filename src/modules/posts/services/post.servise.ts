@@ -25,6 +25,11 @@ export class PostsService {
             ...dto,
             blogName: blog.name,
             createdAt: new Date().toISOString(),
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                newestLikes: []
+            }
 
         }
         const post = new PostModel(newPost)
@@ -59,17 +64,21 @@ export class PostsService {
 
 
     async addLike(postId: string, userId: string, likeStatus: LikeStatus, login: string) {
-        const post = await this.queryPostRepository.getPost(postId)
+        const post = await this.queryPostRepository.getPost(postId, userId)
 
-        const addedAt = new Date()
+
         if (!post) return false
 
         const existing = await PostLikes.findOne({userId, postId})
 
+
         if (existing) {
-            existing.likeStatus = likeStatus
-            existing.addedAt = addedAt
-            await existing.save()
+            if (existing.likeStatus !== likeStatus) {
+                existing.likeStatus = likeStatus
+                existing.addedAt = new Date()
+                await existing.save()
+            }
+
         } else {
             await PostLikes.create({postId, userId, likeStatus, login})
         }
@@ -77,10 +86,18 @@ export class PostsService {
             PostLikes.countDocuments({postId, likeStatus: 'Like'}),
             PostLikes.countDocuments({postId, likeStatus: 'Dislike'})
         ])
-        console.log(likes)
 
-        await PostModel.updateOne({_id: postId}, {$set: {"extendedLikesInfo.likesCount": likes, "extendedLikesInfo.dislikesCount": dislikes}})
-    return true
+        const newestLikes = await PostLikes.findOne({postId: postId, userId: userId})
+
+
+        console.log(newestLikes)
+        await PostModel.updateOne({_id: postId}, {
+            $set: {
+                "extendedLikesInfo.likesCount": likes,
+                "extendedLikesInfo.dislikesCount": dislikes,
+            }
+        })
+        return true
     }
 }
 

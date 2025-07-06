@@ -1,10 +1,10 @@
 import {DeleteResult, ObjectId, UpdateResult} from "mongodb";
-import {PostDocument, PostModel, PostType} from "../../../models/schemas/Post.schema";
+import {PostModel, PostType} from "../../../models/schemas/Post.schema";
 import {injectable} from "inversify";
 
 @injectable()
 export class PostRepository {
-    async save(post: PostDocument): Promise<string> {
+    async save(post: any): Promise<string> {
         const {_id} = await post.save()
         return _id.toString()
     }
@@ -19,10 +19,5 @@ export class PostRepository {
         const result: DeleteResult = await PostModel.deleteOne({_id: new ObjectId(id)})
         return result.deletedCount === 1
     }
-
-    async updateLikeStatus(id: string, likeStatus: any, userId: string, userLogin: string) {
-        await PostModel.updateOne({});
-    }
-
 
 }

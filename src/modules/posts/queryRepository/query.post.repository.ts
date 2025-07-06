@@ -1,39 +1,28 @@
-import {ObjectId, WithId} from "mongodb";
-import {PostViewModel} from "../../../models/view_models/post.view.model";
-import {mapPostToViewModel} from "../../../common/adapters/mapper";
-import {PostDocument, PostLikes, PostModel, PostType} from "../../../models/schemas/Post.schema";
+import {PostLikes, PostModel} from "../../../models/schemas/Post.schema";
 
-export class QueryPostRepository  {
-    async findPosts(pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: any, )  {
+export class QueryPostRepository {
+    async findPosts(userId: string, pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: any,) {
         const totalCountPosts: number = await PostModel.countDocuments()
 
-
-        const posts: WithId<PostType>[] =  await PostModel
+        console.log(userId)
+        const posts = await PostModel
             .find()
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
             .sort({[sortBy]: sortDirection})
             .lean()
 
-        const mappedPost: PostViewModel[] = posts.map(mapPostToViewModel)
-        return {
-            pagesCount: Math.ceil(totalCountPosts / pageSize),
-            page: pageNumber,
-            pageSize: pageSize,
-            totalCount:totalCountPosts,
-            items: posts
-        }
-    }
+        const postIds = posts.map(post => post._id)
 
-    async getPost(id: string, userId) {
-        const post =  await PostModel.findById(id).lean()
-        console.log(post)
-        const likesInfo = await PostLikes.findOne({postId: id}).lean()
-        console.log(likesInfo)
-        if(!likesInfo) return null
-        if(post) {
+        const likes = await PostLikes.find({postId: {$in: postIds}, userId: userId}).lean()
+
+        const post = posts.map(post => {
+            console.log(likes)
+            const matchedLikes = likes.find(l => l.postId.toString() === post._id.toString())
+            console.log(matchedLikes)
+            console.log('post  = ' + post._id)
             return {
-                id: post._id,
+                id: post._id.toString(),
                 title: post.title,
                 shortDescription: post.shortDescription,
                 content: post.content,
@@ -41,12 +30,51 @@ export class QueryPostRepository  {
                 blogName: post.blogName,
                 createdAt: post.createdAt,
                 extendedLikesInfo: {
-                    likesCount: post.extendedLikesInfo!.likesCount,
-                    dislikesCount: post.extendedLikesInfo!.dislikesCount,
-                    myStatus: likesInfo.likeStatus ? likesInfo.likeStatus : 'None'
+                    likesCount: post.extendedLikesInfo?.likesCount ?? 0,
+                    dislikesCount: post.extendedLikesInfo?.dislikesCount,
+                    myStatus: matchedLikes?.likeStatus ?? 'None',
+                    newestLikes: post.extendedLikesInfo?.newestLikes.map(like => ({
+                        addedAt: like.addedAt,
+                        userId: like.userId,
+                        login: like.login
+                    }))
                 }
             }
+        })
+        return {
+
+            pagesCount: Math.ceil(totalCountPosts / pageSize),
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCountPosts,
+            items: post
         }
-        return null
+    }
+
+    async getPost(id: string, userId?: string | null) {
+        const post = await PostModel.findById(id).lean()
+
+        if (!post) return null
+        const status = await PostLikes.findOne({postId: id, userId}).lean()
+
+        return {
+            id: post._id.toString(),
+            title: post.title,
+            shortDescription: post.shortDescription,
+            content: post.content,
+            blogId: post.blogId,
+            blogName: post.blogName,
+            createdAt: post.createdAt,
+            extendedLikesInfo: {
+                likesCount: post.extendedLikesInfo!.likesCount ?? 0,
+                dislikesCount: post.extendedLikesInfo!.dislikesCount ?? 0,
+                myStatus: status ? status.likeStatus : 'None',
+                newestLikes: status ? [{
+                    addedAt: status.addedAt,
+                    userId: status.userId,
+                    login: status.login
+                }] : []
+            }
+        }
     }
 }
