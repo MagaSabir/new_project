@@ -32,7 +32,7 @@ export class PostsController {
             // } else {
             //     userId = null
             // }
-            const userId = req.user?.id ?? null
+            const userId = req.user?.id
             const post = await this.queryPostRepository.getPost(req.params.id, userId)
 
             if (!post) {
