@@ -10,9 +10,9 @@ interface PostLikes {
     addedAt: Date
 }
 
-const postLikes = new Schema({
-    postId: {type: ObjectId, required: true},
-    userId: {type: ObjectId, required: true},
+const postLikes = new Schema<PostLikes>({
+    postId: {type: String, required: true},
+    userId: {type: String, required: true},
     login: {type: String, required: true},
     likeStatus: {type: String, enum: ['Like', 'Dislike', 'None'], required: true, default: 'None'},
     addedAt: {type: Date, default: Date.now() }

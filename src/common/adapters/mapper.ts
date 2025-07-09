@@ -12,14 +12,14 @@ export const mapBlogToViewModel = (el: WithId<BlogType>): BlogType & { id: strin
     }
 }
 
-// export const mapPostToViewModel = (el: WithId<PostType>): PostViewModel => {
-//     return {
-//         id: el._id.toString(),
-//         title: el.title,
-//         shortDescription: el.shortDescription,
-//         content: el.content,
-//         blogId: el.blogId,
-//         blogName: el.blogName,
-//         createdAt: el.createdAt
-//     }
-// }
+export const mapPostToViewModel = (el: any) => {
+    return {
+        id: el._id.toString(),
+        title: el.title,
+        shortDescription: el.shortDescription,
+        content: el.content,
+        blogId: el.blogId,
+        blogName: el.blogName,
+        createdAt: el.createdAt
+    }
+}

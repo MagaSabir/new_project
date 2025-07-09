@@ -80,14 +80,15 @@ export class PostsService {
             }
 
         } else {
-            await PostLikes.create({postId, userId, likeStatus, login})
+            await PostLikes.create({postId, userId, likeStatus, login, addedAt: new Date()})
         }
-        const [likes, dislikes] = await Promise.all([
+        const [likes, dislikes, newestLikes] = await Promise.all([
             PostLikes.countDocuments({postId, likeStatus: 'Like'}),
-            PostLikes.countDocuments({postId, likeStatus: 'Dislike'})
+            PostLikes.countDocuments({postId, likeStatus: 'Dislike'}),
+            PostLikes.findOne({postId: postId, userId: userId})
         ])
 
-        const newestLikes = await PostLikes.findOne({postId: postId, userId: userId})
+        // const newestLikes = await PostLikes.findOne({postId: postId, userId: userId})
 
 
         console.log(newestLikes)

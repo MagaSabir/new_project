@@ -42,7 +42,7 @@ export class QueryBlogsRepository {
             .sort({[sortBy]: sortDirection})
             .lean()
 
-        const mappedPost: PostViewModel[] = posts.map(mapPostToViewModel)
+        const mappedPost: any = posts.map(mapPostToViewModel)
 
         return {
             pagesCount: Math.ceil(totalCount / pageSize),

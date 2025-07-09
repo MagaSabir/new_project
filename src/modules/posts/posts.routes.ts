@@ -8,7 +8,7 @@ import {
 import {basicAuthMiddleware} from "../../common/middlewares/basic.auth.middleware";
 import {accessTokenMiddleware} from "../../common/middlewares/auth.middleware";
 import {inputValidationErrors} from "../../common/adapters/errorMessage";
-import {contentValidation} from "../../common/middlewares/commentValidation/comment.validation";
+import {contentValidation, likeStatusValidation} from "../../common/middlewares/commentValidation/comment.validation";
 import {PostsController} from "./controllers/posts.controller";
 import {container} from "../../composition-root";
 import {checkAccess} from "../../common/middlewares/authAccess";
@@ -41,4 +41,4 @@ postRouter
     )
     .post('/:id/comments', contentValidation, accessTokenMiddleware, inputValidationErrors, postsController.createCommentByPostId.bind(postsController))
     .get('/:id/comments', checkAccess, postsController.getComments.bind(postsController))
-    .put('/:id/like-status', accessTokenMiddleware, postsController.addLike.bind(postsController))
+    .put('/:id/like-status', likeStatusValidation,accessTokenMiddleware,inputValidationErrors, postsController.addLike.bind(postsController))

@@ -9,11 +9,11 @@ import cookieParser from 'cookie-parser'
 import {devicesRoutes} from "./modules/security/devices.routes";
 import {BlogModel} from "./models/schemas/Blog.schema";
 import {PostModel} from "./models/schemas/Post.schema";
-import {UserModel} from "./models/schemas/User.schema";
 import {CommentModel} from "./models/schemas/Comment.schema";
 import {AuthModel} from "./models/schemas/Auth.schema";
 import {DeviceModel} from "./models/schemas/Device.schema";
 import {setupSwagger} from "./swagger/setup-swagger";
+import {UserModel} from "./modules/users/domain/user.entity";
 
 
 

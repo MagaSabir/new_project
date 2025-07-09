@@ -105,7 +105,7 @@ export class BlogsController {
                 res.sendStatus(STATUS_CODE.NOT_FOUND_404)
                 return
             }
-            const createdPost: PostViewModel | null = await this.queryPostRepository.getPost(createdPostId)
+            const createdPost = await this.queryPostRepository.getPost(createdPostId)
             res.status(STATUS_CODE.CREATED_201).send(createdPost)
         } catch (error) {
             console.error('Create Post:', error)

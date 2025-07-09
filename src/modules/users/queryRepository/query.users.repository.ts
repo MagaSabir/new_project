@@ -1,9 +1,10 @@
 import {WithId} from "mongodb";
 import {UserViewModel} from "../../../models/view_models/UserViewModel";
 import {PaginationType} from "../../../common/types/types";
-import {UserModel} from "../../../models/schemas/User.schema";
+// import {UserModel} from "../../../models/schemas/User.schema";
 import {CreatedUserType} from "../../../models/schemas/Auth.schema";
 import {injectable} from "inversify";
+import {UserModel} from "../domain/user.entity";
 
 @injectable()
 export class QueryUsersRepository {

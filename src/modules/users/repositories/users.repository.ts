@@ -1,14 +1,19 @@
 import {DeleteResult, ObjectId} from "mongodb";
-import {UserDocument, UserEntity, UserModel} from "../../../models/schemas/User.schema";
+// import {UserDocument, UserEntity, UserModel} from "../../../models/schemas/User.schema";
 import {injectable} from "inversify";
+import {UserDocument, UserModel} from "../domain/user.entity";
 
 @injectable()
 export class UsersRepository {
-    async createUser(userData: any) {
+    async createUser(userData: UserDocument) {
         const user = await UserModel.create(userData)
         return user._id.toString()
     }
 
+    async save(user: UserDocument) {
+        const {_id} = await user.save()
+        return _id
+    }
 
     async deleteUser(id: string): Promise<boolean> {
         const result: DeleteResult = await UserModel.deleteOne({_id: new ObjectId(id)})

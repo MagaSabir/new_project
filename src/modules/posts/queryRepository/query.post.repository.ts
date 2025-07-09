@@ -12,6 +12,8 @@ export class QueryPostRepository {
             .sort({[sortBy]: sortDirection})
             .lean()
 
+        //[{ id: 1, title: post:1}, { id: 2, title: post2 { ]
+
         const postIds = posts.map(post => post._id)
 
         const likes = userId ? await PostLikes.find({postId: {$in: postIds}, userId: userId}).lean() : []
@@ -48,10 +50,10 @@ export class QueryPostRepository {
     async getPost(id: string, userId?: string | null) {
         const post = await PostModel.findById(id).lean()
         if (!post) return null
-        const status = userId ? await PostLikes.findOne({postId: id, userId}).lean() : null
-        const newestLikes = await PostLikes.find({postId: id}).sort({addedAt: -1}).limit(3).lean()
 
-        console.log(newestLikes)
+        const status = userId ? await PostLikes.findOne({postId: id, userId}).lean() : null
+        const newestLikes = await PostLikes.find({postId: id, likeStatus: 'Like'}).sort({addedAt: -1}).limit(3).lean()
+
         return {
             id: post._id.toString(),
             title: post.title,
@@ -64,8 +66,8 @@ export class QueryPostRepository {
                 likesCount: post.extendedLikesInfo?.likesCount ?? 0,
                 dislikesCount: post.extendedLikesInfo?.dislikesCount ?? 0,
                 myStatus: status ? status.likeStatus : 'None',
-                newestLikes: newestLikes.map(l=> {
-                    return{
+                newestLikes: newestLikes.map(l => {
+                    return {
                         addedAt: l.addedAt,
                         login: l.login,
                         userId: l.userId

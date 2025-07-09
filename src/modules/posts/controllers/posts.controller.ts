@@ -32,7 +32,7 @@ export class PostsController {
             // } else {
             //     userId = null
             // }
-            const userId = req.user?.id
+            const userId = req.user?.id ?? null
             const post = await this.queryPostRepository.getPost(req.params.id, userId)
 
             if (!post) {
@@ -96,13 +96,14 @@ export class PostsController {
         const postId: string = req.params.id
         const {pageNumber, pageSize, sortDirection, sortBy} = sortQueryFields(req.params)
 
-        let userId
-        if (req.user) {
-            userId = req.user.id
-        } else {
-            userId = 'None'
-        }
+        // let userId
+        // if (req.user) {
+        //     userId = req.user.id
+        // } else {
+        //     userId = 'None'
+        // }
 
+        const userId = req.user?.id ?? null
         const comment = await this.queryCommentRepository.getComments(postId, userId, pageNumber, pageSize, sortDirection, sortBy)
         if (!comment.items.length) {
             res.sendStatus(STATUS_CODE.NOT_FOUND_404)

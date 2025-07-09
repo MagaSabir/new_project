@@ -1,7 +1,9 @@
 import {UsersRepository} from "../repositories/users.repository";
 import bcrypt from 'bcrypt';
 import {injectable} from "inversify";
-import {CreateUserDto} from "../controllers/users.controller";
+import {UserModel} from "../domain/user.entity";
+import {CreateUserDto} from "../domain/user.dto";
+import {ObjectId} from "mongodb";
 
 @injectable()
 export class UserService {
@@ -9,19 +11,12 @@ export class UserService {
     }
 
     async createUserService(dto: CreateUserDto) {
-        const {login, email, password} = dto
-        const userEmail = await this.usersRepository.findLoginOrEmail(email, login)
-        if (userEmail) {
-            return null
-        }
-        const passwordHash = await bcrypt.hash(password, 10)
-        const user = {
-            login,
-            email,
-            passwordHash,
-            createdAt: new Date().toISOString()
-        }
-        const id = await this.usersRepository.createUser(user)
+        const userEmail = await this.usersRepository.findLoginOrEmail(dto.email, dto.login)
+
+        if (userEmail) return null
+
+        const user = await UserModel.createUser(dto)
+        const id: ObjectId = await this.usersRepository.save(user)
         return id.toString()
     }
 
