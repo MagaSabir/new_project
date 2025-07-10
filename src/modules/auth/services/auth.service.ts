@@ -11,21 +11,25 @@ import {BcryptPasswordHash} from "../../../common/adapters/bcrypt.password";
 import {jwtService} from "../../../common/adapters/jwt.service";
 import {injectable} from "inversify";
 import {CreatedUserType} from "../../../models/schemas/Auth.schema";
-import {UsersRepository} from "../../users/repositories/users.repository";
+import {UsersRepository} from "../../users/infrasctructure/users.repository";
 import { randomUUID } from "crypto";
+import {QueryUsersRepository} from "../../users/infrasctructure/query.users.repository";
+import {CreateUserDto} from "../../users/domain/user.dto";
+import {UserModel} from "../../users/domain/user.entity";
 
 @injectable()
 export class AuthService {
 
     constructor(protected authRepository: AuthRepository,
-                protected usersRepository: UsersRepository) {
+                protected usersRepository: UsersRepository,
+                protected queryRepository: QueryUsersRepository) {
     }
 
     async login(loginOrEmail: string, password: string, ip: string, userAgent: string): Promise<TokensType | null> {
         const user = await this.authRepository.findUser(loginOrEmail)
         if (!user) return null;
 
-        const isValid: boolean = await BcryptPasswordHash.compare(password, user.passwordHash)
+        const isValid: boolean = await BcryptPasswordHash.compare(password, user.password)
         if (!isValid) return null
 
         const deviceId = randomUUID();
@@ -62,11 +66,12 @@ export class AuthService {
     }
 
 
-    async createUserService(login: string, password: string, email: string) {
-        const user = await this.usersRepository.findLoginOrEmail(email, login)
+    async createUserService(dto: CreateUserDto) {
+        console.log('dt0 - ' + dto)
+        const user = await this.queryRepository.findLoginOrEmail(dto.email, dto.login)
         if (user) {
-            const isEmail: boolean = user.email === email
-            const isLogin: boolean = user.login === login
+            const isEmail: boolean = user.email === dto.email
+            const isLogin: boolean = user.login === dto.login
 
             const errors = []
 
@@ -79,24 +84,13 @@ export class AuthService {
             }
         }
 
-        const passwordHash: string = await bcrypt.hash(password, 10)
-        const newUser = {
-            login,
-            password: passwordHash,
-            email,
-            isConfirmed: false,
-            confirmationCode: randomUUID(),
-            confirmationCodeExpiration: add(new Date(), {
-                hours: 1,
-                minutes: 30,
-            }),
-        };
-        await this.usersRepository.createUser(newUser)
+        const registerUser = await UserModel.registerUser(dto)
+        await this.usersRepository.save(registerUser)
 
         try {
             nodemailerService.sendEmail(
-                newUser.email,
-                newUser.confirmationCode,
+                registerUser.email,
+                registerUser.confirmationCode,
                 emailExamples.registrationEmail
             )
         } catch (e) {
@@ -106,7 +100,7 @@ export class AuthService {
     }
 
     async confirmationUserService(code: string) {
-        const user: WithId<CreatedUserType> | null = await this.usersRepository.findUserByConfirmationCode(code)
+        const user: WithId<CreatedUserType> | null = await this.queryRepository.findUserByConfirmationCode(code)
         if (!user) return false
         if (user.isConfirmed) return false
         if (user.confirmationCodeExpiration! < new Date()) return false
@@ -115,7 +109,7 @@ export class AuthService {
     }
 
     async passwordRecovery(email: string) {
-        const user = await this.usersRepository.findUserByEmail(email)
+        const user = await this.queryRepository.findUserByEmail(email)
         console.log(user)
 
         const code = randomUUID()
@@ -136,7 +130,7 @@ export class AuthService {
 
     async newLogin(password: string, code: string) {
         try {
-            const user: WithId<CreatedUserType> | null = await this.usersRepository.findUserByConfirmationCode(code)
+            const user: WithId<CreatedUserType> | null = await this.queryRepository.findUserByConfirmationCode(code)
             if (!user) return null
             if (user.isConfirmed) return null
             if (user.confirmationCodeExpiration! < new Date()) return null
@@ -150,7 +144,7 @@ export class AuthService {
     }
 
     async resendConfirmCodeService(email: string) {
-        const user: WithId<CreatedUserType> | null = await this.usersRepository.findUserByEmail(email)
+        const user: WithId<CreatedUserType> | null = await this.queryRepository.findUserByEmail(email)
         if (!user) return {status: ResultStatus.BadRequest}
 
         if (user.isConfirmed) {

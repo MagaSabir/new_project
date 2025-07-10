@@ -2,7 +2,7 @@ import express, {Request, Response} from "express";
 import {blogRouter} from "./modules/blogs/blogs.routes";
 import {postRouter} from "./modules/posts/posts.routes";
 import {SETTINGS} from "./settings";
-import {userRouter} from "./modules/users/users.routes";
+import {userRouter} from "./modules/users/api/users.routes";
 import {authRoutes} from "./modules/auth/auth.routes";
 import {commentsRoutes} from "./modules/comments/comments.routes";
 import cookieParser from 'cookie-parser'

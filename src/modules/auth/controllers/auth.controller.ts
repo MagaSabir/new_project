@@ -4,7 +4,7 @@ import {ResultStatus} from "../../../common/types/resultStatuse";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 import {TokensType} from "../../../common/types/types";
 import {injectable} from "inversify";
-import {QueryUsersRepository} from "../../users/queryRepository/query.users.repository";
+import {QueryUsersRepository} from "../../users/infrasctructure/query.users.repository";
 
 @injectable()
 export class AuthController {
@@ -49,8 +49,7 @@ export class AuthController {
     }
 
     async userRegistration(req: Request, res: Response) {
-        const {login, email, password} = req.body
-        const result = await this.authService.createUserService(login, password, email)
+        const result = await this.authService.createUserService(req.body)
         if (result.status === ResultStatus.BadRequest) {
             res.status(STATUS_CODE.BAD_REQUEST_400).json({errorsMessages: result.errorsMessages})
         }

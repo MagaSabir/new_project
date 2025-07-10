@@ -1,4 +1,4 @@
-import {WithId} from "mongodb";
+import {ObjectId, WithId} from "mongodb";
 import {UserViewModel} from "../../../models/view_models/UserViewModel";
 import {PaginationType} from "../../../common/types/types";
 // import {UserModel} from "../../../models/schemas/User.schema";
@@ -66,5 +66,17 @@ export class QueryUsersRepository {
                 userId: userId
             }
         return null
+    }
+
+    async findLoginOrEmail(email: string, login: string) {
+        return UserModel.findOne({$or: [{email}, {login}]}).lean()
+    }
+
+    async findUserByEmail(email: string) {
+        return UserModel.findOne({email}).lean();
+    }
+
+    async findUserByConfirmationCode(code: string) {
+        return UserModel.findOne({confirmationCode: code}).lean();
     }
 }

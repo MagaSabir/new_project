@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {DevicesRepository} from "../../modules/security/repository/devices.repository";
-import {QueryUsersRepository} from "../../modules/users/queryRepository/query.users.repository";
+import {QueryUsersRepository} from "../../modules/users/infrasctructure/query.users.repository";
 import {DevicesQueryRepository} from "../../modules/security/queryRepository/devices.query.repository";
 const devicesRepository = new DevicesRepository()
 const queryRepository = new DevicesQueryRepository()

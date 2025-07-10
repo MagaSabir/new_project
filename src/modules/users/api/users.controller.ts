@@ -5,22 +5,17 @@ import {PaginationType} from "../../../common/types/types";
 import {sortQueryFields} from "../../../common/types/sortQueryFields";
 import {CreatedUserType} from "../../../models/schemas/Auth.schema";
 import {injectable} from "inversify";
-import {QueryUsersRepository} from "../queryRepository/query.users.repository";
-import {UserService} from "../services/users.service";
-export type CreateUserDto = {
-    login: string,
-    email: string,
-    password: string
-}
+import {QueryUsersRepository} from "../infrasctructure/query.users.repository";
+import {UserService} from "../application/users.service";
+
 @injectable()
 export class UsersController {
     constructor(protected userService: UserService,
                 protected queryUsersRepository: QueryUsersRepository) {
     }
 
-    async postController(req: Request, res: Response): Promise<void> {
-        const dto: CreateUserDto = req.body
-        const userId: string | null = await this.userService.createUserService(dto)
+    async createUserController(req: Request, res: Response): Promise<void> {
+        const userId: string | null = await this.userService.createUserService(req.body)
 
         if (!userId) {
             res.status(400).send({

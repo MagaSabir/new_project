@@ -1,17 +1,19 @@
-import {UsersRepository} from "../repositories/users.repository";
-import bcrypt from 'bcrypt';
+import {UsersRepository} from "../infrasctructure/users.repository";
 import {injectable} from "inversify";
 import {UserModel} from "../domain/user.entity";
 import {CreateUserDto} from "../domain/user.dto";
 import {ObjectId} from "mongodb";
+import {QueryUsersRepository} from "../infrasctructure/query.users.repository";
 
 @injectable()
 export class UserService {
-    constructor(protected usersRepository: UsersRepository) {
+    constructor(
+        protected usersRepository: UsersRepository,
+        protected queryRepository: QueryUsersRepository) {
     }
 
     async createUserService(dto: CreateUserDto) {
-        const userEmail = await this.usersRepository.findLoginOrEmail(dto.email, dto.login)
+        const userEmail = await this.queryRepository.findLoginOrEmail(dto.email, dto.login)
 
         if (userEmail) return null
 

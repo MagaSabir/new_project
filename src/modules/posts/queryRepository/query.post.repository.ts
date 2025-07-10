@@ -16,11 +16,12 @@ export class QueryPostRepository {
 
         const postIds = posts.map(post => post._id)
 
-        const likes = userId ? await PostLikes.find({postId: {$in: postIds}, userId: userId}).lean() : []
-
+        const userLikes = userId ? await PostLikes.find({postId: {$in: postIds}, userId: userId}).lean() : []
+        const allLikes = await PostLikes.find({likeStatus: 'Like'}).sort({addedAt: -1}).lean()
         const post = posts.map(post => {
+            const lLikes = allLikes.filter(l => l.postId.toString() === post._id.toString()).slice(0, 3)
 
-            const matchedLikes = likes.find(l => l.postId.toString() === post._id.toString())
+            const matchedLikes = userLikes.find(l => l.postId.toString() === post._id.toString())
             return {
                 id: post._id.toString(),
                 title: post.title,
@@ -33,7 +34,11 @@ export class QueryPostRepository {
                     likesCount: post.extendedLikesInfo?.likesCount ?? 0,
                     dislikesCount: post.extendedLikesInfo?.dislikesCount ?? 0,
                     myStatus: matchedLikes?.likeStatus ?? 'None',
-                    newestLikes: []
+                    newestLikes: lLikes.map(l => ({
+                        addedAt: l.addedAt,
+                        userId: l.userId,
+                        login: l.login
+                    }))
                 }
             }
         })

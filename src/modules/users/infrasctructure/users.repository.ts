@@ -5,10 +5,10 @@ import {UserDocument, UserModel} from "../domain/user.entity";
 
 @injectable()
 export class UsersRepository {
-    async createUser(userData: UserDocument) {
-        const user = await UserModel.create(userData)
-        return user._id.toString()
-    }
+    // async createUser(userData: UserDocument) {
+    //     const user = await UserModel.create(userData)
+    //     return user._id.toString()
+    // }
 
     async save(user: UserDocument) {
         const {_id} = await user.save()
@@ -20,17 +20,7 @@ export class UsersRepository {
         return result.deletedCount === 1
     }
 
-    async findLoginOrEmail(email: string, login: string) {
-        return UserModel.findOne({$or: [{email}, {login}]}).lean()
-    }
 
-    async findUserByEmail(email: string) {
-        return UserModel.findOne({email}).lean();
-    }
-
-    async findUserByConfirmationCode(code: string) {
-        return UserModel.findOne({confirmationCode: code}).lean();
-    }
 
     async updateConfirmation(_id: ObjectId) {
         const result = await UserModel.updateOne({_id}, {
