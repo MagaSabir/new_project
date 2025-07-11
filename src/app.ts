@@ -1,5 +1,5 @@
 import express, {Request, Response} from "express";
-import {blogRouter} from "./modules/blogs/blogs.routes";
+import {blogRouter} from "./modules/blogs/api/blogs.routes";
 import {postRouter} from "./modules/posts/posts.routes";
 import {SETTINGS} from "./settings";
 import {userRouter} from "./modules/users/api/users.routes";

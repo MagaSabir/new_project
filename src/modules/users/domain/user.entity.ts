@@ -14,12 +14,12 @@ type UserType = {
     confirmationCodeExpiration: Date;
 }
 
-type UserMethods = typeof userMethods
-type UserStatics = typeof userStatics
+type UserMethods = typeof userMethods //типизация методов экземпляра
+type UserStatics = typeof userStatics //типизация статических методов
 
-type UserModel = Model<UserType, {}, UserMethods> & UserStatics;
+type UserModel = Model<UserType, {}, UserMethods> & UserStatics; // типизация модели монгусе с методами экземпляра и статики <ТипДокумента, ТипДопМетоды, ТипМетодов>
 
-export type UserDocument = HydratedDocument<UserType, UserMethods>
+export type UserDocument = HydratedDocument<UserType, UserMethods> // тип одного документа
 
 const userSchema = new mongoose.Schema<UserType, {}, UserMethods, UserModel>({
     login: {type: String, required: true, minlength: 3, maxlength: 10},
@@ -66,7 +66,9 @@ const userMethods = {
     }
 }
 
+// привязка методов к схеме чтобы монгусе знал про методы
 userSchema.methods = userMethods
 userSchema.statics = userStatics
 
+// создание модели с типами
 export const UserModel = mongoose.model<UserType, UserModel>('users', userSchema)

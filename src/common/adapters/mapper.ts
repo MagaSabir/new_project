@@ -1,7 +1,7 @@
-import {BlogType} from "../types/blogTypes/blogType";
 import {WithId} from "mongodb";
+import {BlogType} from "../../modules/blogs/domain/blog.entity";
 
-export const mapBlogToViewModel = (el: WithId<BlogType>): BlogType & { id: string } => {
+export const mapBlogToViewModel = (el: WithId<BlogType>) => {
     return {
         id: el._id.toString(),
         name: el.name,

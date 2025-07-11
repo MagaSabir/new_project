@@ -1,13 +1,14 @@
 import {Request, Response} from "express";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 import {PaginationType, ParsedQueryParamsType} from "../../../common/types/types";
-import {BlogsService} from "../services/blog.service";
-import { QueryBlogsRepository} from "../queryRepository/query.blog.repository";
+import {BlogsService} from "../application/blog.service";
+import { QueryBlogsRepository} from "../infrasctructure/query.blog.repository";
 import {PostViewModel} from "../../../models/view_models/post.view.model";
 import {sortQueryFields} from "../../../common/types/sortQueryFields";
 import {injectable} from "inversify";
-import {BlogType, BlogViewModel} from "../../../models/schemas/Blog.schema";
 import {QueryPostRepository} from "../../posts/queryRepository/query.post.repository";
+import {BlogType} from "../domain/blog.entity";
+import {BlogViewModel} from "../../../models/view_models/BlogViewModel";
 
 @injectable()
 export class BlogsController {
@@ -29,9 +30,10 @@ export class BlogsController {
 
     async getPostsByBlogId(req: Request, res: Response) {
         try {
+            const userId = req.user?.id ?? null
             const blogId: string = req.params.id
             const {pageNumber, pageSize, sortDirection, sortBy} = sortQueryFields(req.query)
-            const items: PaginationType<PostViewModel> | null = await this.queryBlogRepository.getPosts(pageNumber, pageSize, sortDirection, sortBy, blogId)
+            const items: PaginationType<PostViewModel> | null = await this.queryBlogRepository.getPosts(userId,pageNumber, pageSize, sortDirection, sortBy, blogId)
             if (items) {
                 res.status(STATUS_CODE.OK_200).send(items)
                 return

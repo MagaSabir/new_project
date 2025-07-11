@@ -1,14 +1,13 @@
-import {BlogType} from "../../../common/types/blogTypes/blogType";
 import {DeleteResult, ObjectId} from "mongodb";
 import {injectable} from "inversify";
-import {BlogDocument, BlogModel} from "../../../models/schemas/Blog.schema";
+import {BlogDocument, BlogModel, BlogType} from "../domain/blog.entity";
 
 
 @injectable()
 export class BlogsRepository {
-    async save(blog: BlogDocument): Promise<string> {
+    async save(blog: BlogDocument): Promise<ObjectId> {
         const {_id} = await blog.save()
-        return _id.toString()
+        return _id
     }
 
     async updateBlog(blog: BlogType, id: string): Promise<boolean> {

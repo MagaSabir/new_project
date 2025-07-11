@@ -1,12 +1,12 @@
 import "reflect-metadata"
-import {BlogsRepository} from "./modules/blogs/repositories/blog.repository";
-import {BlogsService} from "./modules/blogs/services/blog.service";
-import {BlogsController} from "./modules/blogs/controllers/blog.controller";
+import {BlogsRepository} from "./modules/blogs/infrasctructure/blog.repository";
+import {BlogsService} from "./modules/blogs/application/blog.service";
+import {BlogsController} from "./modules/blogs/api/blog.controller";
 import {AuthRepository} from "./modules/auth/repositories/auth.repository";
 import {AuthService} from "./modules/auth/services/auth.service";
 import {AuthController} from "./modules/auth/controllers/auth.controller";
 import {Container} from "inversify";
-import {QueryBlogsRepository} from "./modules/blogs/queryRepository/query.blog.repository";
+import {QueryBlogsRepository} from "./modules/blogs/infrasctructure/query.blog.repository";
 import {PostsController} from "./modules/posts/controllers/posts.controller";
 import {PostsService} from "./modules/posts/services/post.servise";
 import {PostRepository} from "./modules/posts/repositories/post.repository";

@@ -1,5 +1,5 @@
 import {ObjectId} from "mongodb";
-import {QueryBlogsRepository} from "../../blogs/queryRepository/query.blog.repository";
+import {QueryBlogsRepository} from "../../blogs/infrasctructure/query.blog.repository";
 import {BlogType} from "../../../models/schemas/Blog.schema";
 import {PostLikes, PostModel, PostType} from "../../../models/schemas/Post.schema";
 import {PostRepository} from "../repositories/post.repository";

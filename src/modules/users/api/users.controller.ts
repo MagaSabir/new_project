@@ -16,7 +16,6 @@ export class UsersController {
 
     async createUserController(req: Request, res: Response): Promise<void> {
         const userId: string | null = await this.userService.createUserService(req.body)
-
         if (!userId) {
             res.status(400).send({
                 errorsMessages: [
@@ -29,12 +28,11 @@ export class UsersController {
             return
         }
         const createdUser: UserViewModel | null = await this.queryUsersRepository.getCreatedUser(userId)
-        res.status(201).send(createdUser)
+        res.status(STATUS_CODE.CREATED_201).send(createdUser)
     }
 
     async getUserController(req: Request, res: Response): Promise<void> {
-        const searchLoginTerm = req.query.searchLoginTerm
-        const searchEmailTerm = req.query.searchEmailTerm
+        const {searchLoginTerm, searchEmailTerm} = req.query
         const {pageNumber, pageSize, sortDirection, sortBy} = sortQueryFields(req.query)
         const user: PaginationType<CreatedUserType> = await this.queryUsersRepository.getUser(pageNumber, pageSize, sortDirection, sortBy, searchLoginTerm, searchEmailTerm)
         res.status(STATUS_CODE.OK_200).send(user)

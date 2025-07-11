@@ -1,5 +1,5 @@
 import {body, ValidationChain} from "express-validator";
-import {QueryBlogsRepository} from "../../../modules/blogs/queryRepository/query.blog.repository";
+import {QueryBlogsRepository} from "../../../modules/blogs/infrasctructure/query.blog.repository";
 const queryBlogRepository = new QueryBlogsRepository()
 export const titleValidation: ValidationChain = body("title")
   .isString()

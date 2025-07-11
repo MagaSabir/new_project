@@ -2,7 +2,6 @@ import {UsersRepository} from "../infrasctructure/users.repository";
 import {injectable} from "inversify";
 import {UserModel} from "../domain/user.entity";
 import {CreateUserDto} from "../domain/user.dto";
-import {ObjectId} from "mongodb";
 import {QueryUsersRepository} from "../infrasctructure/query.users.repository";
 
 @injectable()
@@ -14,12 +13,10 @@ export class UserService {
 
     async createUserService(dto: CreateUserDto) {
         const userEmail = await this.queryRepository.findLoginOrEmail(dto.email, dto.login)
-
         if (userEmail) return null
-
         const user = await UserModel.createUser(dto)
-        const id: ObjectId = await this.usersRepository.save(user)
-        return id.toString()
+        return  (await this.usersRepository.save(user)).toString()
+        // return id.toString()
     }
 
     async deleteUserByID(id: string): Promise<boolean> {

@@ -1,11 +1,11 @@
-import {BlogsRepository} from "../repositories/blog.repository";
+import {BlogsRepository} from "../infrasctructure/blog.repository";
 import {PostDto} from "../../../common/types/postTypse/postType";
 import {PostRepository} from "../../posts/repositories/post.repository";
 import {injectable} from "inversify";
-import {QueryBlogsRepository} from "../queryRepository/query.blog.repository";
-import {BlogModel} from "../../../models/schemas/Blog.schema";
-import {BlogType} from "../../../common/types/blogTypes/blogType";
+import {QueryBlogsRepository} from "../infrasctructure/query.blog.repository";
 import {PostModel} from "../../../models/schemas/Post.schema";
+import {CrateBlogDto} from "../domain/blog.dto";
+import {BlogModel, BlogType} from "../domain/blog.entity";
 
 @injectable()
 export class BlogsService {
@@ -14,9 +14,9 @@ export class BlogsService {
                 protected postRepository: PostRepository) {
     }
 
-    async createBlog(dto: BlogType): Promise<string> {
-        const blog = new BlogModel(dto)
-        return await this.blogsRepository.save(blog)
+    async createBlog(dto: CrateBlogDto): Promise<string> {
+        const blog = await BlogModel.createBlog(dto)
+        return (await this.blogsRepository.save(blog)).toString()
     }
 
     async updateBlog(dto: BlogType, id: string) {

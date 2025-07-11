@@ -3,17 +3,18 @@ import {
     descriptionValidator,
     nameValidator,
     websiteUrlValidator,
-} from "../../common/middlewares/blogValidation/blogs.validations";
-import {basicAuthMiddleware} from "../../common/middlewares/basic.auth.middleware";
+} from "../../../common/middlewares/blogValidation/blogs.validations";
+import {basicAuthMiddleware} from "../../../common/middlewares/basic.auth.middleware";
 import {
     contentValidator,
     shortDescriptionValidator,
     titleValidation
-} from "../../common/middlewares/blogValidation/posts.validations";
-import {IDisValid} from "../../common/middlewares/IDisValidMiddleware";
-import {inputValidationErrors} from "../../common/adapters/errorMessage";
-import {container} from "../../composition-root";
-import {BlogsController} from "./controllers/blog.controller";
+} from "../../../common/middlewares/blogValidation/posts.validations";
+import {IDisValid} from "../../../common/middlewares/IDisValidMiddleware";
+import {inputValidationErrors} from "../../../common/adapters/errorMessage";
+import {container} from "../../../composition-root";
+import {BlogsController} from "./blog.controller";
+import {checkAccess} from "../../../common/middlewares/authAccess";
 const blogsController = container.get(BlogsController)
 export const blogRouter = Router();
 
@@ -25,7 +26,7 @@ blogRouter
     .post("/:id/posts", IDisValid, basicAuthMiddleware, titleValidation,
         shortDescriptionValidator, contentValidator, inputValidationErrors,
         blogsController.createPostByBlogId.bind(blogsController))
-    .get("/:id/posts", IDisValid, inputValidationErrors, blogsController.getPostsByBlogId.bind(blogsController))
+    .get("/:id/posts",checkAccess, IDisValid, inputValidationErrors, blogsController.getPostsByBlogId.bind(blogsController))
     .put("/:id", IDisValid, basicAuthMiddleware, nameValidator,
         descriptionValidator, websiteUrlValidator, inputValidationErrors,
         blogsController.updateBlog.bind(blogsController))
