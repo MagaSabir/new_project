@@ -2,7 +2,7 @@ import {WithId} from "mongodb";
 import {CommentType} from "../../../models/view_models/CommentModel";
 import {CommentModel} from "../../../models/schemas/Comment.schema";
 import {injectable} from "inversify";
-import {LikesModel} from "../../../models/schemas/Likes.schema";
+import {LikesModel, LikeStatus} from "../../../models/schemas/Likes.schema";
 
 @injectable()
 export class QueryRepoComment {
@@ -19,12 +19,12 @@ export class QueryRepoComment {
             likesInfo: {
                 likesCount: comment.likesCount,
                 dislikesCount: comment.dislikesCount,
-                myStatus: likes ? likes.likeStatus : 'None',
+                myStatus: likes ? likes.likeStatus : LikeStatus.NONE,
             }
         }
     }
 
-    async getComments(id: string, userId: string, pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: any) {
+    async getComments(id: string, userId: string, pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: string) {
         const totalCountPosts: number = await CommentModel.countDocuments({postId: id})
 
 
@@ -37,7 +37,7 @@ export class QueryRepoComment {
 
         const commentId = comments.map(l => l._id)
         const likes = await LikesModel.find({commentId: {$in: commentId}, userId}).lean()
-        const comment = comments.map((el: any) => {
+        const comment = comments.map((el) => {
             const matchedLikes = likes.find(l => l.commentId === el._id.toString())
             return {
                 id: el._id.toString(),
@@ -49,8 +49,6 @@ export class QueryRepoComment {
                     dislikesCount: el.dislikesCount,
                     myStatus: matchedLikes ? matchedLikes.likeStatus : 'None'
                 }
-
-
             }
         })
 

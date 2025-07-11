@@ -15,7 +15,7 @@ export class UserService {
         const userEmail = await this.queryRepository.findLoginOrEmail(dto.email, dto.login)
         if (userEmail) return null
         const user = await UserModel.createUser(dto)
-        return  (await this.usersRepository.save(user)).toString()
+        return  await this.usersRepository.save(user)
         // return id.toString()
     }
 

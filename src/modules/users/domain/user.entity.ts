@@ -26,15 +26,15 @@ const userSchema = new mongoose.Schema<UserType, {}, UserMethods, UserModel>({
     email: {type: String, required: true, minlength: 6, maxlength: 30},
     password: {type: String, required: true, minlength: 6, maxlength: 60},
     createdAt: {type: Date, required: true, default: Date.now},
-    isConfirmed: { type: Boolean, required: true },
-    confirmationCode: { type: String, required: true },
-    confirmationCodeExpiration: { type: Date, required: true }
+    isConfirmed: {type: Boolean, required: true},
+    confirmationCode: {type: String, required: true},
+    confirmationCodeExpiration: {type: Date, required: true}
 })
 
 const userStatics = {
     async createUser(dto: CreateUserDto) {
         const hashedPassword = await bcrypt.hash(dto.password, 10)
-        const user = new UserModel() as UserDocument;
+        const user: UserDocument = new UserModel() as UserDocument;
         user.login = dto.login;
         user.password = hashedPassword
         user.email = dto.email;
@@ -47,15 +47,10 @@ const userStatics = {
 
 
     async registerUser(dto: CreateUserDto) {
-        const hashedPassword = await bcrypt.hash(dto.password, 10)
-        return new UserModel ({
-            login: dto.login,
-            password: hashedPassword,
-            email: dto.email,
-            isConfirmed: false,
-            confirmationCode: randomUUID(),
-            confirmationCodeExpiration: add(new Date(), { hours: 1, minutes: 30 }),
-        })
+        const user: UserDocument = await userStatics.createUser(dto)
+        user.isConfirmed = false
+        user.confirmationCode = randomUUID()
+        user.confirmationCodeExpiration = add(new Date(), {hours: 1, minutes: 30})
     }
 }
 

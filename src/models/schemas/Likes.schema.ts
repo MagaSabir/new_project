@@ -6,12 +6,18 @@ export type LikeType = {
     likeStatus: string
 }
 
+export enum LikeStatus {
+    LIKE = 'Like',
+    DISLIKE = 'Dislike',
+    NONE = 'None'
+}
+
 
 
 const likeSchema = new Schema({
     commentId: { type: String, required: true },
     userId: { type: String, required: true },
-    likeStatus: { type: String, enum: ['Like', 'Dislike', 'None'], required: true},
+    likeStatus: { type: String, enum: LikeStatus, required: true},
     createdAt: { type: Date, default: Date.now() }
 })
 

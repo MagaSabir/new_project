@@ -12,7 +12,7 @@ export class UsersRepository {
 
     async save(user: UserDocument) {
         const {_id} = await user.save()
-        return _id
+        return _id.toString()
     }
 
     async deleteUser(id: string): Promise<boolean> {

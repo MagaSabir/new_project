@@ -17,7 +17,7 @@ export class QueryPostRepository {
         const postIds = posts.map(post => post._id)
 
         const userLikes = userId ? await PostLikes.find({postId: {$in: postIds}, userId: userId}).lean() : []
-        const allLikes = await PostLikes.find({likeStatus: 'Like'}).sort({addedAt: -1}).lean()
+        const allLikes = await PostLikes.find({postId: {$in: postIds},likeStatus: 'Like'}).sort({addedAt: -1}).lean()
         const post = posts.map(post => {
             const lLikes = allLikes.filter(l => l.postId.toString() === post._id.toString()).slice(0, 3)
 
