@@ -16,7 +16,6 @@ export class UserService {
         if (userEmail) return null
         const user = await UserModel.createUser(dto)
         return  await this.usersRepository.save(user)
-        // return id.toString()
     }
 
     async deleteUserByID(id: string): Promise<boolean> {

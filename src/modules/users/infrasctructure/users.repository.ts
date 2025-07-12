@@ -5,10 +5,6 @@ import {UserDocument, UserModel} from "../domain/user.entity";
 
 @injectable()
 export class UsersRepository {
-    // async createUser(userData: UserDocument) {
-    //     const user = await UserModel.create(userData)
-    //     return user._id.toString()
-    // }
 
     async save(user: UserDocument) {
         const {_id} = await user.save()
@@ -19,7 +15,6 @@ export class UsersRepository {
         const result: DeleteResult = await UserModel.deleteOne({_id: new ObjectId(id)})
         return result.deletedCount === 1
     }
-
 
 
     async updateConfirmation(_id: ObjectId) {
