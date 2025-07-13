@@ -2,7 +2,7 @@ import {Request, Response} from "express";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
 import {PaginationType, ParsedQueryParamsType} from "../../../common/types/types";
 import {BlogsService} from "../application/blog.service";
-import { QueryBlogsRepository} from "../infrasctructure/query.blog.repository";
+import {QueryBlogsRepository} from "../infrasctructure/query.blog.repository";
 import {PostViewModel} from "../../../models/view_models/post.view.model";
 import {sortQueryFields} from "../../../common/types/sortQueryFields";
 import {injectable} from "inversify";
@@ -14,7 +14,8 @@ import {BlogViewModel} from "../../../models/view_models/BlogViewModel";
 export class BlogsController {
     constructor(protected blogsService: BlogsService,
                 protected queryBlogRepository: QueryBlogsRepository,
-                protected queryPostRepository: QueryPostRepository) {}
+                protected queryPostRepository: QueryPostRepository) {
+    }
 
     async getBlogs(req: Request, res: Response) {
         try {
@@ -33,7 +34,7 @@ export class BlogsController {
             const userId = req.user?.id ?? null
             const blogId: string = req.params.id
             const {pageNumber, pageSize, sortDirection, sortBy} = sortQueryFields(req.query)
-            const items: PaginationType<PostViewModel> | null = await this.queryBlogRepository.getPosts(userId,pageNumber, pageSize, sortDirection, sortBy, blogId)
+            const items: PaginationType<PostViewModel> | null = await this.queryBlogRepository.getPosts(userId, pageNumber, pageSize, sortDirection, sortBy, blogId)
             if (items) {
                 res.status(STATUS_CODE.OK_200).send(items)
                 return
@@ -73,7 +74,7 @@ export class BlogsController {
 
     async updateBlog(req: Request, res: Response) {
         try {
-            const isUpdated: boolean = await this.blogsService.updateBlog(req.body, req.params.id)
+            const isUpdated: boolean | null = await this.blogsService.updateBlog(req.body, req.params.id)
             if (isUpdated) {
                 res.sendStatus(STATUS_CODE.NO_CONTENT_204)
                 return
@@ -113,7 +114,6 @@ export class BlogsController {
             console.error('Create Post:', error)
             res.sendStatus(STATUS_CODE.SERVER_ERROR)
         }
-
     }
 }
 

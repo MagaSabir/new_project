@@ -1,6 +1,6 @@
 import {DeleteResult, ObjectId} from "mongodb";
 import {injectable} from "inversify";
-import {BlogDocument, BlogModel, BlogType} from "../domain/blog.entity";
+import {BlogDocument, BlogModel} from "../domain/blog.entity";
 
 
 @injectable()
@@ -10,16 +10,12 @@ export class BlogsRepository {
         return _id.toString()
     }
 
-    async updateBlog(blog: BlogDocument) {
-        await blog.save()
-    }
-
     async deleteBlog(id: string): Promise<boolean> {
         const result: DeleteResult = await BlogModel.deleteOne({_id: new ObjectId(id)})
         return result.deletedCount === 1
     }
 
-    async findBlogById(id: string) {
-        return  BlogModel.findById(id)
+    async findBlogById(id: string): Promise<BlogDocument | null> {
+        return BlogModel.findById(id)
     }
 }

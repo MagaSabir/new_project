@@ -4,9 +4,8 @@ import {PostRepository} from "../../posts/repositories/post.repository";
 import {injectable} from "inversify";
 import {QueryBlogsRepository} from "../infrasctructure/query.blog.repository";
 import {PostModel} from "../../../models/schemas/Post.schema";
-import {CrateBlogDto} from "../domain/blog.dto";
-import {BlogDocument, BlogModel, BlogType} from "../domain/blog.entity";
-import {CreateBlogDto} from "../../../common/types/blogTypes/blogType";
+import {CrateBlogDto, UpdateBlogDto} from "../domain/blog.dto";
+import {BlogDocument, BlogModel} from "../domain/blog.entity";
 
 @injectable()
 export class BlogsService {
@@ -16,15 +15,15 @@ export class BlogsService {
     }
 
     async createBlog(dto: CrateBlogDto): Promise<string> {
-        const blog: BlogDocument = await BlogModel.createBlog(dto)
+        const blog: BlogDocument = BlogModel.createBlog(dto)
         return await this.blogsRepository.save(blog)
     }
 
-    async updateBlog(dto: BlogDocument, id: string) {
-        const blog =  await this.blogsRepository.findBlogById(id)
-
-        if(!blog) return null
-        return  this.blogsRepository.save(blog)
+    async updateBlog(dto: UpdateBlogDto, id: string) {
+        const blog: BlogDocument | null = await this.blogsRepository.findBlogById(id)
+        if (!blog) return null
+        blog.updateBlog(dto)
+        return !!await this.blogsRepository.save(blog)
     }
 
     async deleteBlog(id: string): Promise<boolean> {
@@ -41,6 +40,6 @@ export class BlogsService {
             createdAt: new Date().toISOString()
         }
         const post = new PostModel(newPost)
-        return  await this.postRepository.save(post)
+        return await this.postRepository.save(post)
     }
 }

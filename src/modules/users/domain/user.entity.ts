@@ -51,6 +51,7 @@ const userStatics = {
         user.isConfirmed = false
         user.confirmationCode = randomUUID()
         user.confirmationCodeExpiration = add(new Date(), {hours: 1, minutes: 30})
+        return user
     }
 }
 

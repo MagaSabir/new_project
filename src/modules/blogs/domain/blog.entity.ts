@@ -1,5 +1,6 @@
 import mongoose, {HydratedDocument, Model} from "mongoose";
 import {CreateBlogDto} from "../../../common/types/blogTypes/blogType";
+import {UpdateBlogDto} from "./blog.dto";
 
 export type BlogType = {
     name: string,
@@ -10,13 +11,22 @@ export type BlogType = {
 }
 
 type BlogStatics = typeof blogStatics
-type BlogMethods = typeof blogMethods
+
+// interface BlogStatics {
+//     createBlog(dto: CreateBlogDto): BlogDocument
+// }
+
+interface BlogMethods {
+    updateBlog(this: BlogDocument, dto: Partial<BlogType>): void
+}
+
+// type BlogMethods = typeof blogMethods
 
 type BlogModel = Model<BlogType, {}, BlogMethods> & BlogStatics
 
 export type BlogDocument = HydratedDocument<BlogType, BlogMethods>
 
-const blogSchema = new mongoose.Schema<BlogType, {}, BlogMethods, BlogModel>({
+const blogSchema = new mongoose.Schema<BlogType, BlogModel, BlogMethods>({
     name: {type: String, required: true, minlength: 2, maxlength: 15},
     description: {type: String, required: true, minLength: 1, maxlength: 500},
     websiteUrl: {type: String, required: true, minlength: 6, maxlength: 100},
@@ -25,24 +35,20 @@ const blogSchema = new mongoose.Schema<BlogType, {}, BlogMethods, BlogModel>({
 })
 
 const blogStatics = {
-    async createBlog(dto: CreateBlogDto) {
-        return new BlogModel ({
-            name: dto.name,
-            description: dto.description,
-            websiteUrl: dto.websiteUrl,
-        })
+    createBlog(dto: CreateBlogDto): BlogDocument {
+        const blog: BlogDocument = new BlogModel();
+        blog.name = dto.name
+        blog.description = dto.description
+        blog.websiteUrl = dto.websiteUrl
+        return blog
     },
-
-
 }
 
-const blogMethods = {
-    async updateBlog (dto: BlogType, id: string) {
-        return new BlogModel ({
-            name: dto.name,
-            description: dto.description,
-            websiteUrl: dto.websiteUrl,
-        })
+const blogMethods: BlogMethods = {
+    updateBlog(this: BlogDocument, dto: UpdateBlogDto) {
+        this.name = dto.name ?? this.name
+        this.description = dto.description ?? this.description
+        this.websiteUrl = dto.websiteUrl ?? this.websiteUrl
     }
 }
 

@@ -12,10 +12,10 @@ import {jwtService} from "../../../common/adapters/jwt.service";
 import {injectable} from "inversify";
 import {CreatedUserType} from "../../../models/schemas/Auth.schema";
 import {UsersRepository} from "../../users/infrasctructure/users.repository";
-import { randomUUID } from "crypto";
+import {randomUUID} from "crypto";
 import {QueryUsersRepository} from "../../users/infrasctructure/query.users.repository";
 import {CreateUserDto} from "../../users/domain/user.dto";
-import {UserModel} from "../../users/domain/user.entity";
+import {UserDocument, UserModel} from "../../users/domain/user.entity";
 
 @injectable()
 export class AuthService {
@@ -84,7 +84,7 @@ export class AuthService {
             }
         }
 
-        const registerUser = await UserModel.registerUser(dto)
+        const registerUser: UserDocument = await UserModel.registerUser(dto)
         await this.usersRepository.save(registerUser)
 
         try {
