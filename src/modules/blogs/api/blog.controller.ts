@@ -6,7 +6,7 @@ import {QueryBlogsRepository} from "../infrasctructure/query.blog.repository";
 import {PostViewModel} from "../../../models/view_models/post.view.model";
 import {sortQueryFields} from "../../../common/types/sortQueryFields";
 import {injectable} from "inversify";
-import {QueryPostRepository} from "../../posts/queryRepository/query.post.repository";
+import {QueryPostRepository} from "../../posts/infrastructure/query.post.repository";
 import {BlogType} from "../domain/blog.entity";
 import {BlogViewModel} from "../../../models/view_models/BlogViewModel";
 

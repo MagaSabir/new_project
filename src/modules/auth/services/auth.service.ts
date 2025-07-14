@@ -28,7 +28,6 @@ export class AuthService {
     async login(loginOrEmail: string, password: string, ip: string, userAgent: string): Promise<TokensType | null> {
         const user = await this.authRepository.findUser(loginOrEmail)
         if (!user) return null;
-
         const isValid: boolean = await BcryptPasswordHash.compare(password, user.password)
         if (!isValid) return null
 

@@ -1,4 +1,5 @@
-import {PostLikes, PostModel} from "../../../models/schemas/Post.schema";
+import {PostModel} from "../domain/post.entity";
+import {PostLikes} from "../../../models/schemas/Post.schema";
 
 export class QueryPostRepository {
     async findPosts(userId: string, pageNumber: number, pageSize: number, sortDirection: 1 | -1, sortBy: any) {
@@ -12,14 +13,13 @@ export class QueryPostRepository {
             .sort({[sortBy]: sortDirection})
             .lean()
 
-        //[{ id: 1, title: post:1}, { id: 2, title: post2 { ]
 
         const postIds = posts.map(post => post._id)
 
         const userLikes = userId ? await PostLikes.find({postId: {$in: postIds}, userId: userId}).lean() : []
-        const allLikes = await PostLikes.find({postId: {$in: postIds},likeStatus: 'Like'}).sort({addedAt: -1}).lean()
+        const allLikes = await PostLikes.find({postId: {$in: postIds},likeStatus: 'Like'}).sort({addedAt: -1}).limit(3).lean()
         const post = posts.map(post => {
-            const lLikes = allLikes.filter(l => l.postId.toString() === post._id.toString()).slice(0, 3)
+            const lLikes = allLikes.filter(l => l.postId.toString() === post._id.toString())
 
             const matchedLikes = userLikes.find(l => l.postId.toString() === post._id.toString())
             return {

@@ -1,11 +1,13 @@
 import {ObjectId} from "mongodb";
 import {QueryBlogsRepository} from "../../blogs/infrasctructure/query.blog.repository";
-import {PostLikes, PostModel, PostType} from "../../../models/schemas/Post.schema";
-import {PostRepository} from "../repositories/post.repository";
+import {PostRepository} from "../infrastructure/post.repository";
 import {injectable} from "inversify";
 import {CommentRepository, LikeStatus} from "../../comments/repositories/comment.repository";
-import {QueryPostRepository} from "../queryRepository/query.post.repository";
-import {BlogType} from "../../blogs/domain/blog.entity";
+import {QueryPostRepository} from "../infrastructure/query.post.repository";
+import {PostDocument, PostModel, PostType} from "../domain/post.entity";
+import {CreatePostDto} from "../domain/post.dto";
+import {PostLikes} from "../../../models/schemas/Post.schema";
+import {BlogViewModel} from "../../../models/view_models/BlogViewModel";
 
 @injectable()
 export class PostsService {
@@ -16,23 +18,10 @@ export class PostsService {
         protected queryPostRepository: QueryPostRepository) {
     }
 
-    async createPostService(dto: PostType): Promise<string | null> {
-        const blog: BlogType | null = await this.queryBlogRepository.getBlog(dto.blogId)
-        if (!blog) {
-            return null
-        }
-        const newPost = {
-            ...dto,
-            blogName: blog.name,
-            createdAt: new Date().toISOString(),
-            extendedLikesInfo: {
-                likesCount: 0,
-                dislikesCount: 0,
-                newestLikes: []
-            }
-
-        }
-        const post = new PostModel(newPost)
+    async createPostService(dto: CreatePostDto): Promise<string | null> {
+        const blog: BlogViewModel | null = await this.queryBlogRepository.getBlog(dto.blogId)
+        if (!blog) return null
+        const post: PostDocument = PostModel.createPost(dto, blog)
         return await this.postRepository.save(post)
     }
 
@@ -90,8 +79,6 @@ export class PostsService {
 
         // const newestLikes = await PostLikes.findOne({postId: postId, userId: userId})
 
-
-        console.log(newestLikes)
         await PostModel.updateOne({_id: postId}, {
             $set: {
                 "extendedLikesInfo.likesCount": likes,

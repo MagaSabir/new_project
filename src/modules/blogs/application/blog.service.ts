@@ -1,11 +1,11 @@
 import {BlogsRepository} from "../infrasctructure/blog.repository";
 import {PostDto} from "../../../common/types/postTypse/postType";
-import {PostRepository} from "../../posts/repositories/post.repository";
+import {PostRepository} from "../../posts/infrastructure/post.repository";
 import {injectable} from "inversify";
 import {QueryBlogsRepository} from "../infrasctructure/query.blog.repository";
-import {PostModel} from "../../../models/schemas/Post.schema";
 import {CrateBlogDto, UpdateBlogDto} from "../domain/blog.dto";
 import {BlogDocument, BlogModel} from "../domain/blog.entity";
+import {PostModel} from "../../posts/domain/post.entity";
 
 @injectable()
 export class BlogsService {

@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import {randomUUID} from "crypto";
 import {add} from "date-fns";
 
-type UserType = {
+export type UserType = {
     login: string,
     email: string,
     password: string,

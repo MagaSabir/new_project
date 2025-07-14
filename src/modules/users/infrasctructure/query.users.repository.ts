@@ -1,10 +1,9 @@
-import {ObjectId, WithId} from "mongodb";
+import {WithId} from "mongodb";
 import {UserViewModel} from "../../../models/view_models/UserViewModel";
 import {PaginationType} from "../../../common/types/types";
-// import {UserModel} from "../../../models/schemas/User.schema";
 import {CreatedUserType} from "../../../models/schemas/Auth.schema";
 import {injectable} from "inversify";
-import {UserModel} from "../domain/user.entity";
+import {UserModel, UserType} from "../domain/user.entity";
 
 @injectable()
 export class QueryUsersRepository {
@@ -21,14 +20,14 @@ export class QueryUsersRepository {
         const filter = loginOrEmail.length > 0 ? {$or: loginOrEmail} : {}
         const totalCountUsers: number = await UserModel.countDocuments(filter)
 
-        const users = await UserModel
+        const users: WithId<UserType>[] = await UserModel
             .find(filter)
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
             .sort({[sortBy]: sortDirection})
             .lean()
 
-        const newUser: UserViewModel[] = users.map((el: WithId<CreatedUserType>): UserViewModel => {
+        const newUser: UserViewModel[] = users.map((el: WithId<UserType>): UserViewModel => {
             return {
                 id: el._id.toString(),
                 login: el.login,
@@ -57,7 +56,7 @@ export class QueryUsersRepository {
         return null
     }
 
-    async getUseById(userId: string) {
+    async getUserById(userId: string): Promise<{ email: string, login: string, userId: string } | null> {
         const user: WithId<CreatedUserType> | null = await UserModel.findById(userId)
         if (user)
             return {
@@ -68,15 +67,15 @@ export class QueryUsersRepository {
         return null
     }
 
-    async findLoginOrEmail(email: string, login: string) {
+    async findLoginOrEmail(email: string, login: string): Promise<UserType | null> {
         return UserModel.findOne({$or: [{email}, {login}]}).lean()
     }
 
-    async findUserByEmail(email: string) {
+    async findUserByEmail(email: string): Promise<UserType | null> {
         return UserModel.findOne({email}).lean();
     }
 
-    async findUserByConfirmationCode(code: string) {
+    async findUserByConfirmationCode(code: string): Promise<UserType | null> {
         return UserModel.findOne({confirmationCode: code}).lean();
     }
 }

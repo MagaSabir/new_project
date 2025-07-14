@@ -2,8 +2,9 @@ import {ObjectId} from "mongodb";
 import {BlogQuery} from "../../../common/types/blogTypes/blogType";
 import {mapBlogToViewModel} from "../../../common/adapters/mapper";
 import {injectable} from "inversify";
-import {PostLikes, PostModel} from "../../../models/schemas/Post.schema";
+import {PostLikes} from "../../../models/schemas/Post.schema";
 import {BlogModel, BlogType} from "../domain/blog.entity";
+import {PostModel} from "../../posts/domain/post.entity";
 
 
 @injectable()

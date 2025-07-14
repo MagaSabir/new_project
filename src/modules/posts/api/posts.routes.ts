@@ -4,14 +4,14 @@ import {
     contentValidator,
     shortDescriptionValidator,
     titleValidation,
-} from "../../common/middlewares/blogValidation/posts.validations";
-import {basicAuthMiddleware} from "../../common/middlewares/basic.auth.middleware";
-import {accessTokenMiddleware} from "../../common/middlewares/auth.middleware";
-import {inputValidationErrors} from "../../common/adapters/errorMessage";
-import {contentValidation, likeStatusValidation} from "../../common/middlewares/commentValidation/comment.validation";
-import {PostsController} from "./controllers/posts.controller";
-import {container} from "../../composition-root";
-import {checkAccess} from "../../common/middlewares/authAccess";
+} from "../../../common/middlewares/blogValidation/posts.validations";
+import {basicAuthMiddleware} from "../../../common/middlewares/basic.auth.middleware";
+import {accessTokenMiddleware} from "../../../common/middlewares/auth.middleware";
+import {inputValidationErrors} from "../../../common/adapters/errorMessage";
+import {contentValidation, likeStatusValidation} from "../../../common/middlewares/commentValidation/comment.validation";
+import {PostsController} from "./posts.controller";
+import {container} from "../../../composition-root";
+import {checkAccess} from "../../../common/middlewares/authAccess";
 
 const postsController = container.get(PostsController)
 export const postRouter = Router();

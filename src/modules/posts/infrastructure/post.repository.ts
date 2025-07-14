@@ -1,6 +1,6 @@
 import {DeleteResult, ObjectId, UpdateResult} from "mongodb";
-import {PostModel, PostType} from "../../../models/schemas/Post.schema";
 import {injectable} from "inversify";
+import {PostModel, PostType} from "../domain/post.entity";
 
 @injectable()
 export class PostRepository {

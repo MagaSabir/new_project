@@ -1,9 +1,9 @@
 import {Request, Response} from "express";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
-import {QueryPostRepository} from "../queryRepository/query.post.repository";
+import {QueryPostRepository} from "../infrastructure/query.post.repository";
 import {QueryRepoComment} from "../../comments/queryRepositories/query.repo.comment";
 import {sortQueryFields} from "../../../common/types/sortQueryFields";
-import {PostsService} from "../services/post.servise";
+import {PostsService} from "../application/post.servise";
 import {injectable} from "inversify";
 
 
