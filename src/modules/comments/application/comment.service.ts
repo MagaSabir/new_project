@@ -1,9 +1,8 @@
-import {CommentRepository, LikeStatus} from "../repositories/comment.repository";
+import {CommentRepository, LikeStatus} from "../infrastructure/comment.repository";
 import {injectable} from "inversify";
-import {QueryRepoComment} from "../queryRepositories/query.repo.comment";
-import {LikesModel, LikeType} from "../../../models/schemas/Likes.schema";
+import {QueryRepoComment} from "../infrastructure/query.repo.comment";
+import {LikesModel} from "../../../models/schemas/Likes.schema";
 import {ResultStatus} from "../../../common/types/resultStatuse";
-import {CommentModel} from "../../../models/schemas/Comment.schema";
 
 @injectable()
 export class CommentService {

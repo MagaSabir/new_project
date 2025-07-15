@@ -44,7 +44,7 @@ export class AuthController {
 
 
     async getUser(req: Request, res: Response): Promise<void> {
-        const user = await this.queryUsersRepository.getUseById(req.user.id)
+        const user = await this.queryUsersRepository.getUserById(req.user.id)
         res.status(200).send(user)
     }
 

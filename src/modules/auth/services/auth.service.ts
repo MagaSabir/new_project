@@ -15,7 +15,7 @@ import {UsersRepository} from "../../users/infrasctructure/users.repository";
 import {randomUUID} from "crypto";
 import {QueryUsersRepository} from "../../users/infrasctructure/query.users.repository";
 import {CreateUserDto} from "../../users/domain/user.dto";
-import {UserDocument, UserModel} from "../../users/domain/user.entity";
+import {UserDocument, UserModel, UserType} from "../../users/domain/user.entity";
 
 @injectable()
 export class AuthService {
@@ -129,7 +129,7 @@ export class AuthService {
 
     async newLogin(password: string, code: string) {
         try {
-            const user: WithId<CreatedUserType> | null = await this.queryRepository.findUserByConfirmationCode(code)
+            const user = await this.queryRepository.findUserByConfirmationCode(code)
             if (!user) return null
             if (user.isConfirmed) return null
             if (user.confirmationCodeExpiration! < new Date()) return null
@@ -143,7 +143,7 @@ export class AuthService {
     }
 
     async resendConfirmCodeService(email: string) {
-        const user: WithId<CreatedUserType> | null = await this.queryRepository.findUserByEmail(email)
+        const user: CreatedUserType| null = await this.queryRepository.findUserByEmail(email)
         if (!user) return {status: ResultStatus.BadRequest}
 
         if (user.isConfirmed) {

@@ -2,7 +2,7 @@ import {ObjectId} from "mongodb";
 import {QueryBlogsRepository} from "../../blogs/infrasctructure/query.blog.repository";
 import {PostRepository} from "../infrastructure/post.repository";
 import {injectable} from "inversify";
-import {CommentRepository, LikeStatus} from "../../comments/repositories/comment.repository";
+import {CommentRepository, LikeStatus} from "../../comments/infrastructure/comment.repository";
 import {QueryPostRepository} from "../infrastructure/query.post.repository";
 import {PostDocument, PostModel, PostType} from "../domain/post.entity";
 import {CreatePostDto} from "../domain/post.dto";

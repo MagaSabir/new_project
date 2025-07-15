@@ -1,13 +1,14 @@
 import {WithId} from "mongodb";
 import {CommentType} from "../../../models/view_models/CommentModel";
-import {CommentModel} from "../../../models/schemas/Comment.schema";
 import {injectable} from "inversify";
 import {LikesModel, LikeStatus} from "../../../models/schemas/Likes.schema";
+import {CommentModel} from "../domain/comment.entity";
 
 @injectable()
 export class QueryRepoComment {
     async getCommentById(id: string, userId?: string) {
         const comment: WithId<CommentType> | null = await CommentModel.findById(id)
+        console.log(comment)
 
         if (!comment) return null
         const likes = await LikesModel.findOne({commentId: id, userId}).lean()

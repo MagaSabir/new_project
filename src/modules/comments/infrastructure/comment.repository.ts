@@ -1,7 +1,7 @@
 import {ObjectId} from "mongodb";
-import {CommentModel} from "../../../models/schemas/Comment.schema";
 import {injectable} from "inversify";
 import {LikesModel} from "../../../models/schemas/Likes.schema";
+import {CommentModel} from "../domain/comment.entity";
 
 @injectable()
 export class CommentRepository {

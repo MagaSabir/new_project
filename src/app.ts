@@ -4,16 +4,16 @@ import {postRouter} from "./modules/posts/api/posts.routes";
 import {SETTINGS} from "./settings";
 import {userRouter} from "./modules/users/api/users.routes";
 import {authRoutes} from "./modules/auth/auth.routes";
-import {commentsRoutes} from "./modules/comments/comments.routes";
+import {commentsRoutes} from "./modules/comments/api/comments.routes";
 import cookieParser from 'cookie-parser'
 import {devicesRoutes} from "./modules/security/devices.routes";
-import {PostModel} from "./models/schemas/Post.schema";
-import {CommentModel} from "./models/schemas/Comment.schema";
 import {AuthModel} from "./models/schemas/Auth.schema";
 import {DeviceModel} from "./models/schemas/Device.schema";
 import {setupSwagger} from "./swagger/setup-swagger";
 import {UserModel} from "./modules/users/domain/user.entity";
 import {BlogModel} from "./modules/blogs/domain/blog.entity";
+import {PostModel} from "./modules/posts/domain/post.entity";
+import {CommentModel} from "./modules/comments/domain/comment.entity";
 
 
 

@@ -3,7 +3,7 @@ import {UserViewModel} from "../../../models/view_models/UserViewModel";
 import {PaginationType} from "../../../common/types/types";
 import {CreatedUserType} from "../../../models/schemas/Auth.schema";
 import {injectable} from "inversify";
-import {UserModel, UserType} from "../domain/user.entity";
+import {UserDocument, UserModel, UserType} from "../domain/user.entity";
 
 @injectable()
 export class QueryUsersRepository {
@@ -75,7 +75,8 @@ export class QueryUsersRepository {
         return UserModel.findOne({email}).lean();
     }
 
-    async findUserByConfirmationCode(code: string): Promise<UserType | null> {
-        return UserModel.findOne({confirmationCode: code}).lean();
+    async findUserByConfirmationCode(code: string) {
+        const user =  UserModel.findOne({confirmationCode: code}).lean();
+        return user
     }
 }

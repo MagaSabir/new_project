@@ -1,7 +1,7 @@
 import {Request, Response} from "express";
-import {CommentService} from "../services/comment.service";
+import {CommentService} from "../application/comment.service";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
-import {QueryRepoComment} from "../queryRepositories/query.repo.comment";
+import {QueryRepoComment} from "../infrastructure/query.repo.comment";
 import {injectable} from "inversify";
 import {ResultStatus} from "../../../common/types/resultStatuse";
 
