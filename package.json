@@ -59,6 +59,7 @@
     "dev": "nodemon --inspect dist dist/index.js",
     "jest": "jest -i",
     "lint": "eslint --fix .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:unit": "jest --config jest.unit.config.js"
   }
 }

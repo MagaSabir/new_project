@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb";
 import {injectable} from "inversify";
-import {LikesModel} from "../../../models/schemas/Likes.schema";
+import {LikesModel, LikeStatus} from "../../../models/schemas/Likes.schema";
 import {CommentModel} from "../domain/comment.entity";
 
 @injectable()
@@ -38,4 +38,3 @@ export class CommentRepository {
     }
 }
 
-export type LikeStatus = 'Like' | 'Dislike' | 'None'

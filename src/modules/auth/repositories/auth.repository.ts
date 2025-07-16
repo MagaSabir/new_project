@@ -1,8 +1,8 @@
-import {ObjectId} from "mongodb";
 import {injectable} from "inversify";
 
 import {AuthModel} from "../../../models/schemas/Auth.schema";
 import {UserModel} from "../../users/domain/user.entity";
+import {PyloadTypeDb} from "../../../models/view_models/UserViewModel";
 
 @injectable()
 export class AuthRepository {
@@ -12,7 +12,7 @@ export class AuthRepository {
     }
 
     async addSession(session: PyloadTypeDb) {
-         await AuthModel.create(session)
+        await AuthModel.create(session)
     }
 
     async findSession(userId: string, deviceId: string) {
@@ -31,11 +31,3 @@ export class AuthRepository {
 }
 
 
-export type PyloadTypeDb = {
-    userId: ObjectId | string,
-    userAgent: string,
-    ip: string,
-    lastActiveDate: number | undefined
-    deviceId: string
-    expiration: number | undefined
-}

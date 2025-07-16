@@ -13,13 +13,6 @@ export class CommentController {
 
     async getComment(req: Request, res: Response) {
         try {
-            // let userId
-            // if(req.user) {
-            //     userId = req.user.id
-            // } else {
-            //     userId = 'None'
-            // }
-
             const userId = req.user?.id ?? null
             const comment = await this.queryCommentRepository.getCommentById(req.params.id, userId)
 

@@ -66,7 +66,7 @@ export class AuthService {
 
 
     async createUserService(dto: CreateUserDto) {
-        console.log('dt0 - ' + dto)
+
         const user = await this.queryRepository.findLoginOrEmail(dto.email, dto.login)
         if (user) {
             const isEmail: boolean = user.email === dto.email
