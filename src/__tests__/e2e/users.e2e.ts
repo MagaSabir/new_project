@@ -1,9 +1,9 @@
-import {runDb} from "../db/mongoDb";
+import {runDb} from "../../db/mongoDb";
 import request from "supertest";
-import {app} from "../app";
-import {SETTINGS} from "../settings";
-import {auth} from "./helpers/helpers.e2e.helper";
-import {STATUS_CODE} from "../common/adapters/http-statuses-code";
+import {app} from "../../app";
+import {SETTINGS} from "../../settings";
+import {auth} from "../helpers/helpers.e2e.helper";
+import {STATUS_CODE} from "../../common/adapters/http-statuses-code";
 
 
 describe('/users tests',  () => {

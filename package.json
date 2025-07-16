@@ -60,6 +60,6 @@
     "jest": "jest -i",
     "lint": "eslint --fix .",
     "format": "prettier --write .",
-    "test:unit": "jest --config jest.unit.config.js"
+    "test:unit": "jest --config jest-unit.js"
   }
 }

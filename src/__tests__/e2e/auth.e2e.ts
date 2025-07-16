@@ -1,11 +1,11 @@
-import {creator} from "./helpers/helpers.e2e.helper";
+import {creator} from "../helpers/helpers.e2e.helper";
 import request from "supertest";
-import {app} from "../app";
+import {app} from "../../app";
 import {NextFunction} from "express";
 import mongoose from "mongoose";
 import {MongoMemoryServer} from "mongodb-memory-server-core";
 
-jest.mock('../common/middlewares/rateLimit.middleware', () => ({
+jest.mock('../../common/middlewares/rateLimit.middleware', () => ({
     rateLimitMiddleware: (req: Request, res: Response, next: NextFunction) => next()
 }))
  let mongo: MongoMemoryServer;

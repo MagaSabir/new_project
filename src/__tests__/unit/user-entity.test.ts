@@ -1,5 +1,5 @@
-import {describe} from "node:test";
-import {UserModel} from "../modules/users/domain/user.entity";
+import { describe } from '@jest/globals';
+import {UserModel} from "../../modules/users/domain/user.entity";
 
 describe('user entity test', () => {
     it('should create new user', async () => {

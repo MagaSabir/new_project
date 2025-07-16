@@ -1,8 +1,8 @@
 import request from "supertest";
-import {app} from "../app";
-import {SETTINGS} from "../settings";
-import {STATUS_CODE} from "../common/adapters/http-statuses-code";
-import {auth, creator,} from './helpers/helpers.e2e.helper'
+import {app} from "../../app";
+import {SETTINGS} from "../../settings";
+import {STATUS_CODE} from "../../common/adapters/http-statuses-code";
+import {auth, creator,} from '../helpers/helpers.e2e.helper'
 import {MongoMemoryServer} from "mongodb-memory-server-core";
 import mongoose from "mongoose";
 
