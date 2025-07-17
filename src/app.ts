@@ -3,10 +3,10 @@ import {blogRouter} from "./modules/blogs/api/blogs.routes";
 import {postRouter} from "./modules/posts/api/posts.routes";
 import {SETTINGS} from "./settings";
 import {userRouter} from "./modules/users/api/users.routes";
-import {authRoutes} from "./modules/auth/auth.routes";
+import {authRoutes} from "./modules/auth/api/auth.routes";
 import {commentsRoutes} from "./modules/comments/api/comments.routes";
 import cookieParser from 'cookie-parser'
-import {devicesRoutes} from "./modules/security/devices.routes";
+import {devicesRoutes} from "./modules/security/api/devices.routes";
 import {AuthModel} from "./models/schemas/Auth.schema";
 import {DeviceModel} from "./models/schemas/Device.schema";
 import {setupSwagger} from "./swagger/setup-swagger";

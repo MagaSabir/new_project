@@ -4,13 +4,13 @@ import {
     loginOrEmail,
     newPasswordValidation,
     passwordValidation
-} from "../../common/middlewares/postValidation/users.validation";
-import {accessTokenMiddleware} from "../../common/middlewares/auth.middleware";
-import {inputValidationErrors} from "../../common/adapters/errorMessage";
-import {refreshMiddleware} from "../../common/middlewares/refresh.middleware";
-import {rateLimitMiddleware} from "../../common/middlewares/rateLimit.middleware";
-import {AuthController} from "./controllers/auth.controller";
-import {container} from "../../composition-root";
+} from "../../../common/middlewares/postValidation/users.validation";
+import {accessTokenMiddleware} from "../../../common/middlewares/auth.middleware";
+import {inputValidationErrors} from "../../../common/adapters/errorMessage";
+import {refreshMiddleware} from "../../../common/middlewares/refresh.middleware";
+import {rateLimitMiddleware} from "../../../common/middlewares/rateLimit.middleware";
+import {AuthController} from "./auth.controller";
+import {container} from "../../../composition-root";
 
 const authController = container.get(AuthController)
 export const authRoutes = Router()

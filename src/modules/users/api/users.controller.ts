@@ -1,9 +1,8 @@
 import {Request, Response} from "express";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
-import {UserViewModel} from "../../../models/view_models/UserViewModel";
+import {CreatedUserType, UserViewModel} from "../../../models/view_models/UserViewModel";
 import {PaginationType} from "../../../common/types/types";
 import {sortQueryFields} from "../../../common/types/sortQueryFields";
-import {CreatedUserType} from "../../../models/schemas/Auth.schema";
 import {injectable} from "inversify";
 import {QueryUsersRepository} from "../infrasctructure/query.users.repository";
 import {UserService} from "../application/users.service";

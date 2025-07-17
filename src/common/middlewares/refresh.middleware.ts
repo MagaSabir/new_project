@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {jwtService} from "../adapters/jwt.service";
 import {container} from "../../composition-root";
-import {AuthRepository} from "../../modules/auth/repositories/auth.repository";
+import {AuthRepository} from "../../modules/auth/infrastructure/auth.repository";
 const authRepository = container.get(AuthRepository)
 
 export const refreshMiddleware = async (req: Request, res: Response, next: NextFunction) => {

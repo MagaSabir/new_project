@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
-import {DevicesRepository} from "../../modules/security/repository/devices.repository";
-import {QueryUsersRepository} from "../../modules/users/infrasctructure/query.users.repository";
-import {DevicesQueryRepository} from "../../modules/security/queryRepository/devices.query.repository";
+import {DevicesRepository} from "../../modules/security/infrastructure/devices.repository";
+import {DevicesQueryRepository} from "../../modules/security/infrastructure/devices.query.repository";
+
 const devicesRepository = new DevicesRepository()
 const queryRepository = new DevicesQueryRepository()
 export const rateLimitMiddleware = async (req: Request, res: Response, next: NextFunction) => {

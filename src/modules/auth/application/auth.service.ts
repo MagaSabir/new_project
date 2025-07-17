@@ -1,21 +1,20 @@
-import {AuthRepository} from "../repositories/auth.repository";
+import {AuthRepository} from "../infrastructure/auth.repository";
 import bcrypt from "bcrypt";
 import {nodemailerService} from "../../../common/adapters/nodemailer.service";
 import {add} from "date-fns";
 import {ResultStatus} from "../../../common/types/resultStatuse";
 import {WithId} from "mongodb";
 import {PayloadType, TokensType} from "../../../common/types/types";
-
 import {emailExamples} from "../../../common/adapters/html.message";
 import {BcryptPasswordHash} from "../../../common/adapters/bcrypt.password";
 import {jwtService} from "../../../common/adapters/jwt.service";
 import {injectable} from "inversify";
-import {CreatedUserType} from "../../../models/schemas/Auth.schema";
 import {UsersRepository} from "../../users/infrasctructure/users.repository";
 import {randomUUID} from "crypto";
 import {QueryUsersRepository} from "../../users/infrasctructure/query.users.repository";
 import {CreateUserDto} from "../../users/domain/user.dto";
-import {UserDocument, UserModel, UserType} from "../../users/domain/user.entity";
+import {UserDocument, UserModel} from "../../users/domain/user.entity";
+import {CreatedUserType} from "../../../models/view_models/UserViewModel";
 
 @injectable()
 export class AuthService {
@@ -37,7 +36,7 @@ export class AuthService {
             jwtService.generateRefreshToken(user._id.toString(), user.login, deviceId)
         ])
 
-        const payload = await jwtService.verifyToken(refreshToken)
+        const payload: any = await jwtService.verifyToken(refreshToken)
 
         await this.authRepository.addSession({
             userId: user._id.toString(),
@@ -143,7 +142,7 @@ export class AuthService {
     }
 
     async resendConfirmCodeService(email: string) {
-        const user: CreatedUserType| null = await this.queryRepository.findUserByEmail(email)
+        const user: CreatedUserType | null = await this.queryRepository.findUserByEmail(email)
         if (!user) return {status: ResultStatus.BadRequest}
 
         if (user.isConfirmed) {

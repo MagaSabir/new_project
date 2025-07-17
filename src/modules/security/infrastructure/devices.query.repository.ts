@@ -1,14 +1,14 @@
 import {DeviceModel} from "../../../models/schemas/Device.schema";
 import {injectable} from "inversify";
-import {AuthModel} from "../../../models/schemas/Auth.schema";
+import {AuthModel} from "../../auth/domain/session.entity";
+
 @injectable()
 export class DevicesQueryRepository {
     async findDevices(userId: string) {
-        const result = await AuthModel.
-            find({
-                userId,
-                expiration: {$gt: Math.floor(Date.now() / 1000)}
-            }).lean()
+        const result = await AuthModel.find({
+            userId,
+            expiration: {$gt: Math.floor(Date.now() / 1000)}
+        }).lean()
         return result.map(el => {
             return {
                 ip: el.ip === "::1" ? '127.0.0.1' : el.ip,
@@ -19,17 +19,17 @@ export class DevicesQueryRepository {
         })
     }
 
-    async findSessionById (deviceId: string) {
-        return  AuthModel.findOne({deviceId})
+    async findSessionById(deviceId: string) {
+        return AuthModel.findOne({deviceId})
     }
 
-    async getRequest (ip: string,url: string, date: number) {
-        const result = await DeviceModel.find({
+    async getRequest(ip: string, url: string, date: number) {
+        return   DeviceModel.find({
             ip,
             url,
-            date: {$gte: date }
+            date: {$gte: date}
         }).lean()
 
-        return result
+
     }
 }

@@ -1,5 +1,3 @@
-import {ObjectId} from "mongodb";
-
 export type UserViewModel = {
     id: string,
     login: string,
@@ -8,16 +6,11 @@ export type UserViewModel = {
 }
 
 
-
-
-
-
-
-export type PyloadTypeDb = {
-    userId: ObjectId | string,
-    userAgent: string,
-    ip: string,
-    lastActiveDate: number | undefined
-    deviceId: string
-    expiration: number | undefined
+export type CreatedUserType = {
+    login: string,
+    password?: string
+    email: string,
+    createdAt: Date,
+    isConfirmed?: boolean,
+    confirmationCodeExpiration?: string | Date
 }

@@ -11,10 +11,6 @@ export class DevicesRepository  {
         return result.deletedCount === 1
     }
 
-    // async findSessionById (deviceId: string) {
-    //     return  DeviceModel.findOne({deviceId})
-    // }
-
     async deleteSessionWithDeviceId (deviceId: string) {
         const result = await DeviceModel.deleteOne({
             deviceId
@@ -27,14 +23,4 @@ export class DevicesRepository  {
     }
     //$gte (больше или равно)
     //$gt (больше чем)
-
-    // async getRequest (ip: string,url: string, date: number) {
-    //     const result = await DeviceModel.find({
-    //         ip,
-    //         url,
-    //         date: {$gte: date }
-    //     }).lean()
-    //
-    //     return result
-    // }
 }

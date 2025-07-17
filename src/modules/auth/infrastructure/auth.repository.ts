@@ -1,8 +1,7 @@
 import {injectable} from "inversify";
 
-import {AuthModel} from "../../../models/schemas/Auth.schema";
 import {UserModel} from "../../users/domain/user.entity";
-import {PyloadTypeDb} from "../../../models/view_models/UserViewModel";
+import {AuthModel, SessionType} from "../domain/session.entity";
 
 @injectable()
 export class AuthRepository {
@@ -11,7 +10,7 @@ export class AuthRepository {
             .findOne({$or: [{login: loginOrEmail}, {email: loginOrEmail}]}).lean()
     }
 
-    async addSession(session: PyloadTypeDb) {
+    async addSession(session: SessionType) {
         await AuthModel.create(session)
     }
 

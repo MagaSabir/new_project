@@ -2,9 +2,9 @@ import "reflect-metadata"
 import {BlogsRepository} from "./modules/blogs/infrasctructure/blog.repository";
 import {BlogsService} from "./modules/blogs/application/blog.service";
 import {BlogsController} from "./modules/blogs/api/blog.controller";
-import {AuthRepository} from "./modules/auth/repositories/auth.repository";
-import {AuthService} from "./modules/auth/services/auth.service";
-import {AuthController} from "./modules/auth/controllers/auth.controller";
+import {AuthRepository} from "./modules/auth/infrastructure/auth.repository";
+import {AuthService} from "./modules/auth/application/auth.service";
+import {AuthController} from "./modules/auth/api/auth.controller";
 import {Container} from "inversify";
 import {QueryBlogsRepository} from "./modules/blogs/infrasctructure/query.blog.repository";
 import {PostsController} from "./modules/posts/api/posts.controller";
@@ -19,10 +19,10 @@ import {QueryRepoComment} from "./modules/comments/infrastructure/query.repo.com
 import {CommentController} from "./modules/comments/api/comment.controller";
 import {CommentRepository} from "./modules/comments/infrastructure/comment.repository";
 import {CommentService} from "./modules/comments/application/comment.service";
-import {DevicesController} from "./modules/security/controller/devices.controller";
-import {DevicesRepository} from "./modules/security/repository/devices.repository";
-import {DevicesQueryRepository} from "./modules/security/queryRepository/devices.query.repository";
-import {DevicesServices} from "./modules/security/services/devices.services";
+import {DevicesController} from "./modules/security/api/devices.controller";
+import {DevicesRepository} from "./modules/security/infrastructure/devices.repository";
+import {DevicesQueryRepository} from "./modules/security/infrastructure/devices.query.repository";
+import {DevicesServices} from "./modules/security/application/devices.services";
 
 
 export const container = new Container()

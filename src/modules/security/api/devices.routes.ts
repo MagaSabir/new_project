@@ -1,7 +1,7 @@
 import {Router} from "express";
-import {refreshMiddleware} from "../../common/middlewares/refresh.middleware";
-import {container} from "../../composition-root";
-import {DevicesController} from "./controller/devices.controller";
+import {refreshMiddleware} from "../../../common/middlewares/refresh.middleware";
+import {container} from "../../../composition-root";
+import {DevicesController} from "./devices.controller";
 
 export const devicesController = container.get(DevicesController)
 export const devicesRoutes = Router()

@@ -1,4 +1,4 @@
-import {AuthService} from "../services/auth.service";
+import {AuthService} from "../application/auth.service";
 import {Request, Response} from "express";
 import {ResultStatus} from "../../../common/types/resultStatuse";
 import {STATUS_CODE} from "../../../common/adapters/http-statuses-code";
